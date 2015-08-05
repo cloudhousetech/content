@@ -41,19 +41,20 @@ function add_node($node) {
     return $results
 }
  
-foreach ($row in Import-Csv -Header name,nodetype,mediumtype,mediumusername,mediumpassword,connectionmanagergroupid,mediumhostname,operatingsystemfamilyid,operatingsystemfamily "nodes.csv")
+foreach ($row in Import-Csv -Header name,nodetype,mediumtype,mediumhostname,mediumusername,mediumpassword,mediumport,connectionmanagergroupid,operatingsystemfamilyid,operatingsystemid "nodes.csv")
 {
     $node = @{
             "node" = @{
 	        "name" = $row.name;
-            	"node_type" = $row.nodetype;
+            "node_type" = $row.nodetype;
 	        "medium_type" = $row.mediumtype;
-	        "medium_username" = $row.mediumusername;
+            "medium_hostname" = $row.mediumhostname;	        
+            "medium_username" = $row.mediumusername;
 	        "medium_password" = $row.mediumpassword;
-            	"connection_manager_group_id" = $row.connectionmanagergroupid;
-            	"medium_hostname" = $row.mediumhostname;
-            	"operating_system_family_id" = $row.operatingsystemfamilyid;
-            	"operating_system_id" = $row.operatingsystemid;
+            "medium_port" = $row.mediumport;
+            "connection_manager_group_id" = $row.connectionmanagergroupid;
+            "operating_system_family_id" = $row.operatingsystemfamilyid;
+            "operating_system_id" = $row.operatingsystemid;
         }
     }
     add_node($node)

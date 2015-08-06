@@ -15,6 +15,7 @@ node = {
     :connection_manager_group_id => 1,
 }
 
+# NB: Swap in your custom URL here if you have a dedicated instance
 uri = URI.join('https://guardrail.scriptrock.com', '/api/v1/nodes.json')
 req = Net::HTTP::Get.new(uri)
 req['Authorization'] = 'Token token="AB123456CDEF7890GH"'

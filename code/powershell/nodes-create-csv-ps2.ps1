@@ -45,12 +45,12 @@ foreach ($row in Import-Csv -Header name,nodetype,mediumtype,mediumhostname,medi
 {
     $node = @{
             "node" = @{
-	        "name" = $row.name;
+            "name" = $row.name;
             "node_type" = $row.nodetype;
-	        "medium_type" = $row.mediumtype;
+            "medium_type" = $row.mediumtype;
             "medium_hostname" = $row.mediumhostname;	        
             "medium_username" = $row.mediumusername;
-	        "medium_password" = $row.mediumpassword;
+            "medium_password" = $row.mediumpassword;
             "medium_port" = $row.mediumport;
             "connection_manager_group_id" = $row.connectionmanagergroupid;
             "operating_system_family_id" = $row.operatingsystemfamilyid;

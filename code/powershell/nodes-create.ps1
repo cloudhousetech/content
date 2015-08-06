@@ -23,7 +23,8 @@ foreach($kvp in $node.GetEnumerator()) {
 
 $body = $body.TrimEnd('&')
 
-$req = Invoke-WebRequest "http://localhost:3000/api/v1/nodes.json" -Method Post -Headers $headers -Body $body
+# NB: Swap in your custom URL below if you have a dedicated instance
+$req = Invoke-WebRequest "https://guardrail.scriptrock.com/api/v1/nodes.json" -Method Post -Headers $headers -Body $body
 
 if ($req.StatusCode -ge 400) {
     throw [System.Exception] $req.StatusCode.ToString() +

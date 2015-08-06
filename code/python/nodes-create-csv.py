@@ -6,7 +6,8 @@ import urllib;
 import json;
 
 def add_node(node):
-    browser = httplib.HTTPConnection('localhost:3000')
+    # NB: Swap in your custom URL below if you have a dedicated instance
+    browser = httplib.HTTPConnection('guardrail.scriptrock.com')
     try:
         body = ''
         for key, val in node.iteritems():

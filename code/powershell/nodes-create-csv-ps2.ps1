@@ -3,7 +3,8 @@ $secretKey = "YOUR SECRET KEY HERE"
 $token = $apiKey + $secretKey
 $headerPart1 = 'Authorization'
 $headerPart2 = 'Token token="' + $token + '"'
-$uri = "http://your.appliance.com/api/v1/nodes"
+# NB: Swap in your custom URL below if you have a dedicated instance
+$uri = "https://guardrail.scriptrock.com/api/v1/nodes"
 $version = $PSVersionTable.PSVersion.Major
  
 function add_node($node) {

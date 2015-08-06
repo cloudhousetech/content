@@ -3,6 +3,9 @@
 require 'net/http'
 require 'json'
 
+api_key     = "<API_KEY>" 
+secret_key  = "<SECRET_KEY>"
+
 node = {
     :name => "host.com",
     :node_type => "SV",
@@ -12,7 +15,7 @@ node = {
     :connection_manager_group_id => 1,
 }
 
-uri = URI.join('http://localhost:3000', '/api/v1/nodes.json')
+uri = URI.join('https://guardrail.scriptrock.com', '/api/v1/nodes.json')
 req = Net::HTTP::Get.new(uri)
 req['Authorization'] = 'Token token="AB123456CDEF7890GH"'
 req['Accept'] = 'application/json'

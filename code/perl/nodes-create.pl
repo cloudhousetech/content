@@ -19,7 +19,8 @@ $body->query_form(%node);
 my $body_content = $body->as_string;
 $body_content =~ s/^.//;
 
-my $url = new URI::URL "http://localhost:3000" .
+# NB: Swap in your custom URL below if you have a dedicated instance
+my $url = new URI::URL "https://guardrail.scriptrock.com" .
     "/api/v1/nodes.json"
 my $request = HTTP::Request->new(GET => $url,
 HTTP::Headers->new("Authorization" => "Token token=\"AB123456CDEF7890GH\"",

@@ -18,7 +18,8 @@ sub add_node {
     my $body_content = $body->as_string;
     $body_content =~ s/^.//;
 
-    my $url = new URI::URL "http://localhost:3000" . "/api/v1/nodes.json";
+    # NB: Swap in your custom URL below if you have a dedicated instance
+    my $url = new URI::URL "https://guardrail.scriptrock.com" . "/api/v1/nodes.json";
     my $request = HTTP::Request->new(POST => $url,
         HTTP::Headers->new("Authorization" => "Token token=\"ABCD123456EF7890GH\"",
         "Accept" => "application/json"));

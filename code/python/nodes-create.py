@@ -8,6 +8,8 @@ hostname = "guardrail.scriptrock.com"
 api_key = "1234..."
 secret_key = "5678..."
 
+browser = None
+
 try:
     browser = httplib.HTTPSConnection(hostname)
 
@@ -46,4 +48,5 @@ try:
 except httplib.HTTPException as h:
     print h.message;
 finally:
-    browser.close()
+    if browser != None:
+        browser.close()

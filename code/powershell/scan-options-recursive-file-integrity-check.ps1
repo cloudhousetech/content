@@ -9,6 +9,7 @@ $include_extentions = "all";
 $crypto = new-object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
  
 foreach($f in Get-ChildItem -Path $folder -Recurse -Force -ErrorAction SilentlyContinue) {
+    if ($f.PSIsContainer) { continue; }
     try {
         $cast = [System.IO.FileInfo]$f
         $extension = $f.Extension

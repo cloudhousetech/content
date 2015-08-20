@@ -25,7 +25,7 @@ foreach($f in Get-ChildItem -Path $folder -Recurse -Force -ErrorAction SilentlyC
              }
              $hashes += $hash.Replace('-','').ToLower() 
              $hashes += ": "
-             $version = (Get-Item $f.FullName).VersionInfo.FileVersion
+             $version = $f.FullName.VersionInfo.FileVersion
              if ($version.length -gt 0) {
                 $hashes += $version
                 $hashes += " - "

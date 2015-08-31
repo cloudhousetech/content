@@ -45,7 +45,7 @@ function add_node($node) {
 foreach ($row in Import-Csv -Header name,nodetype,mediumtype,mediumhostname,mediumusername,mediumpassword,mediumport,connectionmanagergroupid,operatingsystemfamilyid,operatingsystemid "nodes.csv")
 {
     $node = @{
-            "node" = @{
+        "node" = @{
             "name" = $row.name;
             "node_type" = $row.nodetype;
             "medium_type" = $row.mediumtype;

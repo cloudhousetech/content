@@ -8,7 +8,8 @@ Function add_node($node)
 {
     try {
         $headers = @{
-            'Authorization' = 'Token token="' + $token + '"';
+            'Authorization' = 'Token token="' + $token + '"'
+            'Accept' = 'application/json'
         }
 
         $body = ''
@@ -21,15 +22,15 @@ Function add_node($node)
         $req = Invoke-WebRequest $uri -Method POST -Headers $headers -Body $body
         $req.Content | ConvertFrom-Json
 
-    } catch [System.Exception] {
-        $headers = $_.Exception.Response
-        $headers
+    } catch [System.Net.WebException] {
+        $_.Exception.Response
         $bodyStream = $_.Exception.Response.GetResponseStream()
         $bodyReader = New-Object System.IO.StreamReader($bodyStream)
         $bodyReader.BaseStream.Position = 0
         $bodyReader.DiscardBufferedData()
-        $body = $bodyReader.ReadToEnd()
-        $body
+        $bodyReader.ReadToEnd()
+    } catch {
+        $_.Exception.Message
     }
 }
 
@@ -37,16 +38,16 @@ foreach ($row in Import-Csv -Header name,nodetype,mediumtype,mediumhostname,medi
 {
     $node = @{
         "node" = @{
-            "name" = $row.name;
-            "node_type" = $row.nodetype;
-            "medium_type" = $row.mediumtype;
-            "medium_hostname" = $row.mediumhostname;	        
-            "medium_username" = $row.mediumusername;
-            "medium_password" = $row.mediumpassword;
-            "medium_port" = $row.mediumport;
-            "connection_manager_group_id" = $row.connectionmanagergroupid;
-            "operating_system_family_id" = $row.operatingsystemfamilyid;
-            "operating_system_id" = $row.operatingsystemid;
+            "name" = $row.name
+            "node_type" = $row.nodetype
+            "medium_type" = $row.mediumtype
+            "medium_hostname" = $row.mediumhostname	        
+            "medium_username" = $row.mediumusername
+            "medium_password" = $row.mediumpassword
+            "medium_port" = $row.mediumport
+            "connection_manager_group_id" = $row.connectionmanagergroupid
+            "operating_system_family_id" = $row.operatingsystemfamilyid
+            "operating_system_id" = $row.operatingsystemid
         }
     }
     add_node($node)

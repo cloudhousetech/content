@@ -23,12 +23,16 @@ Function add_node($node)
         $req.Content | ConvertFrom-Json
 
     } catch [System.Net.WebException] {
-        $_.Exception.Response
-        $bodyStream = $_.Exception.Response.GetResponseStream()
-        $bodyReader = New-Object System.IO.StreamReader($bodyStream)
-        $bodyReader.BaseStream.Position = 0
-        $bodyReader.DiscardBufferedData()
-        $bodyReader.ReadToEnd()
+        if ($_.Exception.Response) {
+            $_.Exception.Response
+            $bodyStream = $_.Exception.Response.GetResponseStream()
+            $bodyReader = New-Object System.IO.StreamReader($bodyStream)
+            $bodyReader.BaseStream.Position = 0
+            $bodyReader.DiscardBufferedData()
+            $bodyReader.ReadToEnd()
+        } else { # e.g. SSL errors
+            $_.Exception.Message
+        }
     } catch {
         $_.Exception.Message
     }

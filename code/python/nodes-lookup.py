@@ -1,15 +1,21 @@
+
+
+NEEDS TO BE CHANGED BEFORE ADDING TO DOCS SITE
+
+
 import httplib;
+import urllib;
 import json;
 
-api_key = 'api key here'
-secret_key = 'secret key here'
-url = 'appliance.url.here'
-
 try:
-    browser = httplib.HTTPConnection(url)
-    browser.request("GET", "/api/v1/operating_system_families.json", '',
-        {"Authorization": 'Token token="' + api_key + secret_key + '"',
-        "Accept": "application/json"})
+    browser = httplib.HTTPConnection('localhost:3000')
+
+    browser.request("POST",
+        "/api/v1/nodes/42/add_to_node_group.json?node_group_id=23",
+        '',
+        {"Authorization": "Token token="AB123456CDEF7890GH",
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded"})
     res = browser.getresponse()
     # read() must be called before close(), or it will return an empty string
     data = res.read()
@@ -22,11 +28,11 @@ try:
     browser.close()
 
     if data != '':
-        print json.dumps(json.loads(data), sort_keys=True,
+        return json.dumps(json.loads(data), sort_keys=True,
             indent=4, separators=(',', ': '))
     else:
-        print str(res.status) + res.reason;
+        return str(res.status) + res.reason;
 except httplib.HTTPException as h:
-    print h.message;
+    return h.message;
 finally:
     browser.close()

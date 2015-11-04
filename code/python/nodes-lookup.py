@@ -1,11 +1,10 @@
-
-
-NEEDS TO BE CHANGED BEFORE ADDING TO DOCS SITE
-
-
 import httplib;
 import urllib;
 import json;
+
+api_key = 'api key here'
+secret_key = 'secret key here'
+url = 'appliance.url.here'
 
 try:
     browser = httplib.HTTPConnection('localhost:3000')
@@ -13,7 +12,7 @@ try:
     browser.request("POST",
         "/api/v1/nodes/42/add_to_node_group.json?node_group_id=23",
         '',
-        {"Authorization": "Token token="AB123456CDEF7890GH",
+        {"Authorization": 'Token token="' + api_key + secret_key + '"',
         "Accept": "application/json",
         "Content-Type": "application/x-www-form-urlencoded"})
     res = browser.getresponse()

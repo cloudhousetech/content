@@ -5,7 +5,9 @@ $url = 'appliance.url.here'
 $headers = @{'Authorization' = 'Token token="' + $api_key + $secret_key + '"';
                  'Accept' = 'application/json'}
 
-$req = Invoke-WebRequest "http://" + $url + "/api/v1/operating_system_families.json" -Headers $headers
+$req = Invoke-WebRequest
+    "http://" + $url + "/api/v1/nodes/42/add_to_node_group.json?node_group_id=23"
+    -Method "Post" -Headers $headers
 
 if ($req.StatusCode > 400)
 {

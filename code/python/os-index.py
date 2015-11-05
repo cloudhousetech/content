@@ -1,10 +1,14 @@
 import httplib;
 import json;
 
+api_key = 'api key here'
+secret_key = 'secret key here'
+url = 'appliance.url.here'
+
 try:
     browser = httplib.HTTPConnection('localhost:3000')
     browser.request("GET", "/api/v1/operating_systems.json", '',
-        {"Authorization": "Token token="AB123456CDEF7890GH",
+        {"Authorization": 'Token token="' + api_key + secret_key + '"',
         "Accept": "application/json"})
     res = browser.getresponse()
     # read() must be called before close(), or it will return an empty string

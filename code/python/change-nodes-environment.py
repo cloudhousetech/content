@@ -11,6 +11,9 @@ toEnv =   3 # Set an environment id to transfer to
 
 try:
     browser = httplib.HTTPConnection(url)
+    # -- For HTTPS connections
+    # context = ssl._create_unverified_context()
+    # browser = httplib.HTTPSConnection(url, context=context)
     get_headers = {"Authorization": 'Token token="' + api_key + secret_key + '"',
     "Accept": "application/json"}
     browser.request("GET", "/api/v2/nodes.json", '', get_headers)
@@ -31,12 +34,14 @@ try:
 
             if environment_id == fromEnv:
                 # Change the node's environment_id = toEnv
-                node['environment_id'] = toEnv
-                body = 'node[' + urllib.quote_plus("environment_id") + ']=' + urllib.quote_plus(str(toEnv))
+                output = {'node' : { 'environment_id' : toEnv }}
+                body = json.dumps(output)
                 # Begin http connection for API call
                 conn = httplib.HTTPConnection(url)
+                # -- For HTTPS connections
+                # conn = httplib.HTTPSConnection(url, context=context)
                 put_headers = {"Authorization": 'Token token="' + api_key + secret_key + '"',
-                "Accept": "application/json", 'Content-Type':'application/x-www-form-urlencoded'}
+                "Accept": "application/json", 'Content-Type':'application/json'}
                 conn.request("PUT", "/api/v2/nodes/" + str(node_id) +".json",
                     body, put_headers)
                 update_res = conn.getresponse()

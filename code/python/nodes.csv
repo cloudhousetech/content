@@ -1,0 +1,4 @@
+node_type, medium_type, medium_username, medium_password, medium_port, connection_manager_group_id, operating_system_family_id, operating_system_id, organisation_id, environment_id, name, medium_hostname, short_description
+SV,3,username,,22,1,2,231,2,2,hostname1,1.2.3.4,Description #1
+SV,3,username,,22,1,2,231,2,2,hostname2,1.2.3.5,Description #2
+SV,3,username,,22,1,2,231,2,2,hostname3,1.2.3.6,Description #3

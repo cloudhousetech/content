@@ -4,22 +4,27 @@ import csv
 import httplib;
 import urllib;
 import json;
+import ssl;
+
+hostname = "your.appliance.hostname"
+api_key = "Appliance API Key"
+secret_key = "Appliance Secret Key"
 
 def add_node(node):
     # NB: Swap in your custom URL below if you have a dedicated instance
-    browser = httplib.HTTPConnection('guardrail.scriptrock.com')
+    browser = httplib.HTTPSConnection(hostname, timeout=5, context=ssl._create_unverified_context())
     try:
         body = ''
         for key, val in node.iteritems():
-            body += 'node[' + urllib.quote_plus(str(key)) + ']=' +
-                urllib.quote_plus(str(val)) + '&'
+            body += "node[" + urllib.quote_plus(str(key)) + "]=" + urllib.quote_plus(str(val)) + "&"
 
         body = body[:-1]
 
-        browser.request('POST', '/api/v1/nodes.json', body,
-            {'Authorization': 'Token token="ABCD123456EF7890GH"',
-                'Accept': 'application/json',
-                'Content-Type':'application/x-www-form-urlencoded'})
+        browser.request("POST", "/api/v2/nodes.json", body,
+            {"Authorization": "Token token=\"" + api_key + secret_key + "\"",
+                "Accept": "application/json",
+                "Content-Type": "application/x-www-form-urlencoded"})
+
         res = browser.getresponse()
         data = res.read()
 
@@ -40,14 +45,26 @@ def add_node(node):
     finally:
         browser.close()
 
-with open('nodes.csv', 'rb') as f:
+with open("nodes.csv", "rb") as f:
     reader = csv.reader(f)
     node = {}
     for row in reader:
-        node['name'] = row[0]
-        node['node_type'] = row[1]
-        node['medium_type'] = row[2]
-        node['medium_username'] = row[3]
-        node['medium_password'] = row[4]
-        node['connection_manager_group_id'] = row[5]
-        add_node(node)
+        if row[0] == "node_type":
+            # Looks like an empty row or heading row, skip
+            continue
+        else:
+            node['node_type'] = row[0]
+            node['medium_type'] = row[1]
+            node['medium_username'] = row[2]
+            node['medium_password'] = row[3]
+            node['medium_port'] = row[4]
+            node['connection_manager_group_id'] = row[5]
+            node['operating_system_family_id'] = row[6]
+            node['operating_system_id'] = row[7]
+            node['organisation_id'] = row[8]
+            node['environment_id'] = row[9]
+            node['name'] = row[10]
+            node['medium_hostname'] = row[11]
+            node['short_description'] = row[12]
+            print "node=" + str(node)
+            add_node(node)

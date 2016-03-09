@@ -8,8 +8,10 @@ $include_extentions = "all";
 
 $crypto = new-object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
  
-foreach($f in Get-ChildItem -Path $folder -Recurse -Force -ErrorAction SilentlyContinue | where { ! $_.PSIsContainer }) {
+foreach($f in Get-ChildItem -Path $folder -Recurse -Force -ErrorAction SilentlyContinue) {
+    if ($f.PSIsContainer) { continue; }
     try {
+        $cast = [System.IO.FileInfo]$f
         $extension = $f.Extension
         if ($include_extentions -contains $extension -or $include_extentions -contains "all" ) {
              $bytes = [System.IO.File]::ReadAllBytes($f.FullName)
@@ -23,14 +25,18 @@ foreach($f in Get-ChildItem -Path $folder -Recurse -Force -ErrorAction SilentlyC
              }
              $hashes += $hash.Replace('-','').ToLower() 
              $hashes += ": "
-             $version = (Get-Item $f.FullName).VersionInfo.FileVersion
-             $hashes += $version
-             $hashes += " - "
+             $version = $f.VersionInfo.FileVersion
+             if ($version.length -gt 0) {
+                $hashes += $version
+                $hashes += " - "
+             }
              $hashes += $f.Name
              $hashes += "`r`n" 
          }
+    } catch [System.InvalidCastException] {
+        #Continue
     } catch [System.Exception] {
-        err = "Could not read file " + $f + ": " + $_.Exception.Message
+        "Error: " + $f.FullName + ": " + $_.Exception.Message
     }
 }
 

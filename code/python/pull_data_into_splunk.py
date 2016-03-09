@@ -9,9 +9,10 @@ from datetime import datetime;
 import os;
 import sys;
 
-api_key = '1234'
-secret_key = '5678'
-url = 'url.goes.here'
+# Define constants here
+api_key = 'apikeyhere'
+secret_key = 'secretkeyhere'
+url = 'appliance.url.here'
 start_time = datetime.utcnow()
     
 def auth_token():
@@ -20,11 +21,12 @@ def auth_token():
 def append_auth_token_to_headers(headers):
     headers['Authorization'] = auth_token()['Authorization'];
     return headers;
-        
+
 def _api_call(name, method, path, body='', headers={}):
     browser = None
     try:
-        browser = httplib.HTTPConnection(url)
+        # Change to HTTPConnection() if necessary
+        browser = httplib.HTTPSConnection(url)
         browser.request(method, path, body, append_auth_token_to_headers(headers))
         res = browser.getresponse()
         # read() must be called before close(), otherwise it will return an empty string
@@ -41,7 +43,7 @@ def _api_call(name, method, path, body='', headers={}):
         else:
             raise Exception(str(res.status) + res.reason)
     except httplib.HTTPException as h:
-        raise Exception('ScriptRock API request failed [' + name + ']: ' + h.message)
+        raise Exception('UpGuard API request failed [' + name + ']: ' + h.message)
     finally:
         if browser is not None:
             browser.close()
@@ -61,9 +63,22 @@ def final_diff_report(id):
 def start_node_group_scan(id):
     job_list = []
     node_group_nodes = _api_call('node_group_nodes', 'GET', '/api/v1/node_groups/' + str(id) + '/nodes.json')
+    print(json.dumps(node_group_nodes, sort_keys=True, indent=4, separators=(',', ': ')))
     for node in node_group_nodes:
         job_list.append(_api_call('start_scan', 'POST', '/api/v1/nodes/' + str(node['id']) + '/start_scan.json')['job_id'])
     return job_list
+
+def retrieve_vulns(reported):
+    vuln_list = []
+    page = 1
+    retrieved = _api_call('vulnerabilities', 'GET', '/api/v2/vulns.json?per_page=50&page=' + str(page) + '&reported=' + str(reported))
+    vuln_list = vuln_list + retrieved
+    page += 1
+    while (retrieved != []):
+      retrieved = _api_call('vulnerabilities', 'GET', '/api/v2/vulns.json?per_page=50&page=' + str(page) + '&reported=' + str(reported))
+      vuln_list = vuln_list + retrieved
+      page += 1
+    return vuln_list
 
 def jobs_finished(job_ids):
     for job in job_ids:
@@ -80,52 +95,57 @@ def lock_file(action):
     else:
         os.remove('/tmp/pull_data_lock')
 
-parser = argparse.ArgumentParser(description='Manipulate node groups')
-parser.add_argument('-api_key', help='The API key for the appliance')
-parser.add_argument('-secret_key', help='The secret key for the appliance')
-parser.add_argument('-url', help='The URL for the appliance, with no scheme specified')
-parser.add_argument('-node_group_id', help='The Id of the node group to scan and retrieve a diff report for')
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser\
+    (description='UpGuard script for adding data into Splunk, currently supported features:' \
+    ' Manipulate node groups, retrieve vulnerabilities')
+    parser.add_argument('-api_key', help='The API key for the appliance')
+    parser.add_argument('-secret_key', help='The secret key for the appliance')
+    parser.add_argument('-url', help='The URL for the appliance, with no scheme specified')
+    parser.add_argument('-node_group_id', help='The id of the Node Group to scan and retrieve a diff report for')
+    parser.add_argument('-vuln_reported_type', help='The vulnerabilities to be reported, one of: today, month, all.')
+    parser.add_argument('-force', help='Manually override lockfile to re-run node group scan')
 
-args = parser.parse_args()
+    args = parser.parse_args()
+    # Define endpoints
+    if args.api_key is not None:
+      api_key = args.api_key
+    if args.secret_key is not None:
+      secret_key = args.secret_key
+    if args.url is not None:
+      url = args.url
 
-api_key = args.api_key
-secret_key = args.secret_key
-url = args.url
+    # Toggle between manipulating nodes in node groups vs retrieving vulns
+    if args.node_group_id is None:
+        print('Starting data pull, time: ' + str(start_time))
+        print('Writing lock file')
+        lock_file('lock')
+        print('Started retrieving vulns for ' + str(args.vuln_reported_type))
+        vulns = retrieve_vulns(args.vuln_reported_type)
+        print(json.dumps(vulns, sort_keys=True, indent=4, separators=(',', ': ')))
+        print('Removing lock')
+        lock_file('unlock')
+        exit()
 
-if args.node_group_id is None:
-    print('A node group Id is required')
-    exit()
+    if os.path.isfile('/tmp/pull_data_lock'):
+        print('/tmp/pull_data_lock still exists; Exiting...')
+        if args.node_group_id is True:
+            lock_file('unlock')
+            print('/tmp/pull_data_lock is removed; Continuing...')
+        else:
+            exit()
 
-if os.path.isfile('/tmp/pull_data_lock'):
-    print('pull_data_lock still exists; exiting')
-    exit()
-
-print('Starting data pull, time: ', str(start_time))
-print('Writing lock file')
-lock_file('lock')
-print('Kicking off scan job for node group with Id: ' + args.node_group_id)
-job_id_list = start_node_group_scan(int(args.node_group_id))
-print('Started node group scan job')
-while jobs_finished(job_id_list) == False:
-    print('Waiting for jobs to finish')
-    time.sleep(5)
-print('Jobs finished')
-print('Printing diff report for node group with Id: ' + args.node_group_id)
-print(json.dumps(final_diff_report(int(args.node_group_id)), sort_keys=True, indent=4, separators=(',', ': ')))
-print('Removing lock')
-lock_file('unlock')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    print('Starting data pull, time: ', str(start_time))
+    print('Writing lock file')
+    lock_file('lock')
+    print('Kicking off scan job for node group with id: ' + args.node_group_id)
+    job_id_list = start_node_group_scan(int(args.node_group_id))
+    print('Started node group scan job')
+    while jobs_finished(job_id_list) == False:
+        print('Waiting for jobs to finish')
+        time.sleep(5)
+    print('Jobs finished')
+    print('Printing diff report for node group with Id: ' + args.node_group_id)
+    print(json.dumps(final_diff_report(int(args.node_group_id)), sort_keys=True, indent=4, separators=(',', ': ')))
+    print('Removing lock')
+    lock_file('unlock')

@@ -10,9 +10,9 @@ import os;
 import sys;
 
 # Define constants here
-api_key = 'apikeyhere'
-secret_key = 'secretkeyhere'
-url = 'appliance.url.here'
+api_key = ''
+secret_key = ''
+url = ''
 start_time = datetime.utcnow()
     
 def auth_token():
@@ -71,15 +71,13 @@ def start_node_group_scan(id):
 def retrieve_vulns(reported):
     vuln_list = []
     page = 1
-    retrieved = _api_call('vulnerabilities', 'GET', '/api/v2/vulns.json?per_page=50&page=' + str(page) + '&reported=' + str(reported))
-    vuln_list = vuln_list + retrieved
-    page += 1
-    while (retrieved != []):
+    while True:
       retrieved = _api_call('vulnerabilities', 'GET', '/api/v2/vulns.json?per_page=50&page=' + str(page) + '&reported=' + str(reported))
       vuln_list = vuln_list + retrieved
       page += 1
-    return vuln_list
-
+      if (retrieved == []):
+        return vuln_list
+        
 def jobs_finished(job_ids):
     for job in job_ids:
         result = _api_call('show_job', 'GET', '/api/v1/jobs/' + str(job) + '.json')['status']

@@ -21,12 +21,14 @@ Puppet::Reports.register_report(:upguard) do
   SECRET_KEY = config[:secret_key]
   API_KEY = "#{SERVICE_KEY}#{SECRET_KEY}"
   WINDOWS_CM_GROUP_ID = config[:windows_cm_group_id]
+  DEFAULT_CM_GROUP_ID = config[:default_cm_group_id]
 
   Puppet.info("upguard: APPLIANCE_URL=#{APPLIANCE_URL}")
   Puppet.info("upguard: SERVICE_KEY=#{SERVICE_KEY}")
   Puppet.info("upguard: SECRET_KEY=#{SECRET_KEY}")
   Puppet.info("upguard: API_KEY=#{API_KEY}")
   Puppet.info("upguard: WINDOWS_CM_GROUP_ID=#{WINDOWS_CM_GROUP_ID}")
+  Puppet.info("upguard: DEFAULT_CM_GROUP_ID=#{DEFAULT_CM_GROUP_ID}")
 
   def process
 
@@ -36,18 +38,20 @@ Puppet::Reports.register_report(:upguard) do
 
     if status == 'changed'
       node_ip_hostname = self.host
-      manifest_filename = ERB::Util.url_encode("#{self.logs.first.file.truncate(45)}")
+      manifest_filename = get_manifest_files(self.logs)
 
       Puppet.info("upguard: node_ip_hostname=#{node_ip_hostname}")
       Puppet.info("upguard: manifest_filename=#{manifest_filename}")
 
       lookup = node_lookup(API_KEY, APPLIANCE_URL, node_ip_hostname)
+      os = get_os(node_ip_hostname)
+      Puppet.info("upguard: os: #{os}")
 
       if lookup["node_id"]
         node_id = lookup["node_id"]
         Puppet.info("upguard: node found: node_id=#{node_id}")
       elsif lookup["error"] == "Not Found"
-        node_id = node_create(API_KEY, APPLIANCE_URL, node_ip_hostname, WINDOWS_CM_GROUP_ID)
+        node_id = node_create(API_KEY, APPLIANCE_URL, node_ip_hostname, os, DEFAULT_CM_GROUP_ID, WINDOWS_CM_GROUP_ID)
         Puppet.info("upguard: node not found so created: node_id=#{node_id}")
       else
         Puppet.err("upguard: failed to lookup node: #{lookup}")
@@ -64,6 +68,43 @@ Puppet::Reports.register_report(:upguard) do
     end
   end
 
+  def get_os(hostname)
+    response = `curl -X GET http://localhost:8080/pdb/query/v4/facts/operatingsystem --data-urlencode 'query=["=", "certname", "#{hostname}"]'`
+    Puppet.info("upguard: get_os: response=#{response}")
+    os_details = JSON.load(response)
+    if os_details && os_details[0]
+      os_details[0]['value']
+    else
+      "unknown"
+    end
+  end
+
+  def get_manifest_files(logs)
+    manifest_filename = []
+    default = ERB::Util.url_encode("puppet run")
+
+    if logs
+      (self.logs).each do |log|
+        Puppet.info("upguard: log: #{log}")
+        if log.file
+          Puppet.info("upguard: log.file: #{log.file}")
+          segments = log.file.split("/")
+          if segments && segments.any?
+            manifest_filename.push(segments.last)
+          end
+        end
+      end
+    else
+      manifest_filename.push("#{default}")
+    end
+    if manifest_filename && manifest_filename.any?
+      manifest_filename = manifest_filename.uniq.sort
+      ERB::Util.url_encode(manifest_filename.join(", ").slice(0..40))
+    else
+      "#{default}"
+    end
+  end
+
   # Check to see if the node has already been added to UpGuard. If so, return it's node_id.
   def node_lookup(api_key, instance, external_id)
     response = `curl -X GET -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' #{instance}/api/v2/nodes/lookup.json?external_id=#{external_id}`
@@ -72,10 +113,18 @@ Puppet::Reports.register_report(:upguard) do
   end
   module_function :node_lookup
 
-  # Creates a Windows 2012 node in UpGuard. TODO: Find a way to get OS details from Puppet so this isn't hardcoded.
-  def node_create(api_key, instance, ip_hostname, windows_cm_group_id)
-    node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": "Added via the API.", "node_type": "SV", "operating_system_family_id": 1, "operating_system_id": 125, "medium_type": 7, "medium_port": 5985, "connection_manager_group_id": ' + "\"#{windows_cm_group_id}\"" + ', "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
-    response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '#{node_details}' #{instance}/api/v2/nodes`
+  # Creates a node in UpGuard.
+  def node_create(api_key, instance, ip_hostname, os, default_cm_group_id, windows_cm_group_id)
+    if os && os.downcase == 'windows'
+      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": "Added via the API.", "node_type": "SV", "operating_system_family_id": 1, "operating_system_id": 125, "medium_type": 7, "medium_port": 5985, "connection_manager_group_id": ' + "\"#{windows_cm_group_id}\"" + ', "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
+      response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '#{node_details}' #{instance}/api/v2/nodes`
+    elsif os && os.downcase == 'centos'
+      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": "Added via the API.", "node_type": "SV", "operating_system_family_id": 2, "operating_system_id": 231, "medium_type": 3, "medium_port": 22, "connection_manager_group_id": ' + "\"#{default_cm_group_id}\"" + ', "medium_username": "root", "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
+      response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '#{node_details}' #{instance}/api/v2/nodes`
+    else
+      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": "Added via the API.", "node_type": "SV", "operating_system_family_id": 7, "operating_system_id": 731, "medium_type": 3, "medium_port": 22, "connection_manager_group_id": ' + "\"#{default_cm_group_id}\"" + ', "medium_username": "root", "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
+      response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '#{node_details}' #{instance}/api/v2/nodes`
+    end
     Puppet.info("upguard: node_create response=#{response}")
     node = JSON.load(response)
     if node["id"]

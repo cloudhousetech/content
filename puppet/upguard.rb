@@ -83,8 +83,8 @@ Puppet::Reports.register_report(:upguard) do
     manifest_filename = []
     default = ERB::Util.url_encode("puppet run")
 
-    if logs
-      (self.logs).each do |log|
+    if logs && logs.any?
+      (logs).each do |log|
         Puppet.info("upguard: log: #{log}")
         if log.file
           Puppet.info("upguard: log.file: #{log.file}")

@@ -17,10 +17,12 @@ Puppet::Reports.register_report(:upguard) do
   end
 
   APPLIANCE_URL = config[:appliance_url]
+  PUPPETDB_URL = config[:puppetdb_url]
   SERVICE_KEY = config[:service_key]
   SECRET_KEY = config[:secret_key]
   API_KEY = "#{SERVICE_KEY}#{SECRET_KEY}"
   WINDOWS_CM_GROUP_ID = config[:windows_cm_group_id]
+  WINDOWS_CM_CYBERU_ID = config[:windows_cm_cyberu_id]
   DEFAULT_CM_GROUP_ID = config[:default_cm_group_id]
 
   Puppet.info("upguard: APPLIANCE_URL=#{APPLIANCE_URL}")
@@ -51,7 +53,7 @@ Puppet::Reports.register_report(:upguard) do
         node_id = lookup["node_id"]
         Puppet.info("upguard: node found: node_id=#{node_id}")
       elsif lookup["error"] == "Not Found"
-        node_id = node_create(API_KEY, APPLIANCE_URL, node_ip_hostname, os, DEFAULT_CM_GROUP_ID, WINDOWS_CM_GROUP_ID)
+        node_id = node_create(API_KEY, APPLIANCE_URL, node_ip_hostname, os, DEFAULT_CM_GROUP_ID)
         Puppet.info("upguard: node not found so created: node_id=#{node_id}")
       else
         Puppet.err("upguard: failed to lookup node: #{lookup}")
@@ -69,7 +71,7 @@ Puppet::Reports.register_report(:upguard) do
   end
 
   def get_os(hostname)
-    response = `curl -X GET http://localhost:8080/pdb/query/v4/facts/operatingsystem --data-urlencode 'query=["=", "certname", "#{hostname}"]'`
+    response = `curl -X GET #{PUPPETDB_URL}/pdb/query/v4/facts/operatingsystem --data-urlencode 'query=["=", "certname", "#{hostname}"]'`
     Puppet.info("upguard: get_os: response=#{response}")
     os_details = JSON.load(response)
     if os_details && os_details[0]
@@ -114,8 +116,12 @@ Puppet::Reports.register_report(:upguard) do
   module_function :node_lookup
 
   # Creates a node in UpGuard.
-  def node_create(api_key, instance, ip_hostname, os, default_cm_group_id, windows_cm_group_id)
+  def node_create(api_key, instance, ip_hostname, os, default_cm_group_id)
     if os && os.downcase == 'windows'
+      windows_cm_group_id = WINDOWS_CM_GROUP_ID
+      if ip_hostname.downcase.include? 'office.cyberu.com'
+        windows_cm_group_id = WINDOWS_CM_CYBERU_ID
+      end
       node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": "Added via the API.", "node_type": "SV", "operating_system_family_id": 1, "operating_system_id": 125, "medium_type": 7, "medium_port": 5985, "connection_manager_group_id": ' + "\"#{windows_cm_group_id}\"" + ', "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
       response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '#{node_details}' #{instance}/api/v2/nodes`
     elsif os && os.downcase == 'centos'

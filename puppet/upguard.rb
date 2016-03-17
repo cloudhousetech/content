@@ -26,10 +26,12 @@ Puppet::Reports.register_report(:upguard) do
   DEFAULT_CM_GROUP_ID = config[:default_cm_group_id]
 
   Puppet.info("upguard: APPLIANCE_URL=#{APPLIANCE_URL}")
+  Puppet.info("upguard: PUPPETDB_URL=#{PUPPETDB_URL}")
   Puppet.info("upguard: SERVICE_KEY=#{SERVICE_KEY}")
   Puppet.info("upguard: SECRET_KEY=#{SECRET_KEY}")
   Puppet.info("upguard: API_KEY=#{API_KEY}")
   Puppet.info("upguard: WINDOWS_CM_GROUP_ID=#{WINDOWS_CM_GROUP_ID}")
+  Puppet.info("upguard: WINDOWS_CM_CYBERU_ID=#{WINDOWS_CM_CYBERU_ID}")
   Puppet.info("upguard: DEFAULT_CM_GROUP_ID=#{DEFAULT_CM_GROUP_ID}")
 
   def process

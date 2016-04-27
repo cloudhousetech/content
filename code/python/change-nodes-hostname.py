@@ -43,7 +43,7 @@ try:
                 nodeDetailJson = json.loads(nodeDetail)
                 print "Updating " + nodeDetailJson['name'] + " (" + str(count) + "/" + str(len(nodeListJson)) + ")"
 
-                medium_hostname = nodeDetailJson['medium_hostname'] + domainName
+                medium_hostname = nodeDetailJson['name'] + domainName
                 medium_username = userName
 
                 output = {'node' : { 'medium_hostname' : medium_hostname, 'medium_username' : medium_username }}

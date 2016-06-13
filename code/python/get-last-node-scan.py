@@ -57,7 +57,7 @@ secret_key = "222222"
 try:
     browser = httplib.HTTPConnection(hostname)
 
-    browser.request("GET", "/api/v1/nodes/1/last_node_scan_details?with_data=true", '',
+    browser.request("GET", "/api/v2/nodes/1/last_node_scan_details?with_data=true", '',
  {"Authorization": "Token token=\"" + api_key + secret_key + "\"",
  "Accept": "application/json"})
     res = browser.getresponse()

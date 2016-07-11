@@ -11,7 +11,7 @@ url = 'your.url.here'
 def get_file_id(node, file_path):
     browser = httplib.HTTPConnection(url)
     try:
-        browser.request('GET', '/api/v1/nodes/' + str(node) + '/ci_data?ci_type=files', '', 
+        browser.request('GET', '/api/v2/nodes/' + str(node) + '/ci_data?ci_type=files', '', 
             {'Authorization': 'Token token="' + api_key + secret_key + '"',
             'Accept':'application/json'})
         res = browser.getresponse()
@@ -42,7 +42,7 @@ def get_file_id(node, file_path):
 def get_file(text_file_id):
     browser = httplib.HTTPConnection(url)
     try:
-        browser.request('GET', '/api/v1/text_files/' + str(text_file_id), '', 
+        browser.request('GET', '/api/v2/text_files/' + str(text_file_id), '', 
             {'Authorization': 'Token token="' + api_key + secret_key + '"',
             'Accept':'application/json'})
         res = browser.getresponse()

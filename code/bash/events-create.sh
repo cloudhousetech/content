@@ -38,4 +38,4 @@ shift
 done
 
 data="{\"event\":{\"sub_category\":\"${CATEGORY}\",\"action_taken\":\"${ACTION}\",\"status\":${STATUS},\"source\":\"${ICON}\",\"duration\":\"${DURATION}\",\"extra\":\"${EXTRA}\"}}"
-curl -s -k -H "Authorization: Token token=\"abc123\"" -H "Content-Type: application/json" -d "$data" http://hostname/api/v1/events
+curl -s -k -H "Authorization: Token token=\"abc123\"" -H "Content-Type: application/json" -d "$data" http://hostname/api/v2/events

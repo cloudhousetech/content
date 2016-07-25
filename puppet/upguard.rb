@@ -18,6 +18,7 @@ Puppet::Reports.register_report(:upguard) do
 
   APPLIANCE_URL = config[:appliance_url]
   PUPPETDB_URL = config[:puppetdb_url]
+  COMPILE_MASTER_PEM = config[:compile_master_pem]
   SERVICE_KEY = config[:service_key]
   SECRET_KEY = config[:secret_key]
   API_KEY = "#{SERVICE_KEY}#{SECRET_KEY}"
@@ -27,6 +28,7 @@ Puppet::Reports.register_report(:upguard) do
 
   Puppet.info("upguard: APPLIANCE_URL=#{APPLIANCE_URL}")
   Puppet.info("upguard: PUPPETDB_URL=#{PUPPETDB_URL}")
+  Puppet.info("uppuard: COMPILE_MASTER_PEM=#{COMPILE_MASTER_PEM}")
   Puppet.info("upguard: SERVICE_KEY=#{SERVICE_KEY}")
   Puppet.info("upguard: SECRET_KEY=#{SECRET_KEY}")
   Puppet.info("upguard: API_KEY=#{API_KEY}")
@@ -40,7 +42,8 @@ Puppet::Reports.register_report(:upguard) do
 
     Puppet.info("upguard: status=#{status}")
 
-    if status == 'changed'
+    # For most scenarios, make sure the node is added to upguard and is being scanned.
+    if status == 'changed' || status == 'unchanged' || status == 'failed'
       node_ip_hostname = self.host
       manifest_filename = get_manifest_files(self.logs)
 
@@ -73,7 +76,7 @@ Puppet::Reports.register_report(:upguard) do
   end
 
   def get_os(hostname)
-    response = `curl -X GET #{PUPPETDB_URL}/pdb/query/v4/facts/operatingsystem --data-urlencode 'query=["=", "certname", "#{hostname}"]'`
+    response = `curl -X GET #{PUPPETDB_URL}/pdb/query/v4/facts/operatingsystem --data-urlencode 'query=["=", "certname", "#{hostname}"]' --tlsv1 --cacert /etc/puppetlabs/puppet/ssl/certs/ca.pem --cert /etc/puppetlabs/puppet/ssl/certs/#{COMPILE_MASTER_PEM} --key /etc/puppetlabs/puppet/ssl/private_keys/#{COMPILE_MASTER_PEM}`
     Puppet.info("upguard: get_os: response=#{response}")
     os_details = JSON.load(response)
     if os_details && os_details[0]

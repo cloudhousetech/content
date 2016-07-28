@@ -72,19 +72,27 @@ Puppet::Reports.register_report(:upguard) do
       end
 
       # Make sure to add the node to the node group
-      if !node_group_id.nil? and !node_group_id.include?("error")
+      if !node_group_id.nil? and !node_group_id.to_s.include?("error")
         add_to_node_group_response = add_to_node_group(API_KEY, APPLIANCE_URL, node_id, node_group_id)
         Puppet.info("upguard: add_to_node_group response: #{add_to_node_group_response}")
       else
         Puppet.info("upguard: obtaining node_group_id failed: #{node_group_id}")
       end
 
+      # Kick off a node scan
       job = node_scan(API_KEY, APPLIANCE_URL, node_id, manifest_filename)
-
       if job["job_id"]
         Puppet.info("upguard: node scan kicked off against #{node_ip_hostname} (#{APPLIANCE_URL}/jobs/#{job["job_id"]}/show_job?show_all=true)")
       else
         Puppet.err("upguard: failed to kick off node scan against #{node_ip_hostname} (#{node_id}): #{job}")
+      end
+
+      # Kick off a node vulnerability scan
+      vuln_job = node_vuln_scan(API_KEY, APPLIANCE_URL, node_id)
+      if vuln_job["job_id"]
+        Puppet.info("upguard: node vulnerability scan kicked off against #{node_ip_hostname} (#{APPLIANCE_URL}/jobs/#{vuln_job["job_id"]}/show_job?show_all=true)")
+      else
+        Puppet.err("upguard: failed to kick off node vulnerability scan against #{node_ip_hostname} (#{node_id}): #{vuln_job}")
       end
     end
   end
@@ -203,4 +211,12 @@ Puppet::Reports.register_report(:upguard) do
     JSON.load(response)
   end
   module_function :node_scan
+
+  # Kick off a vuln scan
+  def node_vuln_scan(api_key, instance, node_id)
+    response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' '#{instance}/api/v2/jobs.json?type=node_vulns&type_id=#{node_id}'`
+    Puppet.info("upguard: node_vuln_scan response=#{response}")
+    JSON.load(response)
+  end
+  module_function :node_vuln_scan
 end

@@ -160,7 +160,12 @@ Puppet::Reports.register_report(:upguard) do
     Puppet.info("upguard: node_group_create response=#{create_response}")
     lookup_response = `curl -X GET -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' #{instance}/api/v2/node_groups/lookup.json?name=#{node_group_name}`
     Puppet.info("upguard: node_group_lookup response=#{lookup_response}")
-    JSON.load(lookup_response)
+    lookup_json = JSON.load(lookup_response)
+    if lookup_json and lookup_json['node_group_id']
+      lookup_json['node_group_id']
+    else
+      nil
+    end
   end
   module_function :node_group_create
 

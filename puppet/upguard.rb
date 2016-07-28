@@ -43,7 +43,7 @@ Puppet::Reports.register_report(:upguard) do
     Puppet.info("upguard: status=#{status}")
 
     # For most scenarios, make sure the node is added to upguard and is being scanned.
-    if status == 'changed' || status == 'unchanged' || status == 'failed'
+    if status == 'changed'
       node_ip_hostname = self.host
       manifest_filename = get_manifest_files(self.logs)
 

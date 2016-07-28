@@ -139,6 +139,8 @@ Puppet::Reports.register_report(:upguard) do
 
   # Add the node to the node group
   def add_to_node_group(api_key, instance, node_id, node_group_id)
+    Puppet.info("upguard: node_id=#{node_id}")
+    Puppet.info("upguard: node_group_id=#{node_group_id}")
     response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' #{instance}/api/v2/node_groups/#{node_group_id}/add_node.json?node_id=#{node_id}`
     Puppet.info("upguard: add_to_node_group response=#{response}")
     JSON.load(response)

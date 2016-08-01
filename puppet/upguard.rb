@@ -222,7 +222,7 @@ Puppet::Reports.register_report(:upguard) do
 
   # Kick off a node scan
   def node_scan(api_key, instance, node_id, tag)
-    response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' #{instance}/api/v2/nodes/#{node_id}/start_scan.json?label=#{tag}`
+    response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' #{instance}/api/v2/nodes/#{node_id}/start_scan.json`
     Puppet.info("upguard: node_scan response=#{response}")
     JSON.load(response)
   end

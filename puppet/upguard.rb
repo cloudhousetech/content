@@ -203,16 +203,7 @@ Puppet::Reports.register_report(:upguard) do
     node = JSON.load(response)
 
     if node["id"]
-      Puppet.info("upguard: forcing the node into the right base node group")
-      if os && os.downcase == 'windows'
-        Puppet.info("upguard: adding node to windows node group")
-        windows_resp = add_to_node_group(api_key, instance, node["id"], 4)
-        Puppet.info("upguard: adding node to windows node group response=#{windows_resp}")
-      elsif os && os.downcase == 'centos'
-        Puppet.info("upguard: adding node to linux node group")
-        linux_resp = add_to_node_group(api_key, instance, node["id"], 3)
-        Puppet.info("upguard: adding node to linux node group response=#{linux_resp}")
-      else
+      if os && (os.downcase != 'windows' || os.downcase != 'centos')
         Puppet.info("upguard: adding node to unclassified node group")
         unclassified_resp = add_to_node_group(api_key, instance, node["id"], 29)
         Puppet.info("upguard: adding node to unclassified node group response=#{unclassified_resp}")

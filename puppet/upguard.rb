@@ -101,7 +101,7 @@ Puppet::Reports.register_report(:upguard) do
     response = `curl -X GET #{PUPPETDB_URL}/pdb/query/v4/nodes/#{node_ip_hostname}/facts -d 'query=["in", ["name","certname"], ["extract", ["name","certname"], ["select_fact_contents", ["and", ["=", "path", ["trusted", "authenticated"]], ["=","value","remote"]]]]]' --tlsv1 --cacert /etc/puppetlabs/puppet/ssl/certs/ca.pem --cert /etc/puppetlabs/puppet/ssl/certs/#{COMPILE_MASTER_PEM} --key /etc/puppetlabs/puppet/ssl/private_keys/#{COMPILE_MASTER_PEM}`
     Puppet.info("upguard: role via trusted facts for #{node_ip_hostname} is: response=#{response}")
     role_details = JSON.load(response)
-    if role_details && role_details[0] && role_details[0]['value'] && role_details[0]['value']['extensions']['pp_role']
+    if role_details && role_details[0] && role_details[0]['value'] && role_details[0]['value']['extensions'] && role_details[0]['value']['extensions']['pp_role']
       role_details[0]['value']['extensions']['pp_role']
     else
       response = `curl -X POST #{PUPPETDB_URL}/pdb/query/v4/nodes/#{node_ip_hostname}/facts -H 'Content-Type:application/json' -d '{"query":["=","name", "csod_role"]}' --tlsv1 --cacert /etc/puppetlabs/puppet/ssl/certs/ca.pem --cert /etc/puppetlabs/puppet/ssl/certs/#{COMPILE_MASTER_PEM} --key /etc/puppetlabs/puppet/ssl/private_keys/#{COMPILE_MASTER_PEM}`

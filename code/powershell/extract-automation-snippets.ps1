@@ -30,4 +30,4 @@ Get-Content($fileName) |
 
 #Format:
 # > .\extract-automation-snippets.ps1 "c:\oldfilename.txt" "c:\newfilename.txt" "node #" "pattern to search for in file"
-"automation type parameter" "CI type parameter"
+#   "automation type parameter" "CI type parameter"

@@ -14,6 +14,7 @@ $headers = @{Authorization = 'Token token="' + $apiKey + $secretKey + '"'}
 $hasInserted = $false
 $scanURI = "https://qa.upguard.org/api/v2/nodes/" + $node + "/automation_snippet?type=" + $type + "&ci_type=" + $ciType
 $result = Invoke-RestMethod -Method "GET" -Uri $scanURI -Headers $headers
+$result = $result.Split("`n")
 
 Get-Content($fileName) |
     Foreach-Object {

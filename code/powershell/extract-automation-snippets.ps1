@@ -19,7 +19,6 @@ $result = $result.Split("`n")
 Get-Content($fileName) |
     Foreach-Object {
         if ($_ -match $pattern -and !$hasInserted) {
-           echo $_
            echo $result
            $hasInserted = $true
            }

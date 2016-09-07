@@ -1,19 +1,20 @@
 import httplib;
 import urllib;
+import ssl;
 import json;
 
 # Parameters and constants
 api_key = 'api key here'
 secret_key = 'secret key here'
-url = 'appliance.url.here'
+url = 'appliance.url.here' # use only FQDN, leave out the 'https://' portion
 fromEnv = 4 # Set an environment id to transfer from
 toEnv =   3 # Set an environment id to transfer to
 
 try:
-    browser = httplib.HTTPConnection(url)
+    # browser = httplib.HTTPConnection(url)
     # -- For HTTPS connections
-    # context = ssl._create_unverified_context()
-    # browser = httplib.HTTPSConnection(url, context=context)
+    context = ssl._create_unverified_context()
+    browser = httplib.HTTPSConnection(url, context=context)
     get_headers = {"Authorization": 'Token token="' + api_key + secret_key + '"',
     "Accept": "application/json"}
     browser.request("GET", "/api/v2/nodes.json", '', get_headers)
@@ -37,9 +38,9 @@ try:
                 output = {'node' : { 'environment_id' : toEnv }}
                 body = json.dumps(output)
                 # Begin http connection for API call
-                conn = httplib.HTTPConnection(url)
+                # conn = httplib.HTTPConnection(url)
                 # -- For HTTPS connections
-                # conn = httplib.HTTPSConnection(url, context=context)
+                conn = httplib.HTTPSConnection(url, context=context)
                 put_headers = {"Authorization": 'Token token="' + api_key + secret_key + '"',
                 "Accept": "application/json", 'Content-Type':'application/json'}
                 conn.request("PUT", "/api/v2/nodes/" + str(node_id) +".json",

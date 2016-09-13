@@ -16,15 +16,30 @@ Puppet::Reports.register_report(:upguard) do
     raise(Puppet::ParserError, "upguard.yaml file is invalid")
   end
 
-  APPLIANCE_URL = config[:appliance_url]
-  PUPPETDB_URL = config[:puppetdb_url]
-  COMPILE_MASTER_PEM = config[:compile_master_pem]
-  SERVICE_KEY = config[:service_key]
-  SECRET_KEY = config[:secret_key]
-  API_KEY = "#{SERVICE_KEY}#{SECRET_KEY}"
-  WINDOWS_CM_GROUP_ID = config[:windows_cm_group_id]
-  WINDOWS_CM_CYBERU_ID = config[:windows_cm_cyberu_id]
-  DEFAULT_CM_GROUP_ID = config[:default_cm_group_id]
+  APPLIANCE_URL                 = config[:appliance_url]
+  PUPPETDB_URL                  = config[:puppetdb_url]
+  COMPILE_MASTER_PEM            = config[:compile_master_pem]
+  SERVICE_KEY                   = config[:service_key]
+  SECRET_KEY                    = config[:secret_key]
+  API_KEY                       = "#{SERVICE_KEY}#{SECRET_KEY}"
+  SSH_CM_GROUP_ONE_DOMAIN       = config[:ssh_cm_group_one_domain]  
+  SSH_CM_GROUP_ONE_ID           = config[:ssh_cm_group_one_id]
+  WINDOWS_CM_GROUP_ONE_DOMAIN   = config[:windows_cm_group_one_domain]
+  WINDOWS_CM_GROUP_ONE_ID       = config[:windows_cm_group_one_id]
+  WINDOWS_CM_GROUP_TWO_DOMAIN   = config[:windows_cm_group_two_domain]
+  WINDOWS_CM_GROUP_TWO_ID       = config[:windows_cm_group_two_id]
+  WINDOWS_CM_GROUP_THREE_DOMAIN = config[:windows_cm_group_three_domain]
+  WINDOWS_CM_GROUP_THREE_ID     = config[:windows_cm_group_three_id]
+  WINDOWS_CM_GROUP_FOUR_DOMAIN  = config[:windows_cm_group_four_domain]
+  WINDOWS_CM_GROUP_FOUR_ID      = config[:windows_cm_group_four_id]
+  WINDOWS_CM_GROUP_FIVE_DOMAIN  = config[:windows_cm_group_five_domain]
+  WINDOWS_CM_GROUP_FIVE_ID      = config[:windows_cm_group_five_id]
+  WINDOWS_CM_GROUP_SIX_DOMAIN   = config[:windows_cm_group_six_domain]
+  WINDOWS_CM_GROUP_SIX_ID       = config[:windows_cm_group_six_id]
+  WINDOWS_CM_GROUP_SEVEN_DOMAIN = config[:windows_cm_group_seven_domain]
+  WINDOWS_CM_GROUP_SEVEN_ID     = config[:windows_cm_group_seven_id]
+  WINDOWS_CM_GROUP_EIGHT_DOMAIN = config[:windows_cm_group_eight_domain]
+  WINDOWS_CM_GROUP_EIGHT_ID     = config[:windows_cm_group_eigth_id]
 
   Puppet.info("upguard: APPLIANCE_URL=#{APPLIANCE_URL}")
   Puppet.info("upguard: PUPPETDB_URL=#{PUPPETDB_URL}")
@@ -32,9 +47,24 @@ Puppet::Reports.register_report(:upguard) do
   Puppet.info("upguard: SERVICE_KEY=#{SERVICE_KEY}")
   Puppet.info("upguard: SECRET_KEY=#{SECRET_KEY}")
   Puppet.info("upguard: API_KEY=#{API_KEY}")
-  Puppet.info("upguard: WINDOWS_CM_GROUP_ID=#{WINDOWS_CM_GROUP_ID}")
-  Puppet.info("upguard: WINDOWS_CM_CYBERU_ID=#{WINDOWS_CM_CYBERU_ID}")
-  Puppet.info("upguard: DEFAULT_CM_GROUP_ID=#{DEFAULT_CM_GROUP_ID}")
+  Puppet.info("upguard: SSH_CM_GROUP_ONE_DOMAIN=#{SSH_CM_GROUP_ONE_DOMAIN}")
+  Puppet.info("upguard: SSH_CM_GROUP_ONE_ID=#{SSH_CM_GROUP_ONE_ID}")
+  Puppet.info("upguard: WINDOWS_CM_GROUP_ONE_DOMAIN=#{WINDOWS_CM_GROUP_ONE_DOMAIN}")
+  Puppet.info("upguard: WINDOWS_CM_GROUP_ONE_ID=#{WINDOWS_CM_GROUP_ONE_ID}")
+  Puppet.info("upguard: WINDOWS_CM_GROUP_TWO_DOMAIN=#{WINDOWS_CM_GROUP_TWO_DOMAIN}")
+  Puppet.info("upguard: WINDOWS_CM_GROUP_TWO_ID=#{WINDOWS_CM_GROUP_TWO_ID}")
+  Puppet.info("upguard: WINDOWS_CM_GROUP_THREE_DOMAIN=#{WINDOWS_CM_GROUP_THREE_DOMAIN}")
+  Puppet.info("upguard: WINDOWS_CM_GROUP_THREE_ID=#{WINDOWS_CM_GROUP_THREE_ID}")
+  Puppet.info("upguard: WINDOWS_CM_GROUP_FOUR_DOMAIN=#{WINDOWS_CM_GROUP_FOUR_DOMAIN}")
+  Puppet.info("upguard: WINDOWS_CM_GROUP_FOUR_ID=#{WINDOWS_CM_GROUP_FOUR_ID}")
+  Puppet.info("upguard: WINDOWS_CM_GROUP_FIVE_DOMAIN=#{WINDOWS_CM_GROUP_FIVE_DOMAIN}")
+  Puppet.info("upguard: WINDOWS_CM_GROUP_FIVE_ID=#{WINDOWS_CM_GROUP_FIVE_ID}")
+  Puppet.info("upguard: WINDOWS_CM_GROUP_SIX_DOMAIN=#{WINDOWS_CM_GROUP_SIX_DOMAIN}")
+  Puppet.info("upguard: WINDOWS_CM_GROUP_SIX_ID=#{WINDOWS_CM_GROUP_SIX_ID}")
+  Puppet.info("upguard: WINDOWS_CM_GROUP_SEVEN_DOMAIN=#{WINDOWS_CM_GROUP_SEVEN_DOMAIN}")
+  Puppet.info("upguard: WINDOWS_CM_GROUP_SEVEN_ID=#{WINDOWS_CM_GROUP_SEVEN_ID}")
+  Puppet.info("upguard: WINDOWS_CM_GROUP_EIGHT_DOMAIN=#{WINDOWS_CM_GROUP_EIGHT_DOMAIN}")
+  Puppet.info("upguard: WINDOWS_CM_GROUP_EIGHT_ID=#{WINDOWS_CM_GROUP_EIGHT_ID}")
 
   def process
 
@@ -170,6 +200,7 @@ Puppet::Reports.register_report(:upguard) do
   end
   module_function :node_lookup
 
+  # We create UpGuard node groups to map to Puppet roles
   def node_group_create(api_key, instance, node_group_name)
     create_response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{ "node_group": { "name": "#{node_group_name}" }}' #{instance}/api/v2/node_groups`
     Puppet.info("upguard: node_group_create response=#{create_response}")
@@ -184,20 +215,17 @@ Puppet::Reports.register_report(:upguard) do
   end
   module_function :node_group_create
 
-  # Creates a node in UpGuard.
+  # Creates the node in UpGuard
   def node_create(api_key, instance, ip_hostname, os, default_cm_group_id)
+    cm_group_id = determine_cm(ip_hostname, os)
     if os && os.downcase == 'windows'
-      windows_cm_group_id = WINDOWS_CM_GROUP_ID
-      if ip_hostname.downcase.include? 'office.cyberu.com'
-        windows_cm_group_id = WINDOWS_CM_CYBERU_ID
-      end
-      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": "Added via the API.", "node_type": "SV", "operating_system_family_id": 1, "operating_system_id": 125, "medium_type": 7, "medium_port": 5985, "connection_manager_group_id": ' + "\"#{windows_cm_group_id}\"" + ', "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
+      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": "Added via the API.", "node_type": "SV", "operating_system_family_id": 1, "operating_system_id": 125, "medium_type": 7, "medium_port": 5985, "connection_manager_group_id": ' + "\"#{cm_group_id}\"" + ', "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
       response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '#{node_details}' #{instance}/api/v2/nodes`
     elsif os && os.downcase == 'centos'
-      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": "Added via the API.", "node_type": "SV", "operating_system_family_id": 2, "operating_system_id": 231, "medium_type": 3, "medium_port": 22, "connection_manager_group_id": ' + "\"#{default_cm_group_id}\"" + ', "medium_username": "svc-upguard-lnx", "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
+      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": "Added via the API.", "node_type": "SV", "operating_system_family_id": 2, "operating_system_id": 231, "medium_type": 3, "medium_port": 22, "connection_manager_group_id": ' + "\"#{cm_group_id}\"" + ', "medium_username": "svc-upguard-lnx", "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
       response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '#{node_details}' #{instance}/api/v2/nodes`
     else
-      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": "Added via the API.", "node_type": "SV", "operating_system_family_id": 7, "operating_system_id": 731, "medium_type": 3, "medium_port": 22, "connection_manager_group_id": ' + "\"#{default_cm_group_id}\"" + ', "medium_username": "svc-upguard-lnx", "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
+      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": "Added via the API.", "node_type": "SV", "operating_system_family_id": 7, "operating_system_id": 731, "medium_type": 3, "medium_port": 22, "connection_manager_group_id": ' + "\"#{cm_group_id}\"" + ', "medium_username": "svc-upguard-lnx", "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
       response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '#{node_details}' #{instance}/api/v2/nodes`
     end
     Puppet.info("upguard: node_create response=#{response}")
@@ -226,11 +254,42 @@ Puppet::Reports.register_report(:upguard) do
   end
   module_function :node_scan
 
-  # Kick off a vuln scan
+  # Kick off a vulnerability scan
   def node_vuln_scan(api_key, instance, node_id)
     response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' '#{instance}/api/v2/jobs.json?type=node_vulns&type_id=#{node_id}'`
     Puppet.info("upguard: node_vuln_scan response=#{response}")
     JSON.load(response)
   end
   module_function :node_vuln_scan
+
+  # Determine the correct UpGuard connection manager to scan the node with.
+  def determine_cm(node_name, node_os)
+    return nil if node_name.nil? || node_os.nil?
+    node_name = node_name.downcase
+    node_os   = node_os.downcase
+    # If the node is anything other than Windows return the Id of the Default/Appliance connection manager.
+    return '#{SSH_CM_GROUP_ONE_ID}' if node_os != 'windows'
+    # We have a non-Windows node
+    case node_name.end_with?
+    when '#{WINDOWS_CM_GROUP_ONE_DOMAIN}'
+      return '#{WINDOWS_CM_GROUP_ONE_ID}'
+    when '#{WINDOWS_CM_GROUP_TWO_DOMAIN}'
+      return '#{WINDOWS_CM_GROUP_TWO_ID}'
+    when '#{WINDOWS_CM_GROUP_THREE_DOMAIN}'
+      return '#{WINDOWS_CM_GROUP_THREE_ID}'
+    when '#{WINDOWS_CM_GROUP_FOUR_DOMAIN}'
+      return '#{WINDOWS_CM_GROUP_FOUR_ID}'
+    when '#{WINDOWS_CM_GROUP_FIVE_DOMAIN}'
+      return '#{WINDOWS_CM_GROUP_FIVE_ID}'
+    when '#{WINDOWS_CM_GROUP_SIX_DOMAIN}'
+      return '#{WINDOWS_CM_GROUP_SIX_ID}'
+    when '#{WINDOWS_CM_GROUP_SEVEN_DOMAIN}'
+      return '#{WINDOWS_CM_GROUP_SEVEN_ID}'
+    when '#{WINDOWS_CM_GROUP_EIGHT_DOMAIN}'
+      return '#{WINDOWS_CM_GROUP_EIGHT_ID}'
+    else
+      return nil
+    end
+  end
+  module_function :determine_cm
 end

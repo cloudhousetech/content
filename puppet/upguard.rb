@@ -106,7 +106,7 @@ Puppet::Reports.register_report(:upguard) do
         add_to_node_group_response = add_to_node_group(API_KEY, APPLIANCE_URL, node_id, node_group_id)
         Puppet.info("upguard: add_to_node_group response: #{add_to_node_group_response}")
       else
-        Puppet.info("upguard: obtaining node_group_id failed: #{node_group_id}")
+        Puppet.err("upguard: obtaining node_group_id failed: #{node_group_id}")
       end
 
       # Kick off a node scan
@@ -218,6 +218,9 @@ Puppet::Reports.register_report(:upguard) do
   # Creates the node in UpGuard
   def node_create(api_key, instance, ip_hostname, os, default_cm_group_id)
     cm_group_id = determine_cm(ip_hostname, os)
+    Puppet.info("upguard: node_create ip_hostname=#{ip_hostname}")
+    Puppet.info("upguard: node_create os=#{os}")
+    Puppet.info("upguard: node_create cm_group_id=#{cm_group_id}")
     if os && os.downcase == 'windows'
       node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": "Added via the API.", "node_type": "SV", "operating_system_family_id": 1, "operating_system_id": 125, "medium_type": 7, "medium_port": 5985, "connection_manager_group_id": ' + "\"#{cm_group_id}\"" + ', "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
       response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '#{node_details}' #{instance}/api/v2/nodes`

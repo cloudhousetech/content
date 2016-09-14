@@ -94,7 +94,7 @@ Puppet::Reports.register_report(:upguard) do
         node_id = lookup["node_id"]
         Puppet.info("upguard: node found: node_id=#{node_id}")
       elsif lookup["error"] == "Not Found"
-        node_id = node_create(API_KEY, APPLIANCE_URL, node_ip_hostname, os, DEFAULT_CM_GROUP_ID)
+        node_id = node_create(API_KEY, APPLIANCE_URL, node_ip_hostname, os)
         Puppet.info("upguard: node not found so created: node_id=#{node_id}")
       else
         Puppet.err("upguard: failed to lookup node: #{lookup}")
@@ -216,7 +216,7 @@ Puppet::Reports.register_report(:upguard) do
   module_function :node_group_create
 
   # Creates the node in UpGuard
-  def node_create(api_key, instance, ip_hostname, os, default_cm_group_id)
+  def node_create(api_key, instance, ip_hostname, os)
     cm_group_id = determine_cm(ip_hostname, os)
     Puppet.info("upguard: node_create ip_hostname=#{ip_hostname}")
     Puppet.info("upguard: node_create os=#{os}")
@@ -267,7 +267,7 @@ Puppet::Reports.register_report(:upguard) do
 
   # Determine the correct UpGuard connection manager to scan the node with.
   def determine_cm(node_name, node_os)
-    return nil if node_name.nil? || node_os.nil?
+    return '#{SSH_CM_GROUP_ONE_ID}' if node_name.nil? || node_os.nil?
     node_name = node_name.downcase
     node_os   = node_os.downcase
     # If the node is anything other than Windows return the Id of the Default/Appliance connection manager.

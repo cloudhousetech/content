@@ -4,7 +4,7 @@ require 'erb'
 
 Puppet::Reports.register_report(:upguard) do
 
-  Puppet.info("upguard: starting report processor")
+  Puppet.info("upguard: starting report processor v1.0.0")
 
   desc "Create a node (if not present) and kick off a node scan in UpGuard if changes were made."
 
@@ -104,7 +104,11 @@ Puppet::Reports.register_report(:upguard) do
       # Make sure to add the node to the node group
       if !node_group_id.nil? and !node_group_id.to_s.include?("error")
         add_to_node_group_response = add_to_node_group(API_KEY, APPLIANCE_URL, node_id, node_group_id)
-        Puppet.info("upguard: add_to_node_group response: #{add_to_node_group_response}")
+        if !add_to_node_group_response.nil? && add_to_node_group_response.to_s.include?("Node is already in the group")
+          Puppet.info("upguard: node is already in the node group")
+        else
+          Puppet.info("upguard: added the node to the node group")
+        end
       else
         Puppet.err("upguard: obtaining node_group_id failed: #{node_group_id}")
       end
@@ -267,32 +271,31 @@ Puppet::Reports.register_report(:upguard) do
 
   # Determine the correct UpGuard connection manager to scan the node with.
   def determine_cm(node_name, node_os)
-    return '#{SSH_CM_GROUP_ONE_ID}' if node_name.nil? || node_os.nil?
+    return "#{SSH_CM_GROUP_ONE_ID}" if node_name.nil? || node_os.nil?
     node_name = node_name.downcase
     node_os   = node_os.downcase
     # If the node is anything other than Windows return the Id of the Default/Appliance connection manager.
-    return '#{SSH_CM_GROUP_ONE_ID}' if node_os != 'windows'
+    return "#{SSH_CM_GROUP_ONE_ID}" if node_os != 'windows'
     # We have a non-Windows node
-    case node_name.end_with?
-    when '#{WINDOWS_CM_GROUP_ONE_DOMAIN}'
-      return '#{WINDOWS_CM_GROUP_ONE_ID}'
-    when '#{WINDOWS_CM_GROUP_TWO_DOMAIN}'
-      return '#{WINDOWS_CM_GROUP_TWO_ID}'
-    when '#{WINDOWS_CM_GROUP_THREE_DOMAIN}'
-      return '#{WINDOWS_CM_GROUP_THREE_ID}'
-    when '#{WINDOWS_CM_GROUP_FOUR_DOMAIN}'
-      return '#{WINDOWS_CM_GROUP_FOUR_ID}'
-    when '#{WINDOWS_CM_GROUP_FIVE_DOMAIN}'
-      return '#{WINDOWS_CM_GROUP_FIVE_ID}'
-    when '#{WINDOWS_CM_GROUP_SIX_DOMAIN}'
-      return '#{WINDOWS_CM_GROUP_SIX_ID}'
-    when '#{WINDOWS_CM_GROUP_SEVEN_DOMAIN}'
-      return '#{WINDOWS_CM_GROUP_SEVEN_ID}'
-    when '#{WINDOWS_CM_GROUP_EIGHT_DOMAIN}'
-      return '#{WINDOWS_CM_GROUP_EIGHT_ID}'
+    if node_name.end_with?("#{WINDOWS_CM_GROUP_ONE_DOMAIN}")
+      return "#{WINDOWS_CM_GROUP_ONE_ID}"
+    elsif node_name.end_with?("#{WINDOWS_CM_GROUP_TWO_DOMAIN}")
+      return "#{WINDOWS_CM_GROUP_TWO_ID}"
+    elsif node_name.end_with?("#{WINDOWS_CM_GROUP_THREE_DOMAIN}")
+      return "#{WINDOWS_CM_GROUP_THREE_ID}"
+    elsif node_name.end_with?("#{WINDOWS_CM_GROUP_FOUR_DOMAIN}")
+      return "#{WINDOWS_CM_GROUP_FOUR_ID}"
+    elsif node_name.end_with?("#{WINDOWS_CM_GROUP_FIVE_DOMAIN}")
+      return "#{WINDOWS_CM_GROUP_FIVE_ID}"
+    elsif node_name.end_with?("#{WINDOWS_CM_GROUP_SIX_DOMAIN}")
+      return "#{WINDOWS_CM_GROUP_SIX_ID}"
+    elsif node_name.end_with?("#{WINDOWS_CM_GROUP_SEVEN_DOMAIN}")
+      return "#{WINDOWS_CM_GROUP_SEVEN_ID}"
+    elsif node_name.end_with?("#{WINDOWS_CM_GROUP_EIGHT_DOMAIN}")
+      return "#{WINDOWS_CM_GROUP_EIGHT_ID}"
     else
       # Use the default connection manager Id as the fallback
-      return '#{SSH_CM_GROUP_ONE_ID}'
+      return "#{SSH_CM_GROUP_ONE_ID}"
     end
   end
   module_function :determine_cm

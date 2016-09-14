@@ -39,7 +39,7 @@ Puppet::Reports.register_report(:upguard) do
   WINDOWS_CM_GROUP_SEVEN_DOMAIN = config[:windows_cm_group_seven_domain]
   WINDOWS_CM_GROUP_SEVEN_ID     = config[:windows_cm_group_seven_id]
   WINDOWS_CM_GROUP_EIGHT_DOMAIN = config[:windows_cm_group_eight_domain]
-  WINDOWS_CM_GROUP_EIGHT_ID     = config[:windows_cm_group_eigth_id]
+  WINDOWS_CM_GROUP_EIGHT_ID     = config[:windows_cm_group_eight_id]
 
   Puppet.info("upguard: APPLIANCE_URL=#{APPLIANCE_URL}")
   Puppet.info("upguard: PUPPETDB_URL=#{PUPPETDB_URL}")
@@ -291,7 +291,8 @@ Puppet::Reports.register_report(:upguard) do
     when '#{WINDOWS_CM_GROUP_EIGHT_DOMAIN}'
       return '#{WINDOWS_CM_GROUP_EIGHT_ID}'
     else
-      return nil
+      # Use the default connection manager Id as the fallback
+      return '#{SSH_CM_GROUP_ONE_ID}'
     end
   end
   module_function :determine_cm

@@ -2,7 +2,10 @@
 import json
 import subprocess
 
-process = subprocess.Popen(["yum", "check-update", "-q"], stdout=subprocess.PIPE)
+# Comma delimited list of packages to exclude
+exclude_list = ""
+
+process = subprocess.Popen(["yum", "check-update", "-q", "-x", exclude_list], stdout=subprocess.PIPE)
 (output, err) = process.communicate()
 exit_code = process.wait()
 

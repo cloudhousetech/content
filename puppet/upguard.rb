@@ -122,12 +122,12 @@ Puppet::Reports.register_report(:upguard) do
       end
 
       # Kick off a node vulnerability scan
-      vuln_job = node_vuln_scan(API_KEY, APPLIANCE_URL, node_id)
-      if vuln_job["job_id"]
-        Puppet.info("upguard: node vulnerability scan kicked off against #{node_ip_hostname} (#{APPLIANCE_URL}/jobs/#{vuln_job["job_id"]}/show_job?show_all=true)")
-      else
-        Puppet.err("upguard: failed to kick off node vulnerability scan against #{node_ip_hostname} (#{node_id}): #{vuln_job}")
-      end
+      # vuln_job = node_vuln_scan(API_KEY, APPLIANCE_URL, node_id)
+      # if vuln_job["job_id"]
+      #   Puppet.info("upguard: node vulnerability scan kicked off against #{node_ip_hostname} (#{APPLIANCE_URL}/jobs/#{vuln_job["job_id"]}/show_job?show_all=true)")
+      # else
+      #   Puppet.err("upguard: failed to kick off node vulnerability scan against #{node_ip_hostname} (#{node_id}): #{vuln_job}")
+      # end
     end
   end
 
@@ -138,14 +138,7 @@ Puppet::Reports.register_report(:upguard) do
     if role_details && role_details[0] && role_details[0]['value'] && role_details[0]['value']['extensions'] && role_details[0]['value']['extensions']['pp_role']
       role_details[0]['value']['extensions']['pp_role']
     else
-      response = `curl -X POST #{PUPPETDB_URL}/pdb/query/v4/nodes/#{node_ip_hostname}/facts -H 'Content-Type:application/json' -d '{"query":["=","name", "csod_role"]}' --tlsv1 --cacert /etc/puppetlabs/puppet/ssl/certs/ca.pem --cert /etc/puppetlabs/puppet/ssl/certs/#{COMPILE_MASTER_PEM} --key /etc/puppetlabs/puppet/ssl/private_keys/#{COMPILE_MASTER_PEM}`
-      Puppet.info("upguard: role via facts for #{node_ip_hostname} is: response=#{response}")
-      role_details = JSON.load(response)
-      if role_details && role_details[0] && role_details[0]['value']
-        role_details[0]['value']
-      else
-        nil
-      end
+      nil
     end
   end
 

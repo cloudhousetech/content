@@ -4,7 +4,8 @@ require 'erb'
 
 Puppet::Reports.register_report(:upguard) do
 
-  Puppet.info("upguard: starting report processor v1.0.1")
+  VERSION = "v1.1.0"
+  Puppet.info("upguard: starting report processor #{VERSION}")
 
   desc "Create a node (if not present) and kick off a node scan in UpGuard if changes were made."
 
@@ -22,24 +23,8 @@ Puppet::Reports.register_report(:upguard) do
   SERVICE_KEY                   = config[:service_key]
   SECRET_KEY                    = config[:secret_key]
   API_KEY                       = "#{SERVICE_KEY}#{SECRET_KEY}"
-  SSH_CM_GROUP_ONE_DOMAIN       = config[:ssh_cm_group_one_domain]  
-  SSH_CM_GROUP_ONE_ID           = config[:ssh_cm_group_one_id]
-  WINDOWS_CM_GROUP_ONE_DOMAIN   = config[:windows_cm_group_one_domain]
-  WINDOWS_CM_GROUP_ONE_ID       = config[:windows_cm_group_one_id]
-  WINDOWS_CM_GROUP_TWO_DOMAIN   = config[:windows_cm_group_two_domain]
-  WINDOWS_CM_GROUP_TWO_ID       = config[:windows_cm_group_two_id]
-  WINDOWS_CM_GROUP_THREE_DOMAIN = config[:windows_cm_group_three_domain]
-  WINDOWS_CM_GROUP_THREE_ID     = config[:windows_cm_group_three_id]
-  WINDOWS_CM_GROUP_FOUR_DOMAIN  = config[:windows_cm_group_four_domain]
-  WINDOWS_CM_GROUP_FOUR_ID      = config[:windows_cm_group_four_id]
-  WINDOWS_CM_GROUP_FIVE_DOMAIN  = config[:windows_cm_group_five_domain]
-  WINDOWS_CM_GROUP_FIVE_ID      = config[:windows_cm_group_five_id]
-  WINDOWS_CM_GROUP_SIX_DOMAIN   = config[:windows_cm_group_six_domain]
-  WINDOWS_CM_GROUP_SIX_ID       = config[:windows_cm_group_six_id]
-  WINDOWS_CM_GROUP_SEVEN_DOMAIN = config[:windows_cm_group_seven_domain]
-  WINDOWS_CM_GROUP_SEVEN_ID     = config[:windows_cm_group_seven_id]
-  WINDOWS_CM_GROUP_EIGHT_DOMAIN = config[:windows_cm_group_eight_domain]
-  WINDOWS_CM_GROUP_EIGHT_ID     = config[:windows_cm_group_eight_id]
+  WINDOWS_CMGS                  = config[:windows_connection_manager_groups]
+  SSH_CMGS                      = config[:ssh_connection_manager_groups]
 
   Puppet.info("upguard: APPLIANCE_URL=#{APPLIANCE_URL}")
   Puppet.info("upguard: PUPPETDB_URL=#{PUPPETDB_URL}")
@@ -47,24 +32,8 @@ Puppet::Reports.register_report(:upguard) do
   Puppet.info("upguard: SERVICE_KEY=#{SERVICE_KEY}")
   Puppet.info("upguard: SECRET_KEY=#{SECRET_KEY}")
   Puppet.info("upguard: API_KEY=#{API_KEY}")
-  Puppet.info("upguard: SSH_CM_GROUP_ONE_DOMAIN=#{SSH_CM_GROUP_ONE_DOMAIN}")
-  Puppet.info("upguard: SSH_CM_GROUP_ONE_ID=#{SSH_CM_GROUP_ONE_ID}")
-  Puppet.info("upguard: WINDOWS_CM_GROUP_ONE_DOMAIN=#{WINDOWS_CM_GROUP_ONE_DOMAIN}")
-  Puppet.info("upguard: WINDOWS_CM_GROUP_ONE_ID=#{WINDOWS_CM_GROUP_ONE_ID}")
-  Puppet.info("upguard: WINDOWS_CM_GROUP_TWO_DOMAIN=#{WINDOWS_CM_GROUP_TWO_DOMAIN}")
-  Puppet.info("upguard: WINDOWS_CM_GROUP_TWO_ID=#{WINDOWS_CM_GROUP_TWO_ID}")
-  Puppet.info("upguard: WINDOWS_CM_GROUP_THREE_DOMAIN=#{WINDOWS_CM_GROUP_THREE_DOMAIN}")
-  Puppet.info("upguard: WINDOWS_CM_GROUP_THREE_ID=#{WINDOWS_CM_GROUP_THREE_ID}")
-  Puppet.info("upguard: WINDOWS_CM_GROUP_FOUR_DOMAIN=#{WINDOWS_CM_GROUP_FOUR_DOMAIN}")
-  Puppet.info("upguard: WINDOWS_CM_GROUP_FOUR_ID=#{WINDOWS_CM_GROUP_FOUR_ID}")
-  Puppet.info("upguard: WINDOWS_CM_GROUP_FIVE_DOMAIN=#{WINDOWS_CM_GROUP_FIVE_DOMAIN}")
-  Puppet.info("upguard: WINDOWS_CM_GROUP_FIVE_ID=#{WINDOWS_CM_GROUP_FIVE_ID}")
-  Puppet.info("upguard: WINDOWS_CM_GROUP_SIX_DOMAIN=#{WINDOWS_CM_GROUP_SIX_DOMAIN}")
-  Puppet.info("upguard: WINDOWS_CM_GROUP_SIX_ID=#{WINDOWS_CM_GROUP_SIX_ID}")
-  Puppet.info("upguard: WINDOWS_CM_GROUP_SEVEN_DOMAIN=#{WINDOWS_CM_GROUP_SEVEN_DOMAIN}")
-  Puppet.info("upguard: WINDOWS_CM_GROUP_SEVEN_ID=#{WINDOWS_CM_GROUP_SEVEN_ID}")
-  Puppet.info("upguard: WINDOWS_CM_GROUP_EIGHT_DOMAIN=#{WINDOWS_CM_GROUP_EIGHT_DOMAIN}")
-  Puppet.info("upguard: WINDOWS_CM_GROUP_EIGHT_ID=#{WINDOWS_CM_GROUP_EIGHT_ID}")
+  Puppet.info("upguard: WINDOWS_CMGS=#{WINDOWS_CMGS}")
+  Puppet.info("upguard: SSH_CMGS=#{SSH_CMGS}")
 
   def process
 
@@ -218,16 +187,15 @@ Puppet::Reports.register_report(:upguard) do
     Puppet.info("upguard: node_create ip_hostname=#{ip_hostname}")
     Puppet.info("upguard: node_create os=#{os}")
     Puppet.info("upguard: node_create cm_group_id=#{cm_group_id}")
+    short_description = "Added by upguard.rb #{VERSION}"
     if os && os.downcase == 'windows'
-      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": "Added via the API.", "node_type": "SV", "operating_system_family_id": 1, "operating_system_id": 125, "medium_type": 7, "medium_port": 5985, "connection_manager_group_id": ' + "\"#{cm_group_id}\"" + ', "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
-      response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '#{node_details}' #{instance}/api/v2/nodes`
+      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": ' + "\"#{short_description}\"" + ', "node_type": "SV", "operating_system_family_id": 1, "operating_system_id": 125, "medium_type": 7, "medium_port": 5985, "connection_manager_group_id": ' + "\"#{cm_group_id}\"" + ', "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
     elsif os && os.downcase == 'centos'
-      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": "Added via the API.", "node_type": "SV", "operating_system_family_id": 2, "operating_system_id": 231, "medium_type": 3, "medium_port": 22, "connection_manager_group_id": ' + "\"#{cm_group_id}\"" + ', "medium_username": "svc-upguard-lnx", "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
-      response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '#{node_details}' #{instance}/api/v2/nodes`
+      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": ' + "\"#{short_description}\"" + ', "node_type": "SV", "operating_system_family_id": 2, "operating_system_id": 231, "medium_type": 3, "medium_port": 22, "connection_manager_group_id": ' + "\"#{cm_group_id}\"" + ', "medium_username": "svc-upguard-lnx", "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
     else
-      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": "Added via the API.", "node_type": "SV", "operating_system_family_id": 7, "operating_system_id": 731, "medium_type": 3, "medium_port": 22, "connection_manager_group_id": ' + "\"#{cm_group_id}\"" + ', "medium_username": "svc-upguard-lnx", "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
-      response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '#{node_details}' #{instance}/api/v2/nodes`
+      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": ' + "\"#{short_description}\"" + ', "node_type": "SV", "operating_system_family_id": 7, "operating_system_id": 731, "medium_type": 3, "medium_port": 22, "connection_manager_group_id": ' + "\"#{cm_group_id}\"" + ', "medium_username": "svc-upguard-lnx", "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
     end
+    response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '#{node_details}' #{instance}/api/v2/nodes`
     Puppet.info("upguard: node_create response=#{response}")
     node = JSON.load(response)
 
@@ -264,32 +232,42 @@ Puppet::Reports.register_report(:upguard) do
 
   # Determine the correct UpGuard connection manager to scan the node with.
   def determine_cm(node_name, node_os)
-    return "#{SSH_CM_GROUP_ONE_ID}" if node_name.nil? || node_os.nil?
+    cmgs = nil
+    default_cmg = 1
+
+    # Return the default connection manager group if a node name or node os isn't provided
+    if node_name.nil? || node_os.nil?
+      Puppet.info("upguard: node name or node os not provided, using default connection manager group")
+      return default_cmg
+    end
+    # Downcase once here for further work
     node_name = node_name.downcase
     node_os   = node_os.downcase
-    # If the node is anything other than Windows return the Id of the Default/Appliance connection manager.
-    return "#{SSH_CM_GROUP_ONE_ID}" if node_os != 'windows'
-    # We have a non-Windows node
-    if node_name.end_with?("#{WINDOWS_CM_GROUP_ONE_DOMAIN}")
-      return "#{WINDOWS_CM_GROUP_ONE_ID}"
-    elsif node_name.end_with?("#{WINDOWS_CM_GROUP_TWO_DOMAIN}")
-      return "#{WINDOWS_CM_GROUP_TWO_ID}"
-    elsif node_name.end_with?("#{WINDOWS_CM_GROUP_THREE_DOMAIN}")
-      return "#{WINDOWS_CM_GROUP_THREE_ID}"
-    elsif node_name.end_with?("#{WINDOWS_CM_GROUP_FOUR_DOMAIN}")
-      return "#{WINDOWS_CM_GROUP_FOUR_ID}"
-    elsif node_name.end_with?("#{WINDOWS_CM_GROUP_FIVE_DOMAIN}")
-      return "#{WINDOWS_CM_GROUP_FIVE_ID}"
-    elsif node_name.end_with?("#{WINDOWS_CM_GROUP_SIX_DOMAIN}")
-      return "#{WINDOWS_CM_GROUP_SIX_ID}"
-    elsif node_name.end_with?("#{WINDOWS_CM_GROUP_SEVEN_DOMAIN}")
-      return "#{WINDOWS_CM_GROUP_SEVEN_ID}"
-    elsif node_name.end_with?("#{WINDOWS_CM_GROUP_EIGHT_DOMAIN}")
-      return "#{WINDOWS_CM_GROUP_EIGHT_ID}"
+
+    # Based on the nodes OS type, assign the relevent connection manager group over for searching.
+    if node_os == 'windows'
+      cmgs = WINDOWS_CMGS
     else
-      # Use the default connection manager Id as the fallback
-      return "#{SSH_CM_GROUP_ONE_ID}"
+      cmgs = SSH_CMGS
     end
+
+    unless cmgs.nil?
+      cmgs.each do |c|
+        # Skip element if it's not formatted correctly
+        next if c['domain'].nil? || c['id'].nil?
+        cmg_domain = c['domain']
+        cmg_id = c['id']
+        if node_name.end_with?(cmg_domain)
+          Puppet.info("upguard: assigning #{node_name} to connection manager group #{cmg_domain} (Id: #{cmg_id})")
+          # Stop searching, we have found a connection manager group we can use
+          return "#{cmg_id}"
+        end
+      end
+    end
+
+    # If we got here then we have a node with a domain that isn't mapped to connection manager domain
+    Puppet.info("upguard: windows node #{node_name} could not be mapped to a connection manager group, using default connection manager group instead")
+    return default_cmg
   end
   module_function :determine_cm
 end

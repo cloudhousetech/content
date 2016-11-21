@@ -4,7 +4,7 @@ require 'erb'
 
 Puppet::Reports.register_report(:upguard) do
 
-  VERSION = "v1.1.0"
+  VERSION = "v1.1.1"
   Puppet.info("upguard: starting report processor #{VERSION}")
 
   desc "Create a node (if not present) and kick off a node scan in UpGuard if changes were made."

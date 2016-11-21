@@ -1,0 +1,11 @@
+[Unit]
+Description=Schedules "Postgres Failover" DB copies
+Requires=docker.service
+After=docker.service
+
+[Timer]
+OnActiveSec=30m
+OnUnitActiveSec=24hr
+
+[X-Fleet]
+MachineOf=postgres-failover-sync.service

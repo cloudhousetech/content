@@ -1,0 +1,3 @@
+FAILOVER_MASTER=<ip address or hostname of master>
+BACKUPS_USER=<backups endpoint basic auth user on master>
+BACKUPS_PASSWORD=<password of basic auth user on master>

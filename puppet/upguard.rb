@@ -4,9 +4,7 @@ require 'erb'
 
 Puppet::Reports.register_report(:upguard) do
 
-  VERSION = "v1.1.1"
-  Puppet.info("upguard: starting report processor #{VERSION}")
-
+  VERSION = "v1.1.2"
   desc "Create a node (if not present) and kick off a node scan in UpGuard if changes were made."
 
   configfile = File.join([File.dirname(Puppet.settings[:config]), "upguard.yaml"])
@@ -26,16 +24,17 @@ Puppet::Reports.register_report(:upguard) do
   WINDOWS_CMGS                  = config[:windows_connection_manager_groups]
   SSH_CMGS                      = config[:ssh_connection_manager_groups]
 
-  Puppet.info("upguard: APPLIANCE_URL=#{APPLIANCE_URL}")
-  Puppet.info("upguard: PUPPETDB_URL=#{PUPPETDB_URL}")
-  Puppet.info("uppuard: COMPILE_MASTER_PEM=#{COMPILE_MASTER_PEM}")
-  Puppet.info("upguard: SERVICE_KEY=#{SERVICE_KEY}")
-  Puppet.info("upguard: SECRET_KEY=#{SECRET_KEY}")
-  Puppet.info("upguard: API_KEY=#{API_KEY}")
-  Puppet.info("upguard: WINDOWS_CMGS=#{WINDOWS_CMGS}")
-  Puppet.info("upguard: SSH_CMGS=#{SSH_CMGS}")
-
   def process
+    Puppet.info("upguard: starting report processor #{VERSION}")
+
+    Puppet.info("upguard: APPLIANCE_URL=#{APPLIANCE_URL}")
+    Puppet.info("upguard: PUPPETDB_URL=#{PUPPETDB_URL}")
+    Puppet.info("uppuard: COMPILE_MASTER_PEM=#{COMPILE_MASTER_PEM}")
+    Puppet.info("upguard: SERVICE_KEY=#{SERVICE_KEY}")
+    Puppet.info("upguard: SECRET_KEY=#{SECRET_KEY}")
+    Puppet.info("upguard: API_KEY=#{API_KEY}")
+    Puppet.info("upguard: WINDOWS_CMGS=#{WINDOWS_CMGS}")
+    Puppet.info("upguard: SSH_CMGS=#{SSH_CMGS}")
 
     self.status != nil ? status = self.status : status = 'undefined'
 

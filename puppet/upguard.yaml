@@ -1,0 +1,16 @@
+---
+:appliance_url: 'https://upguard.instance.url'
+:puppetdb_url: 'https://puppetdb.instance.url:8081'
+:compile_master_pem: 'name_of_compile_master.pem'
+:service_key: 'upguard_service_key'
+:secret_key: 'upguard_secret_key'
+:ssh_connection_manager_groups:
+  - domain: 'domain1.com'
+    id: 1
+:windows_connection_manager_groups:
+  - domain: 'domain2.com'
+    id: 2
+  - domain: 'domain3.com'
+    id: 3
+  - domain: 'domain4.com'
+    id: 4

@@ -4,6 +4,10 @@
 :compile_master_pem: 'name_of_compile_master.pem'
 :service_key: 'upguard_service_key'
 :secret_key: 'upguard_secret_key'
+:ssh_username: 'ssh_username'
+:ssh_password: 'ssh_password'
+:winrm_username: '.\\winrm_username'
+:winrm_password: 'winrm_password'
 :ssh_connection_manager_groups:
   - domain: 'domain1.com'
     id: 1

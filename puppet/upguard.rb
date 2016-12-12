@@ -4,7 +4,7 @@ require 'erb'
 
 Puppet::Reports.register_report(:upguard) do
 
-  VERSION = "v1.1.2"
+  VERSION = "v1.2.0"
   desc "Create a node (if not present) and kick off a node scan in UpGuard if changes were made."
 
   configfile = File.join([File.dirname(Puppet.settings[:config]), "upguard.yaml"])
@@ -21,6 +21,10 @@ Puppet::Reports.register_report(:upguard) do
   SERVICE_KEY                   = config[:service_key]
   SECRET_KEY                    = config[:secret_key]
   API_KEY                       = "#{SERVICE_KEY}#{SECRET_KEY}"
+  SSH_USERNAME                  = config[:ssh_username]
+  SSH_PASSWORD                  = config[:ssh_password]
+  WINRM_USERNAME                = config[:winrm_username]
+  WINRM_PASSWORD                = config[:winrm_password]
   WINDOWS_CMGS                  = config[:windows_connection_manager_groups]
   SSH_CMGS                      = config[:ssh_connection_manager_groups]
 
@@ -33,6 +37,10 @@ Puppet::Reports.register_report(:upguard) do
     Puppet.info("upguard: SERVICE_KEY=#{SERVICE_KEY}")
     Puppet.info("upguard: SECRET_KEY=#{SECRET_KEY}")
     Puppet.info("upguard: API_KEY=#{API_KEY}")
+    Puppet.info("upguard: SSH_USERNAME=#{SSH_USERNAME}")
+    Puppet.info("upguard: SSH_PASSWORD=#{SSH_PASSWORD}")
+    Puppet.info("upguard: WINRM_USERNAME=#{WINRM_USERNAME}")
+    Puppet.info("upguard: WINRM_PASSWORD=#{WINRM_PASSWORD}")
     Puppet.info("upguard: WINDOWS_CMGS=#{WINDOWS_CMGS}")
     Puppet.info("upguard: SSH_CMGS=#{SSH_CMGS}")
 
@@ -188,11 +196,11 @@ Puppet::Reports.register_report(:upguard) do
     Puppet.info("upguard: node_create cm_group_id=#{cm_group_id}")
     short_description = "Added by upguard.rb #{VERSION}"
     if os && os.downcase == 'windows'
-      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": ' + "\"#{short_description}\"" + ', "node_type": "SV", "operating_system_family_id": 1, "operating_system_id": 125, "medium_type": 7, "medium_port": 5985, "connection_manager_group_id": ' + "\"#{cm_group_id}\"" + ', "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
+      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": ' + "\"#{short_description}\"" + ', "node_type": "SV", "operating_system_family_id": 1, "operating_system_id": 125, "medium_type": 7, "medium_port": 5985, "connection_manager_group_id": ' + "\"#{cm_group_id}\"" + ', "medium_username": ' + "\"#{WINRM_USERNAME}\"" + ', "medium_password": ' + "\"#{WINRM_PASSWORD}\"" + ', "medium_hostname": ' + "\"#{medium_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
     elsif os && os.downcase == 'centos'
-      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": ' + "\"#{short_description}\"" + ', "node_type": "SV", "operating_system_family_id": 2, "operating_system_id": 231, "medium_type": 3, "medium_port": 22, "connection_manager_group_id": ' + "\"#{cm_group_id}\"" + ', "medium_username": "svc-upguard-lnx", "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
+      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": ' + "\"#{short_description}\"" + ', "node_type": "SV", "operating_system_family_id": 2, "operating_system_id": 231, "medium_type": 3, "medium_port": 22, "connection_manager_group_id": ' + "\"#{cm_group_id}\"" + ', "medium_username": ' + "\"#{SSH_USERNAME}\"" + ', "medium_password": ' + "\"#{SSH_PASSWORD}\"" + ', "medium_hostname": ' + "\"#{medium_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
     else
-      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": ' + "\"#{short_description}\"" + ', "node_type": "SV", "operating_system_family_id": 7, "operating_system_id": 731, "medium_type": 3, "medium_port": 22, "connection_manager_group_id": ' + "\"#{cm_group_id}\"" + ', "medium_username": "svc-upguard-lnx", "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
+      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": ' + "\"#{short_description}\"" + ', "node_type": "SV", "operating_system_family_id": 7, "operating_system_id": 731, "medium_type": 3, "medium_port": 22, "connection_manager_group_id": ' + "\"#{cm_group_id}\"" + ', "medium_username": ' + "\"#{SSH_USERNAME}\"" + ', "medium_password": ' + "\"#{SSH_PASSWORD}\"" + ', "medium_hostname": ' + "\"#{medium_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
     end
     response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '#{node_details}' #{instance}/api/v2/nodes`
     Puppet.info("upguard: node_create response=#{response}")

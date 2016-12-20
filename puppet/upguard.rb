@@ -4,7 +4,7 @@ require 'erb'
 
 Puppet::Reports.register_report(:upguard) do
 
-  VERSION = "v1.2.1"
+  VERSION = "v1.2.2"
   desc "Create a node (if not present) and kick off a node scan in UpGuard if changes were made."
 
   configfile = File.join([File.dirname(Puppet.settings[:config]), "upguard.yaml"])
@@ -98,12 +98,12 @@ Puppet::Reports.register_report(:upguard) do
       end
 
       # Kick off a node vulnerability scan
-      # vuln_job = node_vuln_scan(API_KEY, APPLIANCE_URL, node_id)
-      # if vuln_job["job_id"]
-      #   Puppet.info("upguard: node vulnerability scan kicked off against #{node_ip_hostname} (#{APPLIANCE_URL}/jobs/#{vuln_job["job_id"]}/show_job?show_all=true)")
-      # else
-      #   Puppet.err("upguard: failed to kick off node vulnerability scan against #{node_ip_hostname} (#{node_id}): #{vuln_job}")
-      # end
+      vuln_job = node_vuln_scan(API_KEY, APPLIANCE_URL, node_id)
+      if vuln_job["job_id"]
+        Puppet.info("upguard: node vulnerability scan kicked off against #{node_ip_hostname} (#{APPLIANCE_URL}/jobs/#{vuln_job["job_id"]}/show_job?show_all=true)")
+      else
+        Puppet.err("upguard: failed to kick off node vulnerability scan against #{node_ip_hostname} (#{node_id}): #{vuln_job}")
+      end
     end
   end
 
@@ -231,7 +231,7 @@ Puppet::Reports.register_report(:upguard) do
 
   # Kick off a vulnerability scan
   def node_vuln_scan(api_key, instance, node_id)
-    response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' '#{instance}/api/v2/jobs.json?type=node_vulns&type_id=#{node_id}'`
+    response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' '#{instance}/api/v2/jobs.json?type=node_vulns&vuln_limit=1000&vuln_severity=5&type_id=#{node_id}'`
     Puppet.info("upguard: node_vuln_scan response=#{response}")
     JSON.load(response)
   end

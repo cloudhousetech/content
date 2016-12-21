@@ -15,18 +15,18 @@ Puppet::Reports.register_report(:upguard) do
     raise(Puppet::ParserError, "upguard.yaml file is invalid")
   end
 
-  APPLIANCE_URL                 = config[:appliance_url]
-  PUPPETDB_URL                  = config[:puppetdb_url]
-  COMPILE_MASTER_PEM            = config[:compile_master_pem]
-  SERVICE_KEY                   = config[:service_key]
-  SECRET_KEY                    = config[:secret_key]
-  API_KEY                       = "#{SERVICE_KEY}#{SECRET_KEY}"
-  SSH_USERNAME                  = config[:ssh_username]
-  SSH_PASSWORD                  = config[:ssh_password]
-  WINRM_USERNAME                = config[:winrm_username]
-  WINRM_PASSWORD                = config[:winrm_password]
-  WINDOWS_CMGS                  = config[:windows_connection_manager_groups]
-  SSH_CMGS                      = config[:ssh_connection_manager_groups]
+  APPLIANCE_URL      = config[:appliance_url]
+  PUPPETDB_URL       = config[:puppetdb_url]
+  COMPILE_MASTER_PEM = config[:compile_master_pem]
+  SERVICE_KEY        = config[:service_key]
+  SECRET_KEY         = config[:secret_key]
+  API_KEY            = "#{SERVICE_KEY}#{SECRET_KEY}"
+  SSH_USERNAME       = config[:ssh_username]
+  SSH_PASSWORD       = config[:ssh_password]
+  WINRM_USERNAME     = config[:winrm_username]
+  WINRM_PASSWORD     = config[:winrm_password]
+  WINDOWS_CMGS       = config[:windows_connection_manager_groups]
+  SSH_CMGS           = config[:ssh_connection_manager_groups]
 
   def process
     Puppet.info("upguard: starting report processor #{VERSION}")
@@ -53,14 +53,14 @@ Puppet::Reports.register_report(:upguard) do
       node_ip_hostname = self.host
       manifest_filename = get_manifest_files(self.logs)
 
-      Puppet.info("upguard: node_ip_hostname=#{node_ip_hostname}")
-      Puppet.info("upguard: manifest_filename=#{manifest_filename}")
+      Puppet.info("#{log_prefix} node_ip_hostname=#{node_ip_hostname}")
+      Puppet.info("#{log_prefix} manifest_filename=#{manifest_filename}")
 
       lookup = node_lookup(API_KEY, APPLIANCE_URL, node_ip_hostname)
       os = get_os(node_ip_hostname)
-      Puppet.info("upguard: os: #{os}")
+      Puppet.info("#{log_prefix} os: #{os}")
       node_group_name = get_role(node_ip_hostname)
-      Puppet.info("upguard: puppet role for node is: role=#{node_group_name}")
+      Puppet.info("#{log_prefix} puppet role for node is: role=#{node_group_name}")
       if !node_group_name.nil? and !node_group_name.empty?
         # Create the node_group in UpGuard. If it already exists, and error will be returned - just ignore it.
         node_group_id = node_group_create(API_KEY, APPLIANCE_URL, node_group_name)
@@ -68,48 +68,48 @@ Puppet::Reports.register_report(:upguard) do
 
       if lookup["node_id"]
         node_id = lookup["node_id"]
-        Puppet.info("upguard: node found: node_id=#{node_id}")
+        Puppet.info("#{log_prefix} node found: node_id=#{node_id}")
       elsif lookup["error"] == "Not Found"
         node_id = node_create(API_KEY, APPLIANCE_URL, node_ip_hostname, os)
-        Puppet.info("upguard: node not found so created: node_id=#{node_id}")
+        Puppet.info("#{log_prefix} node not found so created: node_id=#{node_id}")
       else
-        Puppet.err("upguard: failed to lookup node: #{lookup}")
-        raise StandardError, "upguard: unable to get a node id: confirm config variables are correct and appliance is reachable"
+        Puppet.err("#{log_prefix} failed to lookup node: #{lookup}")
+        raise StandardError, "#{log_prefix} unable to get a node id: confirm config variables are correct and appliance is reachable"
       end
 
       # Make sure to add the node to the node group
       if !node_group_id.nil? and !node_group_id.to_s.include?("error")
         add_to_node_group_response = add_to_node_group(API_KEY, APPLIANCE_URL, node_id, node_group_id)
         if !add_to_node_group_response.nil? && add_to_node_group_response.to_s.include?("Node is already in the group")
-          Puppet.info("upguard: node is already in the node group")
+          Puppet.info("#{log_prefix} node is already in the node group")
         else
-          Puppet.info("upguard: added the node to the node group")
+          Puppet.info("#{log_prefix} added the node to the node group")
         end
       else
-        Puppet.err("upguard: obtaining node_group_id failed: #{node_group_id}")
+        Puppet.err("#{log_prefix} obtaining node_group_id failed: #{node_group_id}")
       end
 
       # Kick off a node scan
       job = node_scan(API_KEY, APPLIANCE_URL, node_id, manifest_filename)
       if job["job_id"]
-        Puppet.info("upguard: node scan kicked off against #{node_ip_hostname} (#{APPLIANCE_URL}/jobs/#{job["job_id"]}/show_job?show_all=true)")
+        Puppet.info("#{log_prefix} node scan kicked off against #{node_ip_hostname} (#{APPLIANCE_URL}/jobs/#{job["job_id"]}/show_job?show_all=true)")
       else
-        Puppet.err("upguard: failed to kick off node scan against #{node_ip_hostname} (#{node_id}): #{job}")
+        Puppet.err("#{log_prefix} failed to kick off node scan against #{node_ip_hostname} (#{node_id}): #{job}")
       end
 
       # Kick off a node vulnerability scan
       vuln_job = node_vuln_scan(API_KEY, APPLIANCE_URL, node_id)
       if vuln_job["job_id"]
-        Puppet.info("upguard: node vulnerability scan kicked off against #{node_ip_hostname} (#{APPLIANCE_URL}/jobs/#{vuln_job["job_id"]}/show_job?show_all=true)")
+        Puppet.info("#{log_prefix} node vulnerability scan kicked off against #{node_ip_hostname} (#{APPLIANCE_URL}/jobs/#{vuln_job["job_id"]}/show_job?show_all=true)")
       else
-        Puppet.err("upguard: failed to kick off node vulnerability scan against #{node_ip_hostname} (#{node_id}): #{vuln_job}")
+        Puppet.err("#{log_prefix} failed to kick off node vulnerability scan against #{node_ip_hostname} (#{node_id}): #{vuln_job}")
       end
     end
   end
 
   def get_role(node_ip_hostname)
     response = `curl -X GET #{PUPPETDB_URL}/pdb/query/v4/nodes/#{node_ip_hostname}/facts -d 'query=["in", ["name","certname"], ["extract", ["name","certname"], ["select_fact_contents", ["and", ["=", "path", ["trusted", "authenticated"]], ["=","value","remote"]]]]]' --tlsv1 --cacert /etc/puppetlabs/puppet/ssl/certs/ca.pem --cert /etc/puppetlabs/puppet/ssl/certs/#{COMPILE_MASTER_PEM} --key /etc/puppetlabs/puppet/ssl/private_keys/#{COMPILE_MASTER_PEM}`
-    Puppet.info("upguard: role via trusted facts for #{node_ip_hostname} is: response=#{response}")
+    Puppet.info("#{log_prefix} role via trusted facts for #{node_ip_hostname} is: response=#{response}")
     role_details = JSON.load(response)
     if role_details && role_details[0] && role_details[0]['value'] && role_details[0]['value']['extensions'] && role_details[0]['value']['extensions']['pp_role']
       role_details[0]['value']['extensions']['pp_role']
@@ -120,7 +120,7 @@ Puppet::Reports.register_report(:upguard) do
 
   def get_os(hostname)
     response = `curl -X GET #{PUPPETDB_URL}/pdb/query/v4/facts/operatingsystem --data-urlencode 'query=["=", "certname", "#{hostname}"]' --tlsv1 --cacert /etc/puppetlabs/puppet/ssl/certs/ca.pem --cert /etc/puppetlabs/puppet/ssl/certs/#{COMPILE_MASTER_PEM} --key /etc/puppetlabs/puppet/ssl/private_keys/#{COMPILE_MASTER_PEM}`
-    Puppet.info("upguard: get_os: response=#{response}")
+    Puppet.info("#{log_prefix} get_os: response=#{response}")
     os_details = JSON.load(response)
     if os_details && os_details[0]
       os_details[0]['value']
@@ -135,9 +135,9 @@ Puppet::Reports.register_report(:upguard) do
 
     if logs && logs.any?
       (logs).each do |log|
-        Puppet.info("upguard: log: #{log}")
+        Puppet.info("#{log_prefix} log: #{log}")
         if log.file
-          Puppet.info("upguard: log.file: #{log.file}")
+          Puppet.info("#{log_prefix} log.file: #{log.file}")
           segments = log.file.split("/")
           if segments && segments.any?
             manifest_filename.push(segments.last)
@@ -155,12 +155,21 @@ Puppet::Reports.register_report(:upguard) do
     end
   end
 
+  # Format logs in a consistent, easily grep-able way
+  def log_prefix
+    if self.host
+      "upguard #{self.host}:"
+    else
+      "upguard:"
+    end
+  end
+
   # Add the node to the node group
   def add_to_node_group(api_key, instance, node_id, node_group_id)
-    Puppet.info("upguard: node_id=#{node_id}")
-    Puppet.info("upguard: node_group_id=#{node_group_id}")
+    Puppet.info("#{log_prefix} node_id=#{node_id}")
+    Puppet.info("#{log_prefix} node_group_id=#{node_group_id}")
     response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' #{instance}/api/v2/node_groups/#{node_group_id}/add_node.json?node_id=#{node_id}`
-    Puppet.info("upguard: add_to_node_group response=#{response}")
+    Puppet.info("#{log_prefix} add_to_node_group response=#{response}")
     JSON.load(response)
   end
   module_function :add_to_node_group
@@ -168,7 +177,7 @@ Puppet::Reports.register_report(:upguard) do
   # Check to see if the node has already been added to UpGuard. If so, return it's node_id.
   def node_lookup(api_key, instance, external_id)
     response = `curl -X GET -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' #{instance}/api/v2/nodes/lookup.json?external_id=#{external_id}`
-    Puppet.info("upguard: node_lookup response=#{response}")
+    Puppet.info("#{log_prefix} node_lookup response=#{response}")
     JSON.load(response)
   end
   module_function :node_lookup
@@ -176,9 +185,9 @@ Puppet::Reports.register_report(:upguard) do
   # We create UpGuard node groups to map to Puppet roles
   def node_group_create(api_key, instance, node_group_name)
     create_response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{ "node_group": { "name": "#{node_group_name}" }}' #{instance}/api/v2/node_groups`
-    Puppet.info("upguard: node_group_create response=#{create_response}")
+    Puppet.info("#{log_prefix} node_group_create response=#{create_response}")
     lookup_response = `curl -X GET -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' #{instance}/api/v2/node_groups/lookup.json?name=#{node_group_name}`
-    Puppet.info("upguard: node_group_lookup response=#{lookup_response}")
+    Puppet.info("#{log_prefix} node_group_lookup response=#{lookup_response}")
     lookup_json = JSON.load(lookup_response)
     if lookup_json and lookup_json['node_group_id']
       lookup_json['node_group_id']
@@ -191,9 +200,9 @@ Puppet::Reports.register_report(:upguard) do
   # Creates the node in UpGuard
   def node_create(api_key, instance, ip_hostname, os)
     cm_group_id = determine_cm(ip_hostname, os)
-    Puppet.info("upguard: node_create ip_hostname=#{ip_hostname}")
-    Puppet.info("upguard: node_create os=#{os}")
-    Puppet.info("upguard: node_create cm_group_id=#{cm_group_id}")
+    Puppet.info("#{log_prefix} node_create ip_hostname=#{ip_hostname}")
+    Puppet.info("#{log_prefix} node_create os=#{os}")
+    Puppet.info("#{log_prefix} node_create cm_group_id=#{cm_group_id}")
 
     node = {}
     node[:node] = {}
@@ -230,22 +239,22 @@ Puppet::Reports.register_report(:upguard) do
     end
 
     request = "curl -X POST -s -k -H 'Authorization: Token token=\"#{api_key}\"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '#{node.to_json}' #{instance}/api/v2/nodes"
-    Puppet.info("upguard: node_create request=#{request}")
+    Puppet.info("#{log_prefix} node_create request=#{request}")
     response = `#{request}`
-    Puppet.info("upguard: node_create response=#{response}")
+    Puppet.info("#{log_prefix} node_create response=#{response}")
     node = JSON.load(response)
 
     if node["id"]
       if os && os.downcase != 'windows' && os.downcase != 'centos'
-        Puppet.info("upguard: adding node to unclassified node group")
+        Puppet.info("#{log_prefix} adding node to unclassified node group")
         unclassified_resp = add_to_node_group(api_key, instance, node["id"], 29)
-        Puppet.info("upguard: adding node to unclassified node group response=#{unclassified_resp}")
+        Puppet.info("#{log_prefix} adding node to unclassified node group response=#{unclassified_resp}")
       end
 
       node["id"]
     else
-      Puppet.err("upguard: failed to create node: #{ip_hostname}")
-      raise StandardError, "upguard: unable to create node: confirm node parameters are correct"
+      Puppet.err("#{log_prefix} failed to create node: #{ip_hostname}")
+      raise StandardError, "#{log_prefix} unable to create node: confirm node parameters are correct"
     end
   end
   module_function :node_create
@@ -253,7 +262,7 @@ Puppet::Reports.register_report(:upguard) do
   # Kick off a node scan
   def node_scan(api_key, instance, node_id, tag)
     response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' #{instance}/api/v2/nodes/#{node_id}/start_scan.json`
-    Puppet.info("upguard: node_scan response=#{response}")
+    Puppet.info("#{log_prefix} node_scan response=#{response}")
     JSON.load(response)
   end
   module_function :node_scan
@@ -261,7 +270,7 @@ Puppet::Reports.register_report(:upguard) do
   # Kick off a vulnerability scan
   def node_vuln_scan(api_key, instance, node_id)
     response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' '#{instance}/api/v2/jobs.json?type=node_vulns&vuln_limit=1000&vuln_severity=5&type_id=#{node_id}'`
-    Puppet.info("upguard: node_vuln_scan response=#{response}")
+    Puppet.info("#{log_prefix} node_vuln_scan response=#{response}")
     JSON.load(response)
   end
   module_function :node_vuln_scan
@@ -273,7 +282,7 @@ Puppet::Reports.register_report(:upguard) do
 
     # Return the default connection manager group if a node name or node os isn't provided
     if node_name.nil? || node_os.nil?
-      Puppet.info("upguard: node name or node os not provided, using default connection manager group")
+      Puppet.info("#{log_prefix} node name or node os not provided, using default connection manager group")
       return default_cmg
     end
     # Downcase once here for further work
@@ -294,7 +303,7 @@ Puppet::Reports.register_report(:upguard) do
         cmg_domain = c['domain']
         cmg_id = c['id']
         if node_name.end_with?(cmg_domain)
-          Puppet.info("upguard: assigning #{node_name} to connection manager group #{cmg_domain} (Id: #{cmg_id})")
+          Puppet.info("#{log_prefix} assigning #{node_name} to connection manager group #{cmg_domain} (Id: #{cmg_id})")
           # Stop searching, we have found a connection manager group we can use
           return "#{cmg_id}"
         end
@@ -302,7 +311,7 @@ Puppet::Reports.register_report(:upguard) do
     end
 
     # If we got here then we have a node with a domain that isn't mapped to connection manager domain
-    Puppet.info("upguard: windows node #{node_name} could not be mapped to a connection manager group, using default connection manager group instead")
+    Puppet.info("#{log_prefix} windows node #{node_name} could not be mapped to a connection manager group, using default connection manager group instead")
     return default_cmg
   end
   module_function :determine_cm

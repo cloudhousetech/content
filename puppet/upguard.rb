@@ -4,7 +4,7 @@ require 'erb'
 
 Puppet::Reports.register_report(:upguard) do
 
-  VERSION = "v1.2.2"
+  VERSION = "v1.2.3"
   desc "Create a node (if not present) and kick off a node scan in UpGuard if changes were made."
 
   configfile = File.join([File.dirname(Puppet.settings[:config]), "upguard.yaml"])
@@ -194,15 +194,44 @@ Puppet::Reports.register_report(:upguard) do
     Puppet.info("upguard: node_create ip_hostname=#{ip_hostname}")
     Puppet.info("upguard: node_create os=#{os}")
     Puppet.info("upguard: node_create cm_group_id=#{cm_group_id}")
-    short_description = "Added by upguard.rb #{VERSION}"
+
+    node = {}
+    node[:node] = {}
+    node[:node][:name] = "#{ip_hostname}"
+    node[:node][:external_id] = "#{ip_hostname}"
+    node[:node][:medium_hostname] = "#{ip_hostname}"
+    node[:node][:short_description] = "Added by upguard.rb #{VERSION}"
+    node[:node][:connection_manager_group_id] = "#{cm_group_id}"
+
     if os && os.downcase == 'windows'
-      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": ' + "\"#{short_description}\"" + ', "node_type": "SV", "operating_system_family_id": 1, "operating_system_id": 125, "medium_type": 7, "medium_port": 5985, "connection_manager_group_id": ' + "\"#{cm_group_id}\"" + ', "medium_username": ' + "\"#{WINRM_USERNAME}\"" + ', "medium_password": ' + "\"#{WINRM_PASSWORD}\"" + ', "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
+      node[:node][:node_type] = "SV" # Server
+      node[:node][:operating_system_family_id] = 1
+      node[:node][:operating_system_id] = 125 # Windows 2012
+      node[:node][:medium_type] = 7 # WinRM
+      node[:node][:medium_port] = 5985
+      node[:node][:medium_username] = "#{WINRM_USERNAME}"
+      node[:node][:medium_password] = "#{WINRM_PASSWORD}"
     elsif os && os.downcase == 'centos'
-      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": ' + "\"#{short_description}\"" + ', "node_type": "SV", "operating_system_family_id": 2, "operating_system_id": 231, "medium_type": 3, "medium_port": 22, "connection_manager_group_id": ' + "\"#{cm_group_id}\"" + ', "medium_username": ' + "\"#{SSH_USERNAME}\"" + ', "medium_password": ' + "\"#{SSH_PASSWORD}\"" + ', "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
-    else
-      node_details = '{ "node": { "name": ' + "\"#{ip_hostname}\"" + ', "short_description": ' + "\"#{short_description}\"" + ', "node_type": "SV", "operating_system_family_id": 7, "operating_system_id": 731, "medium_type": 3, "medium_port": 22, "connection_manager_group_id": ' + "\"#{cm_group_id}\"" + ', "medium_username": ' + "\"#{SSH_USERNAME}\"" + ', "medium_password": ' + "\"#{SSH_PASSWORD}\"" + ', "medium_hostname": ' + "\"#{ip_hostname}\"" + ', "external_id": ' + "\"#{ip_hostname}\"" + '}}'
+      node[:node][:node_type] = "SV"
+      node[:node][:operating_system_family_id] = 2
+      node[:node][:operating_system_id] = 231 # CentOS
+      node[:node][:medium_type] = 3 # SSH
+      node[:node][:medium_port] = 22
+      node[:node][:medium_username] = "#{SSH_USERNAME}"
+      node[:node][:medium_password] = "#{SSH_PASSWORD}"
+    else # Add the node as a network device...
+      node[:node][:node_type] = "FW" # Firewall
+      node[:node][:operating_system_family_id] = 7
+      node[:node][:operating_system_id] = 731 # Cisco ASA
+      node[:node][:medium_type] = 3 # SSH
+      node[:node][:medium_port] = 22
+      node[:node][:medium_username] = "#{SSH_USERNAME}"
+      node[:node][:medium_password] = "#{SSH_PASSWORD}"
     end
-    response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '#{node_details}' #{instance}/api/v2/nodes`
+
+    request = "curl -X POST -s -k -H 'Authorization: Token token=\"#{api_key}\"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '#{node.to_json}' #{instance}/api/v2/nodes"
+    Puppet.info("upguard: node_create request=#{request}")
+    response = `#{request}`
     Puppet.info("upguard: node_create response=#{response}")
     node = JSON.load(response)
 

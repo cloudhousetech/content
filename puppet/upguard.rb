@@ -4,7 +4,8 @@ require 'erb'
 
 Puppet::Reports.register_report(:upguard) do
 
-  VERSION = "v1.2.3"
+  VERSION = "v1.3.0"
+  VERSION_TAG = "Added by #{File.basename(__FILE__)} #{VERSION}"
   desc "Create a node (if not present) and kick off a node scan in UpGuard if changes were made."
 
   configfile = File.join([File.dirname(Puppet.settings[:config]), "upguard.yaml"])
@@ -59,11 +60,23 @@ Puppet::Reports.register_report(:upguard) do
       lookup = node_lookup(API_KEY, APPLIANCE_URL, node_ip_hostname)
       os = get_os(node_ip_hostname)
       Puppet.info("#{log_prefix} os: #{os}")
-      node_group_name = get_role(node_ip_hostname)
+
+      # Get the node role and environment from puppet
+      trusted_facts = get_trusted_facts(node_ip_hostname)
+      node_group_name = get_role(trusted_facts)
       Puppet.info("#{log_prefix} puppet role for node is: role=#{node_group_name}")
+      environment_name = get_environment(trusted_facts)
+      Puppet.info("#{log_prefix} puppet environment for node is: environment=#{environment_name}")
+
+      # Get node group and environment ids from UpGuard
       if !node_group_name.nil? and !node_group_name.empty?
         # Create the node_group in UpGuard. If it already exists, and error will be returned - just ignore it.
         node_group_id = node_group_create(API_KEY, APPLIANCE_URL, node_group_name)
+      end
+
+      if !environment_name.nil? and !environment_name.empty?
+        # Create the environment in UpGuard. If it already exists, and error will be returned - just ignore it.
+        environment_id = environment_create(API_KEY, APPLIANCE_URL, environment_name)
       end
 
       if lookup["node_id"]
@@ -89,6 +102,18 @@ Puppet::Reports.register_report(:upguard) do
         Puppet.err("#{log_prefix} obtaining node_group_id failed: #{node_group_id}")
       end
 
+      # Make sure to add the node to the environment
+      if !environment_id.nil? && !environment_id.to_s.include?("error")
+        add_to_environment_response = add_to_environment(API_KEY, APPLIANCE_URL, node_id, environment_id)
+        if !add_to_environment_response.nil? && add_to_environment_response.to_s.include?("error")
+          Puppet.info("#{log_prefix} node environment_id could not be updated")
+        else
+          Puppet.info("#{log_prefix} node environment_id updated")
+        end
+      else
+        Puppet.err("#{log_prefix} obtaining environment_id failed: #{environment_id}")
+      end
+
       # Kick off a node scan
       job = node_scan(API_KEY, APPLIANCE_URL, node_id, manifest_filename)
       if job["job_id"]
@@ -107,12 +132,24 @@ Puppet::Reports.register_report(:upguard) do
     end
   end
 
-  def get_role(node_ip_hostname)
+  def get_trusted_facts(node_ip_hostname)
     response = `curl -X GET #{PUPPETDB_URL}/pdb/query/v4/nodes/#{node_ip_hostname}/facts -d 'query=["in", ["name","certname"], ["extract", ["name","certname"], ["select_fact_contents", ["and", ["=", "path", ["trusted", "authenticated"]], ["=","value","remote"]]]]]' --tlsv1 --cacert /etc/puppetlabs/puppet/ssl/certs/ca.pem --cert /etc/puppetlabs/puppet/ssl/certs/#{COMPILE_MASTER_PEM} --key /etc/puppetlabs/puppet/ssl/private_keys/#{COMPILE_MASTER_PEM}`
-    Puppet.info("#{log_prefix} role via trusted facts for #{node_ip_hostname} is: response=#{response}")
-    role_details = JSON.load(response)
-    if role_details && role_details[0] && role_details[0]['value'] && role_details[0]['value']['extensions'] && role_details[0]['value']['extensions']['pp_role']
-      role_details[0]['value']['extensions']['pp_role']
+    Puppet.info("#{log_prefix} trusted facts for #{node_ip_hostname} is: response=#{response}")
+    trusted_facts = JSON.load(response)
+    trusted_facts
+  end
+
+  def get_role(trusted_facts)
+    if trusted_facts && trusted_facts[0] && trusted_facts[0]['value'] && trusted_facts[0]['value']['extensions'] && trusted_facts[0]['value']['extensions']['pp_role']
+      trusted_facts[0]['value']['extensions']['pp_role']
+    else
+      nil
+    end
+  end
+
+  def get_environment(trusted_facts)
+    if trusted_facts && trusted_facts[0] && trusted_facts[0]['value'] && trusted_facts[0]['value']['extensions'] && trusted_facts[0]['value']['extensions']['pp_environment']
+      trusted_facts[0]['value']['extensions']['pp_environment']
     else
       nil
     end
@@ -164,7 +201,7 @@ Puppet::Reports.register_report(:upguard) do
     end
   end
 
-  # Add the node to the node group
+  # Add the node to the node group.
   def add_to_node_group(api_key, instance, node_id, node_group_id)
     Puppet.info("#{log_prefix} node_id=#{node_id}")
     Puppet.info("#{log_prefix} node_group_id=#{node_group_id}")
@@ -173,6 +210,15 @@ Puppet::Reports.register_report(:upguard) do
     JSON.load(response)
   end
   module_function :add_to_node_group
+
+  # Add the node to the environment. We do this by updating the node rather than using an add_node endpoint.
+  def add_to_environment(api_key, instance, node_id, environment_id)
+    Puppet.info("#{log_prefix} node_id=#{node_id}")
+    Puppet.info("#{log_prefix} environment_id=#{environment_id}")
+    response = `curl -X PUT -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{ "node": { "environment_id": "#{environment_id}", "description": "#{VERSION_TAG}" }}' #{instance}/api/v2/nodes/#{node_id}`
+    Puppet.info("#{log_prefix} add_to_environment response=#{response}")
+  end
+  module_function :add_to_environment
 
   # Check to see if the node has already been added to UpGuard. If so, return it's node_id.
   def node_lookup(api_key, instance, external_id)
@@ -184,7 +230,7 @@ Puppet::Reports.register_report(:upguard) do
 
   # We create UpGuard node groups to map to Puppet roles
   def node_group_create(api_key, instance, node_group_name)
-    create_response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{ "node_group": { "name": "#{node_group_name}" }}' #{instance}/api/v2/node_groups`
+    create_response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{ "node_group": { "name": "#{node_group_name}", "description": "#{VERSION_TAG}" }}' #{instance}/api/v2/node_groups`
     Puppet.info("#{log_prefix} node_group_create response=#{create_response}")
     lookup_response = `curl -X GET -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' #{instance}/api/v2/node_groups/lookup.json?name=#{node_group_name}`
     Puppet.info("#{log_prefix} node_group_lookup response=#{lookup_response}")
@@ -196,6 +242,21 @@ Puppet::Reports.register_report(:upguard) do
     end
   end
   module_function :node_group_create
+
+  # We create UpGuard environments to map to Puppet environments
+  def environment_create(api_key, instance, environment_name)
+    create_response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{ "environment": { "name": "#{environment_name}", "short_description": "#{VERSION_TAG}" }}' #{instance}/api/v2/environments`
+    Puppet.info("#{log_prefix} environment_create response=#{create_response}")
+    lookup_response = `curl -X GET -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' #{instance}/api/v2/environments/lookup.json?name=#{environment_name}`
+    Puppet.info("#{log_prefix} environment_lookup response=#{lookup_response}")
+    lookup_json = JSON.load(lookup_response)
+    if lookup_json and lookup_json['environment_id']
+      lookup_json['environment_id']
+    else
+      nil
+    end
+  end
+  module_function :environment_create
 
   # Creates the node in UpGuard
   def node_create(api_key, instance, ip_hostname, os)
@@ -209,7 +270,7 @@ Puppet::Reports.register_report(:upguard) do
     node[:node][:name] = "#{ip_hostname}"
     node[:node][:external_id] = "#{ip_hostname}"
     node[:node][:medium_hostname] = "#{ip_hostname}"
-    node[:node][:short_description] = "Added by upguard.rb #{VERSION}"
+    node[:node][:short_description] = "Added by upguard.rb #{VERSION_TAG}"
     node[:node][:connection_manager_group_id] = "#{cm_group_id}"
 
     if os && os.downcase == 'windows'

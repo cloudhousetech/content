@@ -270,7 +270,7 @@ Puppet::Reports.register_report(:upguard) do
     node[:node][:name] = "#{ip_hostname}"
     node[:node][:external_id] = "#{ip_hostname}"
     node[:node][:medium_hostname] = "#{ip_hostname}"
-    node[:node][:short_description] = "Added by upguard.rb #{VERSION_TAG}"
+    node[:node][:short_description] = "#{VERSION_TAG}"
     node[:node][:connection_manager_group_id] = "#{cm_group_id}"
 
     if os && os.downcase == 'windows'

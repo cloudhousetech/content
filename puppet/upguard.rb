@@ -330,7 +330,7 @@ Puppet::Reports.register_report(:upguard) do
 
   # Kick off a vulnerability scan
   def node_vuln_scan(api_key, instance, node_id)
-    response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' '#{instance}/api/v2/jobs.json?type=node_vulns&vuln_limit=1000&vuln_severity=5&type_id=#{node_id}'`
+    response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' '#{instance}/api/v2/jobs.json?type=node_vulns&vuln_limit=5000&vuln_severity=5&type_id=#{node_id}'`
     Puppet.info("#{log_prefix} node_vuln_scan response=#{response}")
     JSON.load(response)
   end

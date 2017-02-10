@@ -22,10 +22,6 @@ Puppet::Reports.register_report(:upguard) do
   SERVICE_KEY        = config[:service_key]
   SECRET_KEY         = config[:secret_key]
   API_KEY            = "#{SERVICE_KEY}#{SECRET_KEY}"
-  SSH_USERNAME       = config[:ssh_username]
-  SSH_PASSWORD       = config[:ssh_password]
-  WINRM_USERNAME     = config[:winrm_username]
-  WINRM_PASSWORD     = config[:winrm_password]
   WINDOWS_CMGS       = config[:windows_connection_manager_groups]
   SSH_CMGS           = config[:ssh_connection_manager_groups]
 
@@ -38,10 +34,6 @@ Puppet::Reports.register_report(:upguard) do
     Puppet.info("upguard: SERVICE_KEY=#{SERVICE_KEY}")
     Puppet.info("upguard: SECRET_KEY=#{SECRET_KEY}")
     Puppet.info("upguard: API_KEY=#{API_KEY}")
-    Puppet.info("upguard: SSH_USERNAME=#{SSH_USERNAME}")
-    Puppet.info("upguard: SSH_PASSWORD=#{SSH_PASSWORD}")
-    Puppet.info("upguard: WINRM_USERNAME=#{WINRM_USERNAME}")
-    Puppet.info("upguard: WINRM_PASSWORD=#{WINRM_PASSWORD}")
     Puppet.info("upguard: WINDOWS_CMGS=#{WINDOWS_CMGS}")
     Puppet.info("upguard: SSH_CMGS=#{SSH_CMGS}")
 
@@ -260,10 +252,10 @@ Puppet::Reports.register_report(:upguard) do
 
   # Creates the node in UpGuard
   def node_create(api_key, instance, ip_hostname, os)
-    cm_group_id = determine_cm(ip_hostname, os)
+    domain_details = determine_domain_details(ip_hostname, os)
     Puppet.info("#{log_prefix} node_create ip_hostname=#{ip_hostname}")
     Puppet.info("#{log_prefix} node_create os=#{os}")
-    Puppet.info("#{log_prefix} node_create cm_group_id=#{cm_group_id}")
+    Puppet.info("#{log_prefix} node_create cm group id=#{domain_details['id']}")
 
     node = {}
     node[:node] = {}
@@ -271,7 +263,9 @@ Puppet::Reports.register_report(:upguard) do
     node[:node][:external_id] = "#{ip_hostname}"
     node[:node][:medium_hostname] = "#{ip_hostname}"
     node[:node][:short_description] = "#{VERSION_TAG}"
-    node[:node][:connection_manager_group_id] = "#{cm_group_id}"
+    node[:node][:connection_manager_group_id] = "#{domain_details['id']}"
+    node[:node][:medium_username] = "#{domain_details['service_account']}"
+    node[:node][:medium_password] = "#{domain_details['service_password']}"
 
     if os && os.downcase == 'windows'
       node[:node][:node_type] = "SV" # Server
@@ -279,24 +273,18 @@ Puppet::Reports.register_report(:upguard) do
       node[:node][:operating_system_id] = 125 # Windows 2012
       node[:node][:medium_type] = 7 # WinRM
       node[:node][:medium_port] = 5985
-      node[:node][:medium_username] = "#{WINRM_USERNAME}"
-      node[:node][:medium_password] = "#{WINRM_PASSWORD}"
     elsif os && os.downcase == 'centos'
       node[:node][:node_type] = "SV"
       node[:node][:operating_system_family_id] = 2
       node[:node][:operating_system_id] = 231 # CentOS
       node[:node][:medium_type] = 3 # SSH
       node[:node][:medium_port] = 22
-      node[:node][:medium_username] = "#{SSH_USERNAME}"
-      node[:node][:medium_password] = "#{SSH_PASSWORD}"
     else # Add the node as a network device...
       node[:node][:node_type] = "FW" # Firewall
       node[:node][:operating_system_family_id] = 7
       node[:node][:operating_system_id] = 731 # Cisco ASA
       node[:node][:medium_type] = 3 # SSH
       node[:node][:medium_port] = 22
-      node[:node][:medium_username] = "#{SSH_USERNAME}"
-      node[:node][:medium_password] = "#{SSH_PASSWORD}"
     end
 
     request = "curl -X POST -s -k -H 'Authorization: Token token=\"#{api_key}\"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '#{node.to_json}' #{instance}/api/v2/nodes"
@@ -337,9 +325,12 @@ Puppet::Reports.register_report(:upguard) do
   module_function :node_vuln_scan
 
   # Determine the correct UpGuard connection manager to scan the node with.
-  def determine_cm(node_name, node_os)
+  def determine_domain_details(node_name, node_os)
     cmgs = nil
-    default_cmg = 1
+    default_domain_details = {}
+    default_domain_details['id'] = 1
+    default_domain_details['service_account'] = ""
+    default_domain_details['service_password'] = ""
 
     # Return the default connection manager group if a node name or node os isn't provided
     if node_name.nil? || node_os.nil?
@@ -360,20 +351,21 @@ Puppet::Reports.register_report(:upguard) do
     unless cmgs.nil?
       cmgs.each do |c|
         # Skip element if it's not formatted correctly
-        next if c['domain'].nil? || c['id'].nil?
+        next if c['domain'].nil? || c['id'].nil? || c['service_account'].nil? || c['service_password'].nil?
         cmg_domain = c['domain']
         cmg_id = c['id']
         if node_name.end_with?(cmg_domain)
           Puppet.info("#{log_prefix} assigning #{node_name} to connection manager group #{cmg_domain} (Id: #{cmg_id})")
           # Stop searching, we have found a connection manager group we can use
-          return "#{cmg_id}"
+          return c
         end
       end
     end
 
     # If we got here then we have a node with a domain that isn't mapped to connection manager domain
     Puppet.info("#{log_prefix} windows node #{node_name} could not be mapped to a connection manager group, using default connection manager group instead")
-    return default_cmg
+    return default_domain_details
   end
-  module_function :determine_cm
+  module_function :determine_domain_details
+
 end

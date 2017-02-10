@@ -11,10 +11,18 @@
 :ssh_connection_manager_groups:
   - domain: 'domain1.com'
     id: 1
+    service_account: 'name'
+    service_password: 'password'
 :windows_connection_manager_groups:
   - domain: 'domain2.com'
     id: 2
+    service_account: 'name'
+    service_password: 'password'
   - domain: 'domain3.com'
     id: 3
+    service_account: 'name'
+    service_password: 'password'
   - domain: 'domain4.com'
     id: 4
+    service_account: 'name'
+    service_password: 'password'

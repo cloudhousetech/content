@@ -1,0 +1,15 @@
+###########################################################################################################
+# Description: Builds a table to display detailed policy failure results.                                 #
+# Event variables required: node_id                                                                       #
+# Website version required: >= v2.28.0                                                                    #
+###########################################################################################################
+
+*Policy Failure Details*
+
+{% if node_policy_failures.size > 0 %}
+||Check Path||Expected Value||Actual Value||Result||
+{% for f in node_policy_failures %}{% for c in f[1] %}|{{ f[0] }}, {{ c['name'] }}, {% for a in c['checks'] %}{{ a[0] }}|{% if a[1]['expected'] %}{{ a[1]['expected'] }}{% else %}Absent{% endif %}|{% if a[1]['actual'] %}{{ a[1]['actual'] }}{% else %}Absent{% endif %}|{% if a[1]['result'] == 'failure' %}{color:red}FAIL{color}{% else %}{color:#14892c}PASS{color}{% endif %}|
+{% endfor %}{% endfor %}{% endfor %}
+{% else %}
+No detailed policy results to display.
+{% endif %}

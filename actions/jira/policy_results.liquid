@@ -1,0 +1,15 @@
+###########################################################################################################
+# Description: Builds a table to display policy results (passing and failing). Color codes accordingly.   #
+# Event variables required: Can only be used with the "Node First Scanned" event.                         #
+# Website version required: >= v2.28.0                                                                    #
+###########################################################################################################
+
+*Policy Results*
+
+{% if policy_results.size > 0 %}
+||Policy Name||Result||  
+{% for p in policy_results %}|{{ p['policy'] }}|{% if p['passed'] == false %}{color:red}FAIL{color}{% else %}{color:#14892c}PASS{color}{% endif %}|
+{% endfor %}
+{% else %}
+No policy results to display.
+{% endif %}

@@ -25,6 +25,7 @@ Puppet::Reports.register_report(:upguard) do
   DOMAINS                  = config[:domains]
   ENVIRONMENT              = config[:environment]
   TEST_OS                  = config[:test_os]
+  TEST_NODE_NAME           = config[:test_node_name]
   TEST_LINUX_HOSTNAME      = config[:test_linux_hostname]
   TEST_WINDOWS_HOSTNAME    = config[:test_windows_hostname]
   UNKNOWN_OS_NODE_GROUP_ID = config[:unknown_os_node_group_id]
@@ -41,6 +42,7 @@ Puppet::Reports.register_report(:upguard) do
     Puppet.info("upguard: DOMAINS=#{DOMAINS}")
     Puppet.info("upguard: ENVIRONMENT=#{ENVIRONMENT}")
     Puppet.info("upguard: TEST_OS=#{TEST_OS}")
+    Puppet.info("upguard: TEST_NODE_NAME=#{TEST_NODE_NAME}")
     Puppet.info("upguard: TEST_LINUX_HOSTNAME=#{TEST_LINUX_HOSTNAME}")
     Puppet.info("upguard: TEST_WINDOWS_HOSTNAME=#{TEST_WINDOWS_HOSTNAME}")
     Puppet.info("upguard: UNKNOWN_OS_NODE_GROUP_ID=#{UNKNOWN_OS_NODE_GROUP_ID}")
@@ -85,8 +87,6 @@ Puppet::Reports.register_report(:upguard) do
       add_node_to_environment(node_id, environment_id)
       # Kick off a node scan
       node_scan(node_id, node_ip_hostname, manifest_filename)
-      # Kick off a node vulnerability scan
-      vuln_scan(node_id, node_ip_hostname)
     end
   end
 
@@ -127,6 +127,8 @@ Puppet::Reports.register_report(:upguard) do
     elsif !lookup.nil? && !lookup["error"].nil? && (lookup["error"] == "Not Found")
       node_id = upguard_node_create(API_KEY, APPLIANCE_URL, node_ip_hostname, os)
       Puppet.info("#{log_prefix} node not found so created: node_id=#{node_id}")
+      # Kick off a vuln scan only for newly created nodes
+      vuln_scan(node_id, node_ip_hostname)
       node_id
     else
       Puppet.err("#{log_prefix} failed to lookup node: #{lookup}")
@@ -135,7 +137,7 @@ Puppet::Reports.register_report(:upguard) do
   end
 
   def add_node_to_group(node_id, node_group_id)
-    if !node_group_id.nil? and !node_group_id.to_s.include?("error")
+    if !node_group_id.nil? && !node_group_id.to_s.include?("error")
       add_to_node_group_response = upguard_add_to_node_group(API_KEY, APPLIANCE_URL, node_id, node_group_id)
       if !add_to_node_group_response.nil? && add_to_node_group_response.to_s.include?("Node is already in the group")
         Puppet.info("#{log_prefix} node is already in the node group")
@@ -256,7 +258,7 @@ Puppet::Reports.register_report(:upguard) do
 
   def pdb_get_hostname(node_ip_hostname)
     if test_env
-      node_ip_hostname = "puppet-tst-#{rand(100...999).to_s}.domain.com"
+      node_ip_hostname = TEST_NODE_NAME
       Puppet.info("#{log_prefix} node_ip_hostname=#{node_ip_hostname}")
       node_ip_hostname
     else
@@ -268,7 +270,7 @@ Puppet::Reports.register_report(:upguard) do
   # Get trusted facts from Puppet.
   def pdb_get_trusted_facts(node_ip_hostname)
     if test_env
-      trusted_facts = '[{"certname":"host-name-01.domain.com","name":"trusted","value":{"authenticated":"remote","certname":"host-name-01.domain.com","domain":"domain.com","extensions":{"company_trusted_swimlane":"n/a","pp_datacenter":"mtv","pp_environment":"prod","pp_product":"test","pp_role":"no_rules"},"hostname":"host-name-01"},"environment":"tier2"}]'
+      trusted_facts = '[{"certname":"host-name-01.domain.com","name":"trusted","value":{"authenticated":"remote","certname":"host-name-01.domain.com","domain":"domain.com","extensions":{"company_trusted_swimlane":"n/a","pp_datacenter":"mtv","pp_environment":"prod","pp_product":"test","pp_role":"rabbit_mq"},"hostname":"host-name-01"},"environment":"tier2"}]'
       trusted_facts = JSON.load(trusted_facts)      
       return trusted_facts
     end
@@ -394,7 +396,7 @@ Puppet::Reports.register_report(:upguard) do
     lookup_response = `curl -X GET -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' #{instance}/api/v2/node_groups/lookup.json?name=#{node_group_name}`
     Puppet.info("#{log_prefix} node_group_lookup response=#{lookup_response}")
     lookup_json = JSON.load(lookup_response)
-    if lookup_json and lookup_json['node_group_id']
+    if lookup_json && lookup_json['node_group_id']
       lookup_json['node_group_id']
     else
       nil
@@ -409,7 +411,7 @@ Puppet::Reports.register_report(:upguard) do
     lookup_response = `curl -X GET -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' #{instance}/api/v2/environments/lookup.json?name=#{environment_name}`
     Puppet.info("#{log_prefix} environment_lookup response=#{lookup_response}")
     lookup_json = JSON.load(lookup_response)
-    if lookup_json and lookup_json['environment_id']
+    if lookup_json && lookup_json['environment_id']
       lookup_json['environment_id']
     else
       nil

@@ -1,0 +1,9 @@
+*Policy Results*
+
+{% if policy_results.size > 0 %}
+||Policy Name||Result||  
+{% for p in policy_results %}|{{ p['policy'] }}|{% if p['passed'] == false %}{color:red}FAIL{color}{% else %}{color:#14892c}PASS{color}{% endif %}|
+{% endfor %}
+{% else %}
+No policy results to display.
+{% endif %}

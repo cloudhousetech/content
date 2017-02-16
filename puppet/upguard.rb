@@ -256,6 +256,7 @@ Puppet::Reports.register_report(:upguard) do
   # PUPPET DB (PDB) METHODS                                                   #
   #############################################################################
 
+  # Hostname is a variabe we can source from "self"
   def pdb_get_hostname(node_ip_hostname)
     if test_env
       node_ip_hostname = TEST_NODE_NAME

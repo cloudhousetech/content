@@ -1,0 +1,10 @@
+###########################################################################################################
+# Description: Displays policy failures. A policy can have many checks and a check can have many tests.   #
+# Event variables required: scan_id or job_id                                                             #
+# Website version required: >= v2.28.0                                                                    #
+###########################################################################################################
+
+{% for f in failures %}*{{ f[0] }}*
+{% for p in f[1] %}{{ p['name'] }} ({% for a in p['checks'] %}{{ a[1]['actual'] }}{% endfor %})
+{% endfor %}
+{% endfor %}

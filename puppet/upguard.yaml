@@ -4,25 +4,23 @@
 :compile_master_pem: 'name_of_compile_master.pem'
 :service_key: 'upguard_service_key'
 :secret_key: 'upguard_secret_key'
-:ssh_username: 'ssh_username'
-:ssh_password: 'ssh_password'
-:winrm_username: '.\\winrm_username'
-:winrm_password: 'winrm_password'
-:ssh_connection_manager_groups:
-  - domain: 'domain1.com'
-    id: 1
-    service_account: 'name'
-    service_password: 'password'
-:windows_connection_manager_groups:
-  - domain: 'domain2.com'
-    id: 2
-    service_account: 'name'
-    service_password: 'password'
-  - domain: 'domain3.com'
-    id: 3
-    service_account: 'name'
-    service_password: 'password'
-  - domain: 'domain4.com'
-    id: 4
-    service_account: 'name'
-    service_password: 'password'
+:unknown_os_node_group_id: 99
+:domains:
+  - name: 'domain-one.com'
+    ssh_connection_manager_groups:
+      - id: 1
+        service_account: 'username'
+        service_password: 'password'
+    windows_connection_manager_groups:
+      - id: 2
+        service_account: 'username'
+        service_password: 'password'
+  - name: 'domain-two.com'
+    ssh_connection_manager_groups:
+      - id: 3
+        service_account: 'username'
+        service_password: 'password'
+    windows_connection_manager_groups:
+      - id: 4
+        service_account: 'username'
+        service_password: 'password'

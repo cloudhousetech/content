@@ -1,1 +1,404 @@
-{"policy":{"name":"pci_dss_v32","short_description":"PCI DSS v3.2","description":null,"settings":{"tests":{"output_format":null}},"operating_system_family_id":null,"operating_system_id":null,"type":null},"blueprint":{"data":[{"Build and Maintain a Secure Network and Systems":[{"Requirement 1: Install and maintain a firewall configuration to protect cardholder data":null},{"Requirement 2: Do not use vendor-supplied defaults for system passwords and other security parameters":null}]},{"Protect Cardholder Data":[{"Requirement 3: Protect stored cardholder data":null},{"Requirement 4: Encrypt transmission of cardholder data across open, public networks":null}]},{"Maintain a Vulnerability Management Program":[{"Requirement 5: Protect all systems against malware and regularly update anti-virus software or programs":null},{"Requirement 6: Develop and maintain secure systems and applications":null}]},{"Implement Strong Access Control Measures":[{"Requirement 7: Restrict access to cardholder data by business need to know":null},{"Requirement 8: Identify and authenticate access to system components":null},{"Requirement 9: Restrict physical access to cardholder data":null}]},{"Regularly Monitor and Test Networks":[{"Requirement 10: Track and monitor all access to network resources and cardholder data":[{"check_type":"files","ci_path":["files","*","/etc/ntp.conf"],"description":"10.4 Using time-synchronization\ntechnology, synchronize all critical\nsystem clocks and times and ensure that\nthe following is implemented for\nacquiring, distributing, and storing time.","files":{"path":"/etc/ntp.conf"},"name":"10.4 Using time-synchronization\ntechnology, synchronize all critical\nsystem clocks and times and ensure that\nthe following is implemented for\nacquiring, distributing, and storing time.","error":false,"checks":{"present":[{"check":"equals","expected":"true"}]},"id":"Regularly-Monitor-and-Test-NetworksRequirement-10-Track-and-monitor-all-access-to-network-resources-and-cardholder-data10-4-Using-time-synchronization-technology-synchronize-all-critical-system-clocks-and-times-and-ensure-that-the-following-is-implemented-for-acquiring-distributing-and-storing-time-","nodeGroupsOpen":true},{"check_type":"files","ci_path":["files","*","/etc/audit/auditd.conf"],"description":"10.5.1 Limit viewing of audit trails to those with a job-related need.","files":{"path":"/etc/audit/auditd.conf"},"name":"10.5.1 Limit viewing of audit trails to those with a job-related need.","error":false,"checks":{"present":[{"check":"equals","expected":"true"}]}}]},{"Requirement 11: Regularly test security systems and processes":null}]},{"Maintain an Information Security Policy":[{"Requirement 12: Maintain a policy that addresses information security for all personnel":null}]}],"category":2,"type":"Core::PolicyBlueprint"},"scan_options":{}}
+{
+    "policy": {
+        "name": "pci_dss_v32",
+        "short_description": "PCI DSS v3.2",
+        "description": null,
+        "settings": {
+            "tests": {
+                "output_format": null
+            }
+        },
+        "operating_system_family_id": null,
+        "operating_system_id": null,
+        "type": null
+    },
+    "blueprint": {
+        "data": [{
+            "Build and Maintain a Secure Network and Systems": [{
+                "Requirement 1: Install and maintain a firewall configuration to protect cardholder data": null
+            }, {
+                "Requirement 2: Do not use vendor-supplied defaults for system passwords and other security parameters": [{
+                    "check_type": "files",
+                    "ci_path": ["files", "*", "/etc/libuser.conf"],
+                    "description": "2.3 Encrypt all non-console administrative access using strong cryptography.",
+                    "files": {
+                        "path": "/etc/libuser.conf"
+                    },
+                    "name": "2.3 Encrypt all non-console administrative access using strong cryptography.",
+                    "error": false,
+                    "checks": {
+                        "present": [{
+                            "check": "equals",
+                            "expected": "true"
+                        }]
+                    },
+                    "id": "Build-and-Maintain-a-Secure-Network-and-SystemsRequirement-2-Do-not-use-vendor-supplied-defaults-for-system-passwords-and-other-security-parameters2-3-Encrypt-all-non-console-administrative-access-using-strong-cryptography-",
+                    "nodeGroupsOpen": true
+                }, {
+                    "check_type": "files",
+                    "ci_path": ["files", "*", "/etc/ssh/sshd_config"],
+                    "description": "2.2.5 Remove all unnecessary functionality, such as scripts, drivers, features, subsystems, file systems, and unnecessary web servers.",
+                    "files": {
+                        "path": "/etc/ssh/sshd_config"
+                    },
+                    "name": "2.2.5 Remove all unnecessary functionality, such as scripts, drivers, features, subsystems, file systems, and unnecessary web servers.",
+                    "error": false,
+                    "checks": {
+                        "present": [{
+                            "check": "equals",
+                            "expected": "true"
+                        }]
+                    },
+                    "id": "Build-and-Maintain-a-Secure-Network-and-SystemsRequirement-2-Do-not-use-vendor-supplied-defaults-for-system-passwords-and-other-security-parameters2-2-5-Remove-all-unnecessary-functionality-such-as-scripts-drivers-features-subsystems-file-systems-and-unnecessary-web-servers-",
+                    "nodeGroupsOpen": true
+                }, {
+                    "check_type": "files",
+                    "ci_path": ["files", "*", "/etc/login.defs"],
+                    "description": "2.2.4.1 Configure system security parameters to prevent misuse (login.defs).",
+                    "files": {
+                        "path": "/etc/login.defs"
+                    },
+                    "name": "2.2.4.1 Configure system security parameters to prevent misuse (login.defs).",
+                    "error": false,
+                    "checks": {
+                        "present": [{
+                            "check": "equals",
+                            "expected": "true"
+                        }]
+                    },
+                    "id": "Build-and-Maintain-a-Secure-Network-and-SystemsRequirement-2-Do-not-use-vendor-supplied-defaults-for-system-passwords-and-other-security-parameters2-2-4-1-Configure-system-security-parameters-to-prevent-misuse-login-defs-",
+                    "nodeGroupsOpen": true
+                }, {
+                    "check_type": "files",
+                    "ci_path": ["files", "*", "/etc/sysctl.conf"],
+                    "description": "2.2.4.2 Configure system security parameters to prevent misuse (sysctl.conf).",
+                    "files": {
+                        "path": "/etc/sysctl.conf"
+                    },
+                    "name": "2.2.4.2 Configure system security parameters to prevent misuse (sysctl.conf).",
+                    "error": false,
+                    "checks": {
+                        "present": [{
+                            "check": "equals",
+                            "expected": "true"
+                        }]
+                    },
+                    "id": "Build-and-Maintain-a-Secure-Network-and-SystemsRequirement-2-Do-not-use-vendor-supplied-defaults-for-system-passwords-and-other-security-parameters2-2-4-2-Configure-system-security-parameters-to-prevent-misuse-sysctl-conf-",
+                    "nodeGroupsOpen": true
+                }]
+            }]
+        }, {
+            "Protect Cardholder Data": [{
+                "Requirement 3: Protect stored cardholder data": null
+            }, {
+                "Requirement 4: Encrypt transmission of cardholder data across open, public networks": [{
+                    "check_type": "files",
+                    "ci_path": ["files", "*", "/etc/pam_ldap.conf"],
+                    "description": "4.1 Use strong cryptography and security protocols to safeguard sensitive cardholder data during transmission over open, public networks.",
+                    "files": {
+                        "path": "/etc/pam_ldap.conf"
+                    },
+                    "name": "4.1 Use strong cryptography and security protocols to safeguard sensitive cardholder data during transmission over open, public networks.",
+                    "error": false,
+                    "checks": {
+                        "present": [{
+                            "check": "equals",
+                            "expected": "true"
+                        }]
+                    },
+                    "id": "Protect-Cardholder-DataRequirement-4-Encrypt-transmission-of-cardholder-data-across-open-public-networks4-1-Use-strong-cryptography-and-security-protocols-to-safeguard-sensitive-cardholder-data-during-transmission-over-open-public-networks-",
+                    "nodeGroupsOpen": true
+                }]
+            }]
+        }, {
+            "Maintain a Vulnerability Management Program": [{
+                "Requirement 5: Protect all systems against malware and regularly update anti-virus software or programs": null
+            }, {
+                "Requirement 6: Develop and maintain secure systems and applications": null
+            }]
+        }, {
+            "Implement Strong Access Control Measures": [{
+                "Requirement 7: Restrict access to cardholder data by business need to know": [{
+                    "check_type": "files",
+                    "ci_path": ["files", "*", "/etc/shadow"],
+                    "description": "7.1.2.1 Restrict access to privileged user IDs to least privileges necessary to perform job responsibilities (shadow).",
+                    "files": {
+                        "path": "/etc/shadow"
+                    },
+                    "name": "7.1.2.1 Restrict access to privileged user IDs to least privileges necessary to perform job responsibilities (shadow).",
+                    "error": false,
+                    "checks": {
+                        "present": [{
+                            "check": "equals",
+                            "expected": "true"
+                        }]
+                    },
+                    "id": "Implement-Strong-Access-Control-MeasuresRequirement-7-Restrict-access-to-cardholder-data-by-business-need-to-know7-1-2-1-Restrict-access-to-privileged-user-IDs-to-least-privileges-necessary-to-perform-job-responsibilities-shadow-",
+                    "nodeGroupsOpen": true
+                }, {
+                    "check_type": "files",
+                    "ci_path": ["files", "*", "/etc/group"],
+                    "description": "7.1.2.2 Restrict access to privileged user IDs to least privileges necessary to perform job responsibilities (group).",
+                    "files": {
+                        "path": "/etc/group"
+                    },
+                    "name": "7.1.2.2 Restrict access to privileged user IDs to least privileges necessary to perform job responsibilities (group).",
+                    "error": false,
+                    "checks": {
+                        "present": [{
+                            "check": "equals",
+                            "expected": "true"
+                        }]
+                    },
+                    "id": "Implement-Strong-Access-Control-MeasuresRequirement-7-Restrict-access-to-cardholder-data-by-business-need-to-know7-1-2-2-Restrict-access-to-privileged-user-IDs-to-least-privileges-necessary-to-perform-job-responsibilities-group-",
+                    "nodeGroupsOpen": true
+                }, {
+                    "check_type": "files",
+                    "ci_path": ["files", "*", "/etc/passwd"],
+                    "description": "7.1.2.3 Restrict access to privileged user IDs to least privileges necessary to perform job responsibilities (passwd).",
+                    "files": {
+                        "path": "/etc/passwd"
+                    },
+                    "name": "7.1.2.3 Restrict access to privileged user IDs to least privileges necessary to perform job responsibilities (passwd).",
+                    "error": false,
+                    "checks": {
+                        "present": [{
+                            "check": "equals",
+                            "expected": "true"
+                        }]
+                    },
+                    "id": "Implement-Strong-Access-Control-MeasuresRequirement-7-Restrict-access-to-cardholder-data-by-business-need-to-know7-1-2-3-Restrict-access-to-privileged-user-IDs-to-least-privileges-necessary-to-perform-job-responsibilities-passwd-",
+                    "nodeGroupsOpen": true
+                }]
+            }, {
+                "Requirement 8: Identify and authenticate access to system components": [{
+                    "check_type": "files",
+                    "ci_path": ["files", "*", "/etc/pam.d/system-auth-ac"],
+                    "description": "8.2.5 Do not allow an individual to submit a new password/passphrase that is the same as any of the last four passwords/passphrases he or she has used.",
+                    "files": {
+                        "path": "/etc/pam.d/system-auth-ac"
+                    },
+                    "name": "8.2.5 Do not allow an individual to submit a new password/passphrase that is the same as any of the last four passwords/passphrases he or she has used.",
+                    "error": false,
+                    "checks": {
+                        "present": [{
+                            "check": "equals",
+                            "expected": "true"
+                        }]
+                    },
+                    "id": "Implement-Strong-Access-Control-MeasuresRequirement-8-Identify-and-authenticate-access-to-system-components8-2-5-Do-not-allow-an-individual-to-submit-a-new-password-passphrase-that-is-the-same-as-any-of-the-last-four-passwords-passphrases-he-or-she-has-used-",
+                    "nodeGroupsOpen": true
+                }, {
+                    "check_type": "files",
+                    "ci_path": ["files", "*", "/etc/pam.d/password-auth-ac"],
+                    "description": "8.1.4.1 Remove/disable inactive user accounts within 90 days (password-auth-ac).",
+                    "files": {
+                        "path": "/etc/pam.d/password-auth-ac"
+                    },
+                    "name": "8.1.4.1 Remove/disable inactive user accounts within 90 days (password-auth-ac).",
+                    "error": false,
+                    "checks": {
+                        "present": [{
+                            "check": "equals",
+                            "expected": "true"
+                        }]
+                    },
+                    "id": "Implement-Strong-Access-Control-MeasuresRequirement-8-Identify-and-authenticate-access-to-system-components8-1-4-1-Remove-disable-inactive-user-accounts-within-90-days-password-auth-ac-",
+                    "nodeGroupsOpen": true
+                }, {
+                    "check_type": "files",
+                    "ci_path": ["files", "*", "/etc/default/useradd"],
+                    "description": "8.4.1.2 Remove/disable inactive user accounts within 90 days (useradd).",
+                    "files": {
+                        "path": "/etc/default/useradd"
+                    },
+                    "name": "8.4.1.2 Remove/disable inactive user accounts within 90 days (useradd).",
+                    "error": false,
+                    "checks": {
+                        "present": [{
+                            "check": "equals",
+                            "expected": "true"
+                        }]
+                    },
+                    "id": "Implement-Strong-Access-Control-MeasuresRequirement-8-Identify-and-authenticate-access-to-system-components8-4-1-2-Remove-disable-inactive-user-accounts-within-90-days-useradd-",
+                    "nodeGroupsOpen": true
+                }, {
+                    "check_type": "files",
+                    "ci_path": ["files", "*", "/etc/passwd"],
+                    "description": "8.1.1.1 Assign all users a unique ID before allowing them to access system components or cardholder data (passwd).",
+                    "files": {
+                        "path": "/etc/passwd"
+                    },
+                    "name": "8.1.1.1 Assign all users a unique ID before allowing them to access system components or cardholder data (passwd).",
+                    "error": false,
+                    "checks": {
+                        "present": [{
+                            "check": "equals",
+                            "expected": "true"
+                        }]
+                    },
+                    "id": "Implement-Strong-Access-Control-MeasuresRequirement-8-Identify-and-authenticate-access-to-system-components8-1-1-1-Assign-all-users-a-unique-ID-before-allowing-them-to-access-system-components-or-cardholder-data-passwd-",
+                    "nodeGroupsOpen": true
+                }, {
+                    "check_type": "files",
+                    "ci_path": ["files", "*", "/etc/group"],
+                    "description": "8.1.1.2 Assign all users a unique ID before allowing them to access system components or cardholder data (group).",
+                    "files": {
+                        "path": "/etc/group"
+                    },
+                    "name": "8.1.1.2 Assign all users a unique ID before allowing them to access system components or cardholder data (group).",
+                    "error": false,
+                    "checks": {
+                        "present": [{
+                            "check": "equals",
+                            "expected": "true"
+                        }]
+                    },
+                    "id": "Implement-Strong-Access-Control-MeasuresRequirement-8-Identify-and-authenticate-access-to-system-components8-1-1-2-Assign-all-users-a-unique-ID-before-allowing-them-to-access-system-components-or-cardholder-data-",
+                    "nodeGroupsOpen": true
+                }]
+            }, {
+                "Requirement 9: Restrict physical access to cardholder data": null
+            }]
+        }, {
+            "Regularly Monitor and Test Networks": [{
+                "Requirement 10: Track and monitor all access to network resources and cardholder data": [{
+                    "check_type": "files",
+                    "ci_path": ["files", "*", "/etc/ntp.conf"],
+                    "description": "10.4 Using time-synchronization\ntechnology, synchronize all critical\nsystem clocks and times and ensure that\nthe following is implemented for\nacquiring, distributing, and storing time.",
+                    "files": {
+                        "path": "/etc/ntp.conf"
+                    },
+                    "name": "10.4 Using time-synchronization\ntechnology, synchronize all critical\nsystem clocks and times and ensure that\nthe following is implemented for\nacquiring, distributing, and storing time.",
+                    "error": false,
+                    "checks": {
+                        "present": [{
+                            "check": "equals",
+                            "expected": "true"
+                        }]
+                    },
+                    "id": "Regularly-Monitor-and-Test-NetworksRequirement-10-Track-and-monitor-all-access-to-network-resources-and-cardholder-data10-4-Using-time-synchronization-technology-synchronize-all-critical-system-clocks-and-times-and-ensure-that-the-following-is-implemented-for-acquiring-distributing-and-storing-time-",
+                    "nodeGroupsOpen": true
+                }, {
+                    "check_type": "files",
+                    "ci_path": ["files", "*", "/etc/audit/auditd.conf"],
+                    "description": "10.5.1 Limit viewing of audit trails to those with a job-related need.",
+                    "files": {
+                        "path": "/etc/audit/auditd.conf"
+                    },
+                    "name": "10.5.1 Limit viewing of audit trails to those with a job-related need.",
+                    "error": false,
+                    "checks": {
+                        "present": [{
+                            "check": "equals",
+                            "expected": "true"
+                        }]
+                    },
+                    "id": "Regularly-Monitor-and-Test-NetworksRequirement-10-Track-and-monitor-all-access-to-network-resources-and-cardholder-data10-5-1-Limit-viewing-of-audit-trails-to-those-with-a-job-related-need-",
+                    "nodeGroupsOpen": true
+                }, {
+                    "check_type": "files",
+                    "ci_path": ["files", "*", "/etc/audit/audit.rules"],
+                    "description": "10.5.2 Protect audit trail files from unauthorized modifications.",
+                    "files": {
+                        "path": "/etc/audit/audit.rules"
+                    },
+                    "name": "10.5.2 Protect audit trail files from unauthorized modifications.",
+                    "error": false,
+                    "checks": {
+                        "present": [{
+                            "check": "equals",
+                            "expected": "true"
+                        }]
+                    },
+                    "id": "Regularly-Monitor-and-Test-NetworksRequirement-10-Track-and-monitor-all-access-to-network-resources-and-cardholder-data10-5-2-Protect-audit-trail-files-from-unauthorized-modifications-",
+                    "nodeGroupsOpen": true
+                }, {
+                    "check_type": "files",
+                    "ci_path": ["files", "*", "/etc/audisp/plugins.d/syslog.conf"],
+                    "description": "10.2 Implement automated audit trails for all system components.",
+                    "files": {
+                        "path": "/etc/audisp/plugins.d/syslog.conf"
+                    },
+                    "name": "10.2 Implement automated audit trails for all system components.",
+                    "error": false,
+                    "checks": {
+                        "present": [{
+                            "check": "equals",
+                            "expected": "true"
+                        }]
+                    },
+                    "id": "Regularly-Monitor-and-Test-NetworksRequirement-10-Track-and-monitor-all-access-to-network-resources-and-cardholder-data10-2-Implement-automated-audit-trails-for-all-system-components-",
+                    "nodeGroupsOpen": true
+                }]
+            }, {
+                "Requirement 11: Regularly test security systems and processes": null
+            }]
+        }, {
+            "Maintain an Information Security Policy": [{
+                "Requirement 12: Maintain a policy that addresses information security for all personnel": null
+            }]
+        }],
+        "category": 2,
+        "type": "Core::PolicyBlueprint"
+    },
+    "scan_options": {
+        "scan_directory_options": [{
+            "path": "/etc/pam.d/system-auth-ac",
+            "contents": true,
+            "lastModified": true
+        }, {
+            "path": "/etc/pam.d/password-auth-ac",
+            "contents": true,
+            "lastModified": true
+        }, {
+            "path": "/etc/default/useradd",
+            "contents": true,
+            "lastModified": true
+        }, {
+            "path": "/etc/ntp.conf",
+            "contents": true,
+            "lastModified": true
+        }, {
+            "path": "/etc/audit/auditd.conf",
+            "contents": true,
+            "lastModified": true
+        }, {
+            "path": "/etc/audit/audit.rules",
+            "contents": true,
+            "lastModified": true
+        }, {
+            "path": "/etc/audisp/plugins.d/syslog.conf",
+            "contents": true,
+            "lastModified": true
+        }, {
+            "path": "/etc/group",
+            "contents": true,
+            "lastModified": true
+        }, {
+            "path": "/etc/passwd",
+            "contents": true,
+            "lastModified": true
+        }, {
+            "path": "/etc/shadow",
+            "contents": true,
+            "lastModified": true
+        }, {
+            "path": "/etc/libuser.conf",
+            "contents": true,
+            "lastModified": true
+        }, {
+            "path": "/etc/ssh/sshd_config",
+            "contents": true,
+            "lastModified": true
+        }, {
+            "path": "/etc/sysctl.conf",
+            "contents": true,
+            "lastModified": true
+        }, {
+            "path": "/etc/login.defs",
+            "contents": true,
+            "lastModified": true
+        }]
+    }
+}

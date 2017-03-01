@@ -4,7 +4,7 @@ require 'erb'
 
 Puppet::Reports.register_report(:upguard) do
 
-  VERSION = "v1.4.1"
+  VERSION = "v1.4.2"
   VERSION_TAG = "Added by #{File.basename(__FILE__)} #{VERSION}"
   desc "Create a node (if not present) and kick off a node scan in UpGuard if changes were made."
 
@@ -72,6 +72,8 @@ Puppet::Reports.register_report(:upguard) do
       environment_name = pdb_get_environment(trusted_facts)
       # Extract the datacenter
       datacenter_name = pdb_get_datacenter(trusted_facts)
+      # The format for environment names is datacenter_environment
+      environment_name = generate_environment_name(datacenter_name, environment_name)
 
       ##########################################################################
       # DRIVER METHODS                                                         #
@@ -81,16 +83,12 @@ Puppet::Reports.register_report(:upguard) do
       node_group_id = lookup_or_create_node_group(node_group_name, nil)
       # Get environment id from UpGuard
       environment_id = lookup_or_create_environment(environment_name)
-      # Get node group id from UpGuard
-      datacenter_id = lookup_or_create_node_group(datacenter_name, "^#{datacenter_name}-.+")
       # Determine if we can find the node or if we need to create it
       node_id = lookup_or_create_node(node_ip_hostname, os)
       # Make sure to add the node to the node group
       add_node_to_group(node_id, node_group_id)
       # Make sure to add the node to the environment
       add_node_to_environment(node_id, environment_id)
-      # Make sure to add the node to the node group
-      add_node_to_group(node_id, datacenter_id)
       # Kick off a node scan
       node_scan(node_id, node_ip_hostname, manifest_filename)
     end
@@ -99,6 +97,17 @@ Puppet::Reports.register_report(:upguard) do
   ##############################################################################
   # DRIVER METHODS                                                             #
   ##############################################################################
+
+  def generate_environment_name(datacenter_name, environment_name)
+    if (!datacenter_name.nil? && !datacenter_name.empty?) && (!environment_name.nil? && !environment_name.empty?)
+      datacenter_environment_name = "#{datacenter_name}_#{environment_name}"
+      Puppet.err("#{log_prefix} datacenter_environment_name=#{datacenter_environment_name}")
+      datacenter_environment_name
+    else
+      Puppet.err("#{log_prefix} either pp_datacenter (#{datacenter_name}) or pp_environment (#{environment_name}) is nil or empty")
+      "tf_problem"
+    end
+  end
 
   def lookup_or_create_node_group(node_group_name, node_group_rule)
     if !node_group_name.nil? && !node_group_name.empty?
@@ -277,7 +286,7 @@ Puppet::Reports.register_report(:upguard) do
   # Get trusted facts from Puppet.
   def pdb_get_trusted_facts(node_ip_hostname)
     if test_env
-      trusted_facts = '[{"certname":"host-name-01.domain.com","name":"trusted","value":{"authenticated":"remote","certname":"host-name-01.domain.com","domain":"domain.com","extensions":{"company_trusted_swimlane":"n/a","pp_datacenter":"ptl","pp_environment":"prod","pp_product":"test","pp_role":"rabbit_mq"},"hostname":"host-name-01"},"environment":"tier2"}]'
+      trusted_facts = '[{"certname":"host-name-01.domain.com","name":"trusted","value":{"authenticated":"remote","certname":"host-name-01.domain.com","domain":"domain.com","extensions":{"company_trusted_swimlane":"n/a","pp_datacenter":"mtv","pp_environment":"qa","pp_product":"test","pp_role":"rabbit_mq"},"hostname":"host-name-01"},"environment":"tier2"}]'
       trusted_facts = JSON.load(trusted_facts)      
       return trusted_facts
     end

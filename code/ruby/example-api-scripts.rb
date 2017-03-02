@@ -2,7 +2,7 @@ require "httparty"
 
 @sr_api_key         = ""
 @sr_secret_key      = ""
-@sr_url             = ""
+@sr_url             = "https://app.upguard.com"
 @headers            = { "Authorization" => "Token token=\"#{@sr_api_key}#{@sr_secret_key}\"" }
 
 def get_all_environments

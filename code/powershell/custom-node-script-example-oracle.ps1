@@ -24,9 +24,15 @@ $node = @{}
 
 # { section_header: {
 #   subsection_header: {
+#     configuration_item_1: {
+#       attr_1: "value",
+#       attr_2: "value"
+#     },
 #     configuration_item_2: {
 #       attr_1: "other value",
+#       attr_2: "other value"
 #     }
+#   }
 # }
 
 # "section_header" will be used as the top-level name for a group of

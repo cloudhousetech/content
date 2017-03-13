@@ -7,6 +7,7 @@ try {
         $dns_results_count += 1
         $dns_key = "dnsReverseSearchEntry" + $dns_results_count
         $tempObj | Add-Member -MemberType NoteProperty –Name $dns_key –Value $dns_value
+        $tempObj | Add-Member -MemberType NoteProperty –Name "ReverseDNS" –Value "DNS Reverse Search Entry $dns_results_count"
         $dnsObj += $tempObj
     }
     $dnsObj

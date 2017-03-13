@@ -1,7 +1,7 @@
-# For WinRM nodes, update their hostname if it's equal to a given connection manager hostname.
+# For WinRM nodes, update their medium_hostname if it's equal to a given connection manager medium_hostname.
 # This script can be used in the situation where nodes have been added with a medium_hostname
 # equal to that of the connection manager medium_hostname that should be scanning them.
-# Use -dry_run to see what would be changed
+# Use $dry_run = $true to see what would be changed.
 
 # Ignore SSL certificate errors. Comment out if not needed.
 add-type @"
@@ -46,7 +46,6 @@ else
 
         # Only update hostname for WinRM nodes.
         if ($node_details.medium_type -ne 7) { continue }
-
         # If the medium_hostname isn't set to the connection_manager_hostname, then there's nothing to repair here, continue on.
         if ($node_details.medium_hostname -ne $connection_manager_hostname) { continue }
         # Ignore connection managers added as nodes

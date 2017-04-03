@@ -4,7 +4,7 @@ require 'erb'
 
 Puppet::Reports.register_report(:upguard) do
 
-  VERSION = "v1.4.2"
+  VERSION = "v1.4.3"
   VERSION_TAG = "Added by #{File.basename(__FILE__)} #{VERSION}"
   desc "Create a node (if not present) and kick off a node scan in UpGuard if changes were made."
 
@@ -29,6 +29,7 @@ Puppet::Reports.register_report(:upguard) do
   TEST_LINUX_HOSTNAME      = config[:test_linux_hostname]
   TEST_WINDOWS_HOSTNAME    = config[:test_windows_hostname]
   UNKNOWN_OS_NODE_GROUP_ID = config[:unknown_os_node_group_id]
+  SLEEP_BEFORE_SCAN        = config[:sleep_before_scan]
 
   def process
     Puppet.info("upguard: starting report processor #{VERSION}")
@@ -46,6 +47,7 @@ Puppet::Reports.register_report(:upguard) do
     Puppet.info("upguard: TEST_LINUX_HOSTNAME=#{TEST_LINUX_HOSTNAME}")
     Puppet.info("upguard: TEST_WINDOWS_HOSTNAME=#{TEST_WINDOWS_HOSTNAME}")
     Puppet.info("upguard: UNKNOWN_OS_NODE_GROUP_ID=#{UNKNOWN_OS_NODE_GROUP_ID}")
+    Puppet.info("upguard: SLEEP_BEFORE_SCAN=#{SLEEP_BEFORE_SCAN}")
 
     self.status != nil ? status = self.status : status = 'undefined'
 
@@ -84,13 +86,19 @@ Puppet::Reports.register_report(:upguard) do
       # Get environment id from UpGuard
       environment_id = lookup_or_create_environment(environment_name)
       # Determine if we can find the node or if we need to create it
-      node_id = lookup_or_create_node(node_ip_hostname, os)
+      node = lookup_or_create_node(node_ip_hostname, os)
       # Make sure to add the node to the node group
-      add_node_to_group(node_id, node_group_id)
+      add_node_to_group(node[:id], node_group_id)
       # Make sure to add the node to the environment
-      add_node_to_environment(node_id, environment_id)
-      # Kick off a node scan
-      node_scan(node_id, node_ip_hostname, manifest_filename)
+      add_node_to_environment(node[:id], environment_id)
+      # For new nodes, sleep to let Puppet catch up
+      if node[:created]
+        Puppet.info("#{log_prefix} new node, sleeping for #{SLEEP_BEFORE_SCAN} seconds...")
+        sleep SLEEP_BEFORE_SCAN
+        # Kick off a vuln scan only for newly created nodes
+        vuln_scan(node[:id], node_ip_hostname)
+      end
+      node_scan(node[:id], node_ip_hostname, manifest_filename)
     end
   end
 
@@ -134,17 +142,18 @@ Puppet::Reports.register_report(:upguard) do
   end
 
   def lookup_or_create_node(node_ip_hostname, os)
+    node = {}
     lookup = upguard_node_lookup(API_KEY, APPLIANCE_URL, node_ip_hostname)
     if !lookup.nil? && !lookup["node_id"].nil?
-      node_id = lookup["node_id"]
-      Puppet.info("#{log_prefix} node found/created: node_id=#{node_id}")
-      node_id
+      node[:id] = lookup["node_id"]
+      node[:created] = false
+      Puppet.info("#{log_prefix} node already exists: node[:id]=#{node[:id]}")
+      node
     elsif !lookup.nil? && !lookup["error"].nil? && (lookup["error"] == "Not Found")
-      node_id = upguard_node_create(API_KEY, APPLIANCE_URL, node_ip_hostname, os)
-      Puppet.info("#{log_prefix} node not found so created: node_id=#{node_id}")
-      # Kick off a vuln scan only for newly created nodes
-      vuln_scan(node_id, node_ip_hostname)
-      node_id
+      node[:id] = upguard_node_create(API_KEY, APPLIANCE_URL, node_ip_hostname, os)
+      node[:created] = true
+      Puppet.info("#{log_prefix} node not found so created: node[:id]=#{node[:id]}")
+      node
     else
       Puppet.err("#{log_prefix} failed to lookup node: #{lookup}")
       raise StandardError, "#{log_prefix} unable to get a node id: confirm config variables are correct and upguard appliance is reachable"

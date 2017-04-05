@@ -1,0 +1,10 @@
+#dd
+
+{% for f in failures %}
+*{{ f[0] }}*
+||Check||Result||
+{% for p in f[1] %}|{{ p['name'] }}|{{ p['result'] }}|
+{% endfor %}
+{% endfor %}
+
+{{ job_url }}

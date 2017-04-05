@@ -1,4 +1,10 @@
-#dd
+###########################################################################################################
+# Description: Print out policy failure results. This will loop over affected nodes and construct a       #
+#              table detailing which policy checks have failed.                                           #
+# Event variables required: scan_id OR (job_id AND policy_id)                                             #
+# Example event: type=Policy Ran AND variables.success=false                                              #
+# Website version required: >= v2.28.0                                                                    #
+###########################################################################################################
 
 {% for f in failures %}
 *{{ f[0] }}*

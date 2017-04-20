@@ -12,7 +12,7 @@ parser.add_argument('--target-url', required=True, help='URL for the UpGuard ins
 parser.add_argument('--api-key', required=True, help='API key for the UpGuard instance')
 parser.add_argument('--secret-key', required=True, help='Secret key for the UpGuard instance')
 parser.add_argument('--insecure', action='store_true', help='Ignore SSL certificate check?')
-parser.add_argument('--per-page', type=int, default=10, help='Number of nodes to retrieve in each call. (Default: 100)')
+parser.add_argument('--per-page', type=int, default=100, help='Number of nodes to retrieve in each call. (Default: 100)')
 args = parser.parse_args()
 
 # Initializations

@@ -6,7 +6,7 @@
 
 # Setup API
 $upGuardServer = 'https://your.instance.url'
-$secretKey ='<< secret key >>'
+$secretKey = '<< secret key >>'
 $serviceAccount = '<< api key >>'
 
 # Setup variables

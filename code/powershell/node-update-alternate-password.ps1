@@ -29,7 +29,11 @@ $node_details = Invoke-WebRequest -Uri ("https://" + $target_url + "/api/v2/node
 $node_details = ConvertFrom-Json -InputObject $node_details
 
 # Only update password for SSH nodes.
-if ($node_details.medium_type -ne 3) { continue }
+if ($node_details.medium_type -ne 7) 
+{ 
+    "Node is not an SSH node, quitting."
+    continue 
+}
 
 "Updating node id {0} alternate_password..." -f $node_id
 

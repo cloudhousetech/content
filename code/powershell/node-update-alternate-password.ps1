@@ -15,7 +15,6 @@ add-type @"
 "@
 [System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy
 
-
 $target_url = "<< target_url >>" # Without scheme
 $api_key = "<< api_key >>"
 $secret_key = "<< secret_key >>"

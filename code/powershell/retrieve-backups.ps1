@@ -11,7 +11,7 @@ $backup_filepath = $backup_location + $backup_file + ".tar.gz"
 Invoke-WebRequest -Uri $backup_endpoint -OutFile $backup_filepath -Credential $credentials
 
 # Only keep the last two backups. There is no need to store backups beyond this.
-$backup_files = Get-ChildItem $backup_location -Filter *.tar.gz | Sort LastWriteTime -Descending #| where {$_.extension -eq ".tar.gz"}
+$backup_files = Get-ChildItem $backup_location -Filter *.tar.gz | Sort LastWriteTime -Descending
 if ($backup_files.count -gt 2) {
     Remove-Item $backup_files[-1].FullName
 }

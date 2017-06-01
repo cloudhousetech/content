@@ -7,6 +7,7 @@ secretKey="<< secretKey >>"
 upguard="<< https://your.upguard.appliance >>"
 mediumPassword="abc"
 alternatePassword="123"
+cmGroupId=123
 nodeId=123
 
 # UpGuard endpoints
@@ -19,7 +20,7 @@ acceptHeader="Accept: application/json"
 contentHeader="Content-Type: application/json"
 
 nodesShowReplaced="${nodesShow/\[0\]/$nodeId}"
-response=`curl -X PUT -s -k -H "$authHeader" -H "$acceptHeader" -H "$contentHeader" -d '{"node": {"medium_password": '\"$mediumPassword\"', "alternate_password": '\"$alternatePassword\"' }}' $upguard$nodesShowReplaced`
+response=`curl -X PUT -s -k -H "$authHeader" -H "$acceptHeader" -H "$contentHeader" -d '{"node": {"connection_manager_group_id": '\"$cmGroupId\"', "medium_password": '\"$mediumPassword\"', "alternate_password": '\"$alternatePassword\"' }}' $upguard$nodesShowReplaced`
 if [[ $response == "" ]]; then
 	echo "Updated node password."
 else

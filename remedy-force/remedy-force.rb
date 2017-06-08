@@ -6,11 +6,8 @@ require 'mail'
 require 'eis/upguard'
 require 'eis_remedyforce'
 
-#
 # Poll the UpGuard appliance for drift notifications and open RF incidents/send e-mail if found
-#
 # Looks for upguard_task_alerts.yml in /usr/local/etc for alerting information.
-#
 
 MAIL_FROM   = 'xxxxxxxxx@xxx.xxx'
 CONFIG_FILE = '/usr/local/etc/upguard_task_alerts.yml'

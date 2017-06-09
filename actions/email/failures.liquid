@@ -1,0 +1,26 @@
+###########################################################################################################
+# Description: Prints out tabular information about policy and attribute failures.                        #
+# Event variables required: failures                                                                      #
+# Website version required: >= v2.28.0                                                                    #
+###########################################################################################################
+
+{% for f in failures %}
+Node name: {{ f[0] }}
+
+<table border="1">
+{% for c in f[1] %}
+<tr>
+<td>Check: {{ c['name'] }}</td>
+<td>Result: {{ c['result'] }}</td>
+<td><table border="1">
+{% for a in c['checks'] %}
+<tr><td>Attribute name</td><td>{{ a[0] }}</td></tr>
+<tr><td>Expected</td><td>{{ a[1]['expected'] }}</td></tr>
+<tr><td>Actual</td><td>{{ a[1]['actual'] }}</td></tr>
+<tr><td>Result</td><td>{{ a[1]['result'] }}</td></tr>
+{% endfor %}
+</table></td>
+</tr>
+{% endfor %}
+</table>
+{% endfor %}

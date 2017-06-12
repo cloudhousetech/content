@@ -10,7 +10,7 @@
 {% for f in failures %}
   <p><h2>Node: {{ f[0] }}</h2></p>
   {% for c in f[1] %}
-    <h3>{{ c['name'] | replace: ",", " >" }}</h3>
+    <h3>{{ c['name'] | replace: ",", " &gt;" }}</h3>
     {% assign not_present = false %}
     {% for a in c['checks'] %}
       {% if a[0] == 'present' and a[1]['expected'] == 'true' and a[1]['actual'] == 'false' %}

@@ -8,7 +8,7 @@
 <p>For full results click <a href="https://demo.upguard.com/reports#/policy/{{ policy_id }}">here</a></p>
 <hr />
 {% for f in failures %}
-  <p><h2>Node: {{ if node == null }}{{ f[0] }}{{ else }}{{ node }} {{ endif }}</h2></p>
+  <p><h2>Node: {{ if node == null }}{{ f[0] }}{{ else }}{{ node }}{{ endif }}</h2></p>
   {% for c in f[1] %}
     <h3>{{ c['name'] | replace: ",", " &gt;" }}</h3>
     {% assign not_present = false %}

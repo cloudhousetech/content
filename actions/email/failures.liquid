@@ -5,7 +5,7 @@
 ###########################################################################################################
 
 <h1>{{ policy }} Failures</h1>
-<p>For full results click <a href="https://demo.upguard.com/reports#/policy/{{ policy_id }}">here</a></p>
+<p>For full results click <a href="https://<YOUR_INSTANCE_URL>/reports#/policy/{{ policy_id }}">here</a></p>
 <hr />
 {% for f in failures %}
   <p><h2>Node: {{ if node == null }}{{ f[0] }}{{ else }}{{ node }}{{ endif }}</h2></p>

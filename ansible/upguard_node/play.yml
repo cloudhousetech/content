@@ -1,0 +1,45 @@
+---
+- hosts: all
+  connection: local
+  gather_facts: false
+
+  vars:
+    UPGUARD_VALIDATE_CERTS: false
+    ENV_UPGUARD_URL: "{{ lookup('env', 'UPGUARD_URL') }}"
+    ENV_UPGUARD_ACCESS_KEY: "{{ lookup('env', 'UPGUARD_ACCESS_KEY') }}"
+    ENV_UPGUARD_SECRET_KEY: "{{ lookup('env', 'UPGUARD_SECRET_KEY') }}"
+
+  vars_prompt:
+    - name: 'UPGUARD_URL'
+      prompt: 'UpGuard URL'
+      default: "{{ ENV_UPGUARD_URL }}"
+      private: false
+
+    - name: 'UPGUARD_ACCESS_KEY'
+      prompt: 'UpGuard Access Key'
+      default: "{{ ENV_UPGUARD_ACCESS_KEY }}"
+      private: false
+
+    - name: 'UPGUARD_SECRET_KEY'
+      prompt: 'UpGuard Secret Key'
+      default: "{{ ENV_UPGUARD_SECRET_KEY }}"
+      private: true
+
+  tasks:
+    - name: Debug
+      debug: var=inventory_hostname_short
+
+    - name: upguard node
+      upguard_node:
+        url: "{{ UPGUARD_URL }}"
+        username: "{{ UPGUARD_ACCESS_KEY }}"
+        password: "{{ UPGUARD_SECRET_KEY }}"
+        validate_certs: "{{ UPGUARD_VALIDATE_CERTS }}"
+        name: "{{ inventory_hostname_short }}"
+        node_type: "RT"
+        state: "present"
+        properties:
+          medium_type: 6
+      register: results
+
+    - debug: var=results

@@ -668,7 +668,7 @@ class UpguardNode(object):
         url = '/nodes/{}/start_scan.json'.format(node_id)
         params = {'label': label}
         try:
-            response = self._connect(url, method='post')
+            response = self._connect(url, params=params, method='post')
             response.raise_for_status()
         except requests.exceptions.HTTPError as ex:
             self.module.fail_json(msg='failed to create scan',

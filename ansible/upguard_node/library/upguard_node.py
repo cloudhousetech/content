@@ -374,7 +374,7 @@ class UpguardNode(object):
         # pylint: disable=redefined-builtin
         return
 
-    def _connect(self, url=None, data=None, method='get'):
+    def _connect(self, url=None, data=None, params=None, method='get'):
         """Connect and return request."""
         req = getattr(requests, str(method.lower()))
         url = self.arg.url + str(url)
@@ -384,7 +384,7 @@ class UpguardNode(object):
         verify = bool(self.arg.validate_certs)
         try:
             response = req(url, headers=headers, auth=auth,
-                           json=data, verify=verify)
+                           params=params, json=data, verify=verify)
         except requests.exceptions.RequestException as ex:
             self.module.fail_json(msg='failed to connect',
                                   error=str(ex))
@@ -422,9 +422,10 @@ class UpguardNode(object):
 
     def group_id(self, group_name):
         """Return group id."""
-        url = '/node_groups/lookup.json?name={}'.format(group_name)
+        url = '/node_groups/lookup.json'
+        params = {'name': group_name}
         try:
-            response = self._connect(url)
+            response = self._connect(url, params=params)
             response.raise_for_status()
         except requests.exceptions.HTTPError as ex:
             self.module.fail_json(msg='group does not exist',
@@ -437,10 +438,10 @@ class UpguardNode(object):
     def group_add_node(self, group_id):
         """Add node to group."""
         added = False
-        url = '/node_groups/{}/add_nodes.json?node_ids[]={}'.format(
-            group_id, self.node_id)
+        url = '/node_groups/{}/add_nodes.json'.format(group_id)
+        params = {'node_ids[]': self.node_id}
         try:
-            response = self._connect(url, method='post')
+            response = self._connect(url, params=params, method='post')
             response.raise_for_status()
             if response.status_code == 201:
                 added = True
@@ -453,9 +454,10 @@ class UpguardNode(object):
     @property
     def node_id(self):
         """Return node id."""
-        url = '/nodes/lookup.json?name={}'.format(self.arg.name)
+        url = '/nodes/lookup.json'
+        params = {'name': self.arg.name}
         try:
-            response = self._connect(url)
+            response = self._connect(url, params=params)
             response.raise_for_status()
         except requests.exceptions.HTTPError as ex:
             self.module.fail_json(msg='node does not exist.',
@@ -485,9 +487,10 @@ class UpguardNode(object):
     def exists(self):
         """Node exists."""
         node_exists = True
-        url = '/nodes/lookup.json?name={}'.format(self.arg.name)
+        url = '/nodes/lookup.json'
+        params = {'name': self.arg.name}
         try:
-            response = self._connect(url)
+            response = self._connect(url, params=params)
             response.raise_for_status()
         except requests.exceptions.HTTPError as ex:
             err = str(ex)
@@ -662,7 +665,8 @@ class UpguardNode(object):
         node_id = self.node_id
         label = self.arg.scan_label
         timeout = self.arg.scan_timeout
-        url = '/nodes/{}/start_scan.json?label={}'.format(node_id, label)
+        url = '/nodes/{}/start_scan.json'.format(node_id)
+        params = {'label': label}
         try:
             response = self._connect(url, method='post')
             response.raise_for_status()

@@ -1,7 +1,7 @@
 {
   "policy": {
-    "name": "s3_access_control_lists",
-    "short_description": "S3 Access Control Lists",
+    "name": "s3_bucket_access",
+    "short_description": "S3 Bucket Access",
     "description": "Validate permissions on S3 buckets to ensure they are not exposing the contents to the general public",
     "settings": {
       "tests": {
@@ -12,90 +12,35 @@
     "operating_system_id": 1416,
     "type": null
   },
-  "data": [
-    {
-      "Buckets": [
-        {
-          "All": [
-            {
-              "S3": {
-                "name": "*"
-              },
-              "id": "BucketsAllItem-mapping-to-Buckets-All-should-contain-the-defined-values",
-              "name": "Item mapping to Buckets,All,* should contain the defined values",
-              "checks": {
-                "READ": [
-                  {
-                    "exp": "http://acs.amazonaws.com/groups/global/AllUsers",
-                    "check": "excludes",
-                    "expected": "http://acs.amazonaws.com/groups/global/AllUsers",
-                    "background": "Access permission to this group allows anyone to access the resource. The requests can be signed (authenticated) or unsigned (anonymous). Unsigned requests omit the Authentication header in the request"
-                  },
-                  {
-                    "exp": "http://acs.amazonaws.com/groups/global/AuthenticatedUsers",
-                    "check": "excludes",
-                    "expected": "http://acs.amazonaws.com/groups/global/AuthenticatedUsers",
-                    "background": "This group represents all AWS accounts. Access permission to this group allows any AWS account to access the resource. However, all requests must be signed (authenticated)"
-                  }
-                ],
-                "WRITE": [
-                  {
-                    "exp": "http://acs.amazonaws.com/groups/global/AuthenticatedUsers",
-                    "check": "excludes",
-                    "expected": "http://acs.amazonaws.com/groups/global/AuthenticatedUsers",
-                    "background": "This group represents all AWS accounts. Access permission to this group allows any AWS account to access the resource. However, all requests must be signed (authenticated)"
-                  },
-                  {
-                    "exp": "http://acs.amazonaws.com/groups/global/AllUsers",
-                    "check": "excludes",
-                    "expected": "http://acs.amazonaws.com/groups/global/AllUsers",
-                    "background": "Access permission to this group allows anyone to access the resource. The requests can be signed (authenticated) or unsigned (anonymous). Unsigned requests omit the Authentication header in the request"
-                  }
-                ],
-                "READ_ACP": [
-                  {
-                    "exp": "http://acs.amazonaws.com/groups/global/AuthenticatedUsers",
-                    "check": "excludes",
-                    "expected": "http://acs.amazonaws.com/groups/global/AuthenticatedUsers",
-                    "background": "This group represents all AWS accounts. Access permission to this group allows any AWS account to access the resource. However, all requests must be signed (authenticated)"
-                  },
-                  {
-                    "exp": "http://acs.amazonaws.com/groups/global/AllUsers",
-                    "check": "excludes",
-                    "expected": "http://acs.amazonaws.com/groups/global/AllUsers",
-                    "background": "Access permission to this group allows anyone to access the resource. The requests can be signed (authenticated) or unsigned (anonymous). Unsigned requests omit the Authentication header in the request"
-                  }
-                ],
-                "WRITE_ACP": [
-                  {
-                    "exp": "http://acs.amazonaws.com/groups/global/AuthenticatedUsers",
-                    "check": "excludes",
-                    "expected": "http://acs.amazonaws.com/groups/global/AuthenticatedUsers",
-                    "background": "This group represents all AWS accounts. Access permission to this group allows any AWS account to access the resource. However, all requests must be signed (authenticated)"
-                  },
-                  {
-                    "exp": "http://acs.amazonaws.com/groups/global/AllUsers",
-                    "check": "excludes",
-                    "expected": "http://acs.amazonaws.com/groups/global/AllUsers",
-                    "background": "Access permission to this group allows anyone to access the resource. The requests can be signed (authenticated) or unsigned (anonymous). Unsigned requests omit the Authentication header in the request"
-                  }
-                ]
-              },
-              "ci_path": [
-                "Buckets",
-                "All",
-                "*"
-              ],
-              "check_type": "s3",
-              "selectList": [
-                "*"
-              ],
-              "nodeGroupsOpen": true
-            }
-          ]
-        }
-      ]
-    }
-  ],
+  "data": [{
+    "Permissions": [{
+      "All": [{
+        "S3": {
+          "name": "*"
+        },
+        "id": "PermissionsAllItem-mapping-to-Permissions-All-should-contain-the-defined-values",
+        "name": "Item mapping to Permissions,All should not contain the defined values",
+        "checks": {
+          "*": [{
+            "exp": "http://acs.amazonaws.com/groups/global/AllUsers",
+            "check": "excludes",
+            "expected": "http://acs.amazonaws.com/groups/global/AllUsers",
+            "background": "Checks the bucket is not exposed to the public internet"
+          }, {
+            "exp": "http://acs.amazonaws.com/groups/global/AuthenticatedUsers",
+            "name": "*",
+            "path": ["Permissions", "All", "Item mapping to Permissions,All should contain the defined values"],
+            "check": "excludes",
+            "expected": "http://acs.amazonaws.com/groups/global/AuthenticatedUsers",
+            "background": "Checks the bucket is not exposed to any authenticated AWS user"
+          }]
+        },
+        "ci_path": ["Permissions", "All"],
+        "check_type": "s3",
+        "selectList": ["FULL_CONTROL", "Owner", "READ", "READ_ACP", "WRITE", "WRITE_ACP", "*"],
+        "nodeGroupsOpen": true
+      }]
+    }]
+  }],
   "scan_options": {}
 }

@@ -13,7 +13,7 @@ def main
 
   puts response
 
-  if response.include?(@expected_response)
+  if !response.include?(@expected_response)
     send_chat("#{@message_mod}: #{@hostname} has no login page.", "#{response}")
     `touch #{tmp_file}` unless File.exists? "#{tmp_file}"
   else

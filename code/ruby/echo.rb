@@ -1,3 +1,5 @@
+# Contab usage: */1 * * * * /home/centos/.rvm/gems/ruby-2.4.1@lab/wrappers/ruby /scripts/echo.rb 'dogfood.upguard.org' 'login' '<!channel>: ' 2>&1 > /tmp/echo-dogfood.upguard.org.rb.log
+
 require 'httparty'
 require 'active_support/core_ext/numeric/time'
 
@@ -6,11 +8,15 @@ require 'active_support/core_ext/numeric/time'
 @expected_response = ARGV[1]  # The response you are expecting back from the above instance.
 @message_mod = ARGV[2]        # Slack message alert level e.g.: <!channel>
 
+puts "hostname: #{@hostname}"
+puts "expected_response: #{@expected_response}"
+puts "message_mod: #{@message_mod}"
+
 def main
   # Raw curl here is preferred over using httparty so that the query can be easily copied into a terminal
   # for verification.
   response = `curl -v -k https://#{@hostname} 2>&1`
-  violation_file = "/tmp/#{@hostname}_offline.json"
+  violation_file = "/tmp/echo-#{@hostname}.offline.json"
 
   puts response
 
@@ -22,16 +28,23 @@ def main
       violation_instance = violation_details['violation_instance']
       violation_instance_next = violation_instance + 1
       violation_next_check_datetime = violation_details['next_check_datetime']
+      violation_next_check_counter = violation_details['violation_next_check_counter']
 
       # Update the violation instance count
       content[:violation_instance] = violation_instance_next
 
       # Don't alert on the first instance.
-      if (violation_instance.present? && violation_instance > 2) && (violation_next_check_datetime.present? && (Time.now >= Date.parse(violation_next_check_datetime)))
-        send_chat("#{@message_mod}: #{@hostname} has no login page. Violation instance #{violation_instance}. Checking again in #{fibonacci(violation_instance_next)} minutes.", "#{response}")
-        content[:next_check_datetime] = fibonacci(violation_instance_next).minutes.from_now
+      puts "Time.now: #{DateTime.now}"
+      puts "Next check: #{DateTime.parse(violation_next_check_datetime)}"
+
+      if (violation_instance.present? && violation_instance > 2) && (violation_next_check_datetime.present? && (DateTime.now >= DateTime.parse(violation_next_check_datetime)))
+        violation_next_check_counter = violation_next_check_counter + 1
+        send_chat("#{@message_mod}#{@hostname} has no login page. Violation instance #{violation_instance}. Checking again in #{fibonacci(violation_next_check_counter)} minutes.", "#{response}")
+        content[:violation_next_check_counter] = violation_next_check_counter
+        content[:next_check_datetime] = fibonacci(violation_next_check_counter).minutes.from_now
       else
         # Don't increment the next check time.
+        content[:violation_next_check_counter] = violation_next_check_counter
         content[:next_check_datetime] = violation_next_check_datetime
       end
       File.write(violation_file, content.to_json)
@@ -39,12 +52,15 @@ def main
       # Init
       content = {}
       content[:violation_instance] = 1
+      content[:violation_next_check_counter] = 1
       content[:next_check_datetime] = fibonacci(content[:violation_instance]).minutes.from_now
       File.write(violation_file, content.to_json)
     end
   else
-    send_chat("#{@message_mod}: #{@hostname} available again.", "")
-    `rm #{violation_file}` if File.exists? "#{violation_file}"
+    if File.exists? "#{violation_file}"
+      send_chat("#{@message_mod}#{@hostname} available again.", "")
+      `rm #{violation_file}`
+    end
   end
 end
 

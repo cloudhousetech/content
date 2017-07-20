@@ -1,4 +1,4 @@
-# Contab usage: */1 * * * * /home/centos/.rvm/gems/ruby-2.4.1@lab/wrappers/ruby /scripts/echo.rb 'dogfood.upguard.org' 'login' '<!channel>: ' 2>&1 > /tmp/echo-dogfood.upguard.org.rb.log
+# Contab usage: */1 * * * * /home/centos/.rvm/gems/ruby-2.4.1@lab/wrappers/ruby /scripts/echo.rb 'instance.upguard.org' 'login' '<!channel>: ' 2>&1 > /tmp/echo-instance.upguard.org.rb.log
 
 require 'httparty'
 require 'active_support/core_ext/numeric/time'
@@ -39,7 +39,7 @@ def main
 
       if (violation_instance.present? && violation_instance > 2) && (violation_next_check_datetime.present? && (DateTime.now >= DateTime.parse(violation_next_check_datetime)))
         violation_next_check_counter = violation_next_check_counter + 1
-        send_chat("#{@message_mod}#{@hostname} has no login page. Violation instance #{violation_instance}. Checking again in #{fibonacci(violation_next_check_counter)} minutes.", "#{response}")
+        send_chat("#{@message_mod}#{@hostname} has no login page. Violation instance #{violation_instance}. Checking again in #{fibonacci(violation_next_check_counter)} minute(s).", "#{response}")
         content[:violation_next_check_counter] = violation_next_check_counter
         content[:next_check_datetime] = fibonacci(violation_next_check_counter).minutes.from_now
       else

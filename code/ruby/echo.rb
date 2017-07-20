@@ -7,15 +7,17 @@ require 'active_support/core_ext/numeric/time'
 @hostname = ARGV[0]           # The instance you are wanting to check.
 @expected_response = ARGV[1]  # The response you are expecting back from the above instance.
 @message_mod = ARGV[2]        # Slack message alert level e.g.: <!channel>
+@slack_channel = ARGV[3]      # The Slack channel to send alerts to.
 
 puts "hostname: #{@hostname}"
 puts "expected_response: #{@expected_response}"
 puts "message_mod: #{@message_mod}"
+puts "slack_channel: #{@slack_channel}"
 
 def main
   # Raw curl here is preferred over using httparty so that the query can be easily copied into a terminal
   # for verification.
-  response = `curl -v -k https://#{@hostname} 2>&1`
+  response = `curl -v -k -L https://#{@hostname} 2>&1`
   violation_file = "/tmp/echo-#{@hostname}.offline.json"
 
   puts response
@@ -78,7 +80,7 @@ def send_chat(heading, text)
     attachments.push(attachments_body)
     HTTParty.post(url,:headers  => { 'Content-Type' => 'application/json' },
                   :body     => {
-                      :channel     => "#testnotify",
+                      :channel     => "#{@slack_channel}",
                       :username    => "Online Check",
                       :attachments => attachments,
                       :icon_emoji  => "ghost",

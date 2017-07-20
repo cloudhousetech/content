@@ -79,7 +79,7 @@ def send_chat(heading, text)
     HTTParty.post(url,:headers  => { 'Content-Type' => 'application/json' },
                   :body     => {
                       :channel     => "#testnotify",
-                      :username    => "#{@hostname} Server Check",
+                      :username    => "Online Check",
                       :attachments => attachments,
                       :icon_emoji  => "ghost",
                       :link_names  => 1

@@ -1,4 +1,5 @@
-require 'httparty' # Slack integration.
+require 'httparty'
+require 'active_support/core_ext/numeric/time'
 
 # Argument collecting
 @hostname = ARGV[0]           # The instance you are wanting to check.
@@ -9,16 +10,41 @@ def main
   # Raw curl here is preferred over using httparty so that the query can be easily copied into a terminal
   # for verification.
   response = `curl -v -k https://#{@hostname} 2>&1`
-  tmp_file = "/tmp/#{$hostname}_offline"
+  violation_file = "/tmp/#{@hostname}_offline.json"
 
   puts response
 
   if !response.include?(@expected_response)
-    send_chat("#{@message_mod}: #{@hostname} has no login page.", "#{response}")
-    `touch #{tmp_file}` unless File.exists? "#{tmp_file}"
+    if File.exists? "#{violation_file}"
+      content = {}
+      violation_file_string = File.read(violation_file)
+      violation_details = JSON.parse(violation_file_string)
+      violation_instance = violation_details['violation_instance']
+      violation_instance_next = violation_instance + 1
+      violation_next_check_datetime = violation_details['next_check_datetime']
+
+      # Update the violation instance count
+      content[:violation_instance] = violation_instance_next
+
+      # Don't alert on the first instance.
+      if (violation_instance.present? && violation_instance > 2) && (violation_next_check_datetime.present? && (Time.now >= Date.parse(violation_next_check_datetime)))
+        send_chat("#{@message_mod}: #{@hostname} has no login page. Violation instance #{violation_instance}. Checking again in #{fibonacci(violation_instance_next)} minutes.", "#{response}")
+        content[:next_check_datetime] = fibonacci(violation_instance_next).minutes.from_now
+      else
+        # Don't increment the next check time.
+        content[:next_check_datetime] = violation_next_check_datetime
+      end
+      File.write(violation_file, content.to_json)
+    else
+      # Init
+      content = {}
+      content[:violation_instance] = 1
+      content[:next_check_datetime] = fibonacci(content[:violation_instance]).minutes.from_now
+      File.write(violation_file, content.to_json)
+    end
   else
-    send_chat("#{@message_mod}: #{@hostname} available again.", "") if File.exists? "#{tmp_file}"
-    `rm #{tmp_file}` if File.exists? "#{tmp_file}"
+    send_chat("#{@message_mod}: #{@hostname} available again.", "")
+    `rm #{violation_file}` if File.exists? "#{violation_file}"
   end
 end
 
@@ -45,6 +71,10 @@ def send_chat(heading, text)
   else
     puts text
   end
+end
+
+def fibonacci(n)
+  n <= 1 ? n :  fibonacci( n - 1 ) + fibonacci( n - 2 )
 end
 
 main

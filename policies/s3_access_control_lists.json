@@ -13,34 +13,26 @@
     "type": null
   },
   "data": [{
-    "Permissions": [{
-      "All": [{
-        "S3": {
-          "name": "*"
-        },
-        "id": "PermissionsAllItem-mapping-to-Permissions-All-should-contain-the-defined-values",
-        "name": "Item mapping to Permissions,All should not contain the defined values",
-        "checks": {
-          "*": [{
-            "exp": "http://acs.amazonaws.com/groups/global/AllUsers",
-            "check": "excludes",
-            "expected": "http://acs.amazonaws.com/groups/global/AllUsers",
-            "background": "Checks the bucket is not exposed to the public internet"
-          }, {
-            "exp": "http://acs.amazonaws.com/groups/global/AuthenticatedUsers",
-            "name": "*",
-            "path": ["Permissions", "All", "Item mapping to Permissions,All should contain the defined values"],
-            "check": "excludes",
-            "expected": "http://acs.amazonaws.com/groups/global/AuthenticatedUsers",
-            "background": "Checks the bucket is not exposed to any authenticated AWS user"
-          }]
-        },
-        "ci_path": ["Permissions", "All"],
-        "check_type": "s3",
-        "selectList": ["FULL_CONTROL", "Owner", "READ", "READ_ACP", "WRITE", "WRITE_ACP", "*"],
-        "nodeGroupsOpen": true
+    "Permissions":[{
+      "All":[{
+        "name":"Item mapping to Permissions,All should not contain the defined values",
+          "checks":{
+            "Value":[{
+              "check":"excludes",
+              "expected":"http://acs.amazonaws.com/groups/global/AllUsers"
+            },
+            {
+              "check":"excludes",
+              "expected":"http://acs.amazonaws.com/groups/global/AuthenticatedUsers"
+            }]
+          },
+          "ci_path":["Permissions","All","*"],
+          "check_type":"permissions",
+          "Permissions":{
+             "name":"All"
+          }
+        }]
       }]
-    }]
-  }],
+    }],
   "scan_options": {}
 }

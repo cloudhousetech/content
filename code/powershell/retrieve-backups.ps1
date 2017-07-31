@@ -68,7 +68,7 @@ if ($backup_files.count -gt 2) {
     Remove-Item $backup_files[-1].FullName
 }
 
-Get-BitsTransfer
+#Get-BitsTransfer
 #Get-BitsTransfer | Complete-BitsTransfer
 #net stop BITS
 #net start BITS

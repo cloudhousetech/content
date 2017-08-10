@@ -8,7 +8,11 @@
 <p>For full results click <a href="{{ instance_hostname }}/reports#/policy/{{ policy_id }}">here</a></p>
 <hr />
 {% for f in failures %}
-  <p><h2>Node: {{ if node == null }}{{ f[0] }}{{ else }}{{ node }}{{ endif }}</h2></p>
+  {% assign node_name = node %}
+  {% if node_name == null %}
+    {% assign node_name = f[0] %}
+  {% endif %}
+  <p><h2>Node: {{ node_name }}</h2></p>
   {% for c in f[1] %}
     <h3>{{ c['name'] | replace: ",", " &gt;" }}</h3>
     {% assign not_present = false %}

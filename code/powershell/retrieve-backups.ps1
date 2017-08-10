@@ -26,6 +26,9 @@ Start-BitsTransfer `
     -Asynchronous
 $job = Get-BitsTransfer $display_name
 
+# Ignore invalid common name in server certificate, Ignore invalid date in  server certificate
+& "bitsadmin" /SetSecurityFlags $display_name 7
+
 # Create a holding pattern while we wait for the connection to be established
 # and the transfer to actually begin.  Otherwise the next Do...While loop may
 # exit before the transfer even starts.  Print the job status as it changes
@@ -38,12 +41,13 @@ Do {
         $job
     }
     If ($lastStatus -like "*Error*") {
-        Remove-BitsTransfer $job
         Write-Host "Error connecting to download."
+        Write-Host $job.ErrorDescription
+        Get-BitsTransfer | Complete-BitsTransfer
         Exit
     }
 }
-while ($lastStatus -ne "Transferring")
+while ($lastStatus -ne "Transferred" -and $lastStatus -ne "Transferring")
 $job
 
 # Print the transfer status as we go:

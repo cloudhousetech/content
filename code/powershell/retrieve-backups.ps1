@@ -26,7 +26,7 @@ Start-BitsTransfer `
     -Asynchronous
 $job = Get-BitsTransfer $display_name
 
-# Ignore invalid common name in server certificate, Ignore invalid date in  server certificate
+# Ignore invalid common name in server certificate, ignore invalid date in server certificate.
 & "bitsadmin" /SetSecurityFlags $display_name 7
 
 # Create a holding pattern while we wait for the connection to be established

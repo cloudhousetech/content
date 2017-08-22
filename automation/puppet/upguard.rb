@@ -22,7 +22,7 @@ Puppet::Reports.register_report(:upguard) do
   SERVICE_KEY              = config[:service_key]
   SECRET_KEY               = config[:secret_key]
   API_KEY                  = "#{SERVICE_KEY}#{SECRET_KEY}"
-  DOMAINS                  = config[:domains]
+  CM                       = config[:sites]
   ENVIRONMENT              = config[:environment]
   TEST_OS                  = config[:test_os]
   TEST_NODE_NAME           = config[:test_node_name]
@@ -32,26 +32,26 @@ Puppet::Reports.register_report(:upguard) do
   SLEEP_BEFORE_SCAN        = config[:sleep_before_scan]
 
   def process
-    Puppet.info("upguard: starting report processor #{VERSION}")
+    Puppet.info("#{log_prefix} starting report processor #{VERSION}")
 
-    Puppet.info("upguard: APPLIANCE_URL=#{APPLIANCE_URL}")
-    Puppet.info("upguard: PUPPETDB_URL=#{PUPPETDB_URL}")
-    Puppet.info("uppuard: COMPILE_MASTER_PEM=#{COMPILE_MASTER_PEM}")
-    Puppet.info("upguard: SERVICE_KEY=#{SERVICE_KEY}")
-    Puppet.info("upguard: SECRET_KEY=#{SECRET_KEY}")
-    Puppet.info("upguard: API_KEY=#{API_KEY}")
-    Puppet.info("upguard: DOMAINS=#{DOMAINS}")
-    Puppet.info("upguard: ENVIRONMENT=#{ENVIRONMENT}")
-    Puppet.info("upguard: TEST_OS=#{TEST_OS}")
-    Puppet.info("upguard: TEST_NODE_NAME=#{TEST_NODE_NAME}")
-    Puppet.info("upguard: TEST_LINUX_HOSTNAME=#{TEST_LINUX_HOSTNAME}")
-    Puppet.info("upguard: TEST_WINDOWS_HOSTNAME=#{TEST_WINDOWS_HOSTNAME}")
-    Puppet.info("upguard: UNKNOWN_OS_NODE_GROUP_ID=#{UNKNOWN_OS_NODE_GROUP_ID}")
-    Puppet.info("upguard: SLEEP_BEFORE_SCAN=#{SLEEP_BEFORE_SCAN}")
+    Puppet.info("#{log_prefix} APPLIANCE_URL=#{APPLIANCE_URL}")
+    Puppet.info("#{log_prefix} PUPPETDB_URL=#{PUPPETDB_URL}")
+    Puppet.info("#{log_prefix} COMPILE_MASTER_PEM=#{COMPILE_MASTER_PEM}")
+    Puppet.info("#{log_prefix} SERVICE_KEY=#{SERVICE_KEY}")
+    Puppet.info("#{log_prefix} SECRET_KEY=#{SECRET_KEY}")
+    Puppet.info("#{log_prefix} API_KEY=#{API_KEY}")
+    Puppet.info("#{log_prefix} CM=#{CM}")
+    Puppet.info("#{log_prefix} ENVIRONMENT=#{ENVIRONMENT}")
+    Puppet.info("#{log_prefix} TEST_OS=#{TEST_OS}")
+    Puppet.info("#{log_prefix} TEST_NODE_NAME=#{TEST_NODE_NAME}")
+    Puppet.info("#{log_prefix} TEST_LINUX_HOSTNAME=#{TEST_LINUX_HOSTNAME}")
+    Puppet.info("#{log_prefix} TEST_WINDOWS_HOSTNAME=#{TEST_WINDOWS_HOSTNAME}")
+    Puppet.info("#{log_prefix} UNKNOWN_OS_NODE_GROUP_ID=#{UNKNOWN_OS_NODE_GROUP_ID}")
+    Puppet.info("#{log_prefix} SLEEP_BEFORE_SCAN=#{SLEEP_BEFORE_SCAN}")
 
     self.status != nil ? status = self.status : status = 'undefined'
 
-    Puppet.info("upguard: status=#{status}")
+    Puppet.info("#{log_prefix} status=#{status}")
 
     # For most scenarios, make sure the node is added to upguard and is being scanned.
     if test_env ? status == 'unchanged' : status == 'changed'
@@ -61,11 +61,12 @@ Puppet::Reports.register_report(:upguard) do
       ##########################################################################
 
       # Get the node name
-      node_ip_hostname = pdb_get_hostname(self.host)    
+      node_ip_hostname = pdb_get_hostname(self.host)
       # We use this to tag node scans with the puppet "file(s)" that have caused the change
       manifest_filename = pdb_manifest_files(self.logs)
       # Used to set the node OS type in UpGuard
       os = pdb_get_os(node_ip_hostname)
+      Puppet.info("#{log_prefix} status=#{status} os=#{os}")
       # Get trusted facts from Puppet (once)
       trusted_facts = pdb_get_trusted_facts(node_ip_hostname)
       # Extract the role
@@ -83,12 +84,21 @@ Puppet::Reports.register_report(:upguard) do
 
       # Get node group id from UpGuard
       node_group_id = lookup_or_create_node_group(node_group_name, nil)
+      os_node_group_id = -1
+      if os == 'CentOS'
+        os_node_group_id = lookup_or_create_node_group('Linux_Static', nil)
+      elsif os == 'windows'
+        os_node_group_id = lookup_or_create_node_group('Windows_Static', nil)
+      end
       # Get environment id from UpGuard
       environment_id = lookup_or_create_environment(environment_name)
       # Determine if we can find the node or if we need to create it
-      node = lookup_or_create_node(node_ip_hostname, os)
+      node = lookup_or_create_node(node_ip_hostname, os, datacenter_name)
       # Make sure to add the node to the node group
       add_node_to_group(node[:id], node_group_id)
+      if os_node_group_id != -1
+        add_node_to_group(node[:id], os_node_group_id)
+      end
       # Make sure to add the node to the environment
       add_node_to_environment(node[:id], environment_id)
       # For new nodes, sleep to let Puppet catch up
@@ -141,7 +151,7 @@ Puppet::Reports.register_report(:upguard) do
     end
   end
 
-  def lookup_or_create_node(node_ip_hostname, os)
+  def lookup_or_create_node(node_ip_hostname, os, datacenter_name)
     node = {}
     lookup = upguard_node_lookup(API_KEY, APPLIANCE_URL, node_ip_hostname)
     if !lookup.nil? && !lookup["node_id"].nil?
@@ -150,7 +160,7 @@ Puppet::Reports.register_report(:upguard) do
       Puppet.info("#{log_prefix} node already exists: node[:id]=#{node[:id]}")
       node
     elsif !lookup.nil? && !lookup["error"].nil? && (lookup["error"] == "Not Found")
-      node[:id] = upguard_node_create(API_KEY, APPLIANCE_URL, node_ip_hostname, os)
+      node[:id] = upguard_node_create(API_KEY, APPLIANCE_URL, node_ip_hostname, os, datacenter_name)
       node[:created] = true
       Puppet.info("#{log_prefix} node not found so created: node[:id]=#{node[:id]}")
       node
@@ -207,7 +217,7 @@ Puppet::Reports.register_report(:upguard) do
   #############################################################################
   # HELPER METHODS                                                            #
   #############################################################################
- 
+
   # Used for debugging (shortcuts needing to use PDB).
   def test_env
     if ENVIRONMENT.is_a?(String) && ENVIRONMENT == "test"
@@ -227,7 +237,7 @@ Puppet::Reports.register_report(:upguard) do
   end
 
   # Determine the correct UpGuard connection manager to scan the node with.
-  def determine_domain_details(node_name, node_os)
+  def determine_domain_details(node_name, node_os, datacenter_name)
     default_cmg_details = {}
     default_cmg_details['id'] = 1
     default_cmg_details['service_account'] = ""
@@ -242,30 +252,39 @@ Puppet::Reports.register_report(:upguard) do
     node_name = node_name.downcase
     node_os   = node_os.downcase
 
-    if DOMAINS.is_a?(Array) && DOMAINS.any?
-      DOMAINS.each do |domain|
-        # Skip element if it's not formatted correctly
-        domain_name = domain['name']
-        next if domain_name.nil?
-        next unless node_name.end_with?(domain_name)
+    if CM.is_a?(Array) && CM.any?
+      CM.each do |site|
+        site_name = site['name']
+        next if site_name.nil?
+        next unless site_name == datacenter_name
+        domains = site['domains']
 
-        if node_os == 'windows'
-          windows_cmgs = domain['windows_connection_manager_groups']
-          # Check that we have a Windows connection manager group for the given domain
-          if windows_cmgs.is_a?(Array) && windows_cmgs.any?
-            # Make sure the domain has a node group created for it (this helps with creating variable overrides)
-            # The node group rule here will automatically add the node to the node group (and other others)
-            lookup_or_create_node_group(domain_name, ".+#{domain_name}$")
-            # Multiple (Windows) connection manager groups can be defined for a domain.
-            # Currently, we just use the first.
-            return windows_cmgs[0]
-          end
-        else
-          ssh_cmgs = domain['ssh_connection_manager_groups']
-          if ssh_cmgs.is_a?(Array) && ssh_cmgs.any?
-            # Make sure the domain has a node group created for it (this helps with creating variable overrides)
-            lookup_or_create_node_group(domain_name, ".+#{domain_name}$")
-            return ssh_cmgs[0]
+        if domains.is_a?(Array) && domains.any?
+          domains.each do |domain|
+            # Skip element if it's not formatted correctly
+            domain_name = domain['name']
+            next if domain_name.nil?
+            next unless node_name.end_with?(domain_name)
+
+            if node_os == 'windows'
+              windows_cmgs = domain['windows_connection_manager_groups']
+              # Check that we have a Windows connection manager group for the given domain
+              if windows_cmgs.is_a?(Array) && windows_cmgs.any?
+                # Make sure the domain has a node group created for it (this helps with creating variable overrides)
+                # The node group rule here will automatically add the node to the node group (and other others)
+                lookup_or_create_node_group(domain_name, ".+#{domain_name}$")
+                # Multiple (Windows) connection manager groups can be defined for a domain.
+                # Currently, we just use the first.
+                return windows_cmgs[0]
+              end
+            else
+              ssh_cmgs = domain['ssh_connection_manager_groups']
+              if ssh_cmgs.is_a?(Array) && ssh_cmgs.any?
+                # Make sure the domain has a node group created for it (this helps with creating variable overrides)
+                lookup_or_create_node_group(domain_name, ".+#{domain_name}$")
+                return ssh_cmgs[0]
+              end
+            end
           end
         end
       end
@@ -296,7 +315,7 @@ Puppet::Reports.register_report(:upguard) do
   def pdb_get_trusted_facts(node_ip_hostname)
     if test_env
       trusted_facts = '[{"certname":"host-name-01.domain.com","name":"trusted","value":{"authenticated":"remote","certname":"host-name-01.domain.com","domain":"domain.com","extensions":{"company_trusted_swimlane":"n/a","pp_datacenter":"mtv","pp_environment":"qa","pp_product":"test","pp_role":"rabbit_mq"},"hostname":"host-name-01"},"environment":"tier2"}]'
-      trusted_facts = JSON.load(trusted_facts)      
+      trusted_facts = JSON.load(trusted_facts)
       return trusted_facts
     end
 
@@ -456,8 +475,8 @@ Puppet::Reports.register_report(:upguard) do
   module_function :upguard_environment_create
 
   # Creates the node in UpGuard
-  def upguard_node_create(api_key, instance, ip_hostname, os)
-    domain_details = determine_domain_details(ip_hostname, os)
+  def upguard_node_create(api_key, instance, ip_hostname, os, datacenter_name)
+    domain_details = determine_domain_details(ip_hostname, os, datacenter_name)
     Puppet.info("#{log_prefix} node_create ip_hostname=#{ip_hostname}")
     Puppet.info("#{log_prefix} node_create os=#{os}")
     Puppet.info("#{log_prefix} node_create cm group=#{domain_details}")
@@ -534,4 +553,3 @@ Puppet::Reports.register_report(:upguard) do
   end
   module_function :upguard_node_vuln_scan
 end
-

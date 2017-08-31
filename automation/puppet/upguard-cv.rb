@@ -1,157 +1,292 @@
 require 'httparty'
-require 'vine'
+require 'fileutils'
 
-# Clem: single ticket with full history
-# 1. Create upguard-cv.lock file
-# 1. inspect Policy Ran events since last run time
-# 2. for each event, lookup job_id to get list of nodes to check
-# 3. for each node, lookup if ticket exists in jira based on ticket label
-      # next unless ticket exists
-# 4.  # node, get latest policy_results
-      # next if jira_status == latests_policy_results_status
-      # add latest_policy_results as a comment to the ticket
-      # update the ticket_status (Pass to Fail, Fail to Pass)
-
+# Fail -> Fail = Comment with "Policy still failing" + latest node scan
+# Fail -> Pass = Comment + Close
+# Pass -> Fail = Create ticket
+# Pass -> Pass = Do nothing.
 
 def main
-
-  node_name = 'my-node-name'
   ug = UpGuard.new
-  ug.get_jira_ticket(node_name)
-
-  #ug.update_node(327)
-  #ug.create_node_group('Orange') #78
-  #ug.create_node_group('Second') #77
-  #ug.add_node_to_node_group(327, 78)
-  #ug.remove_node_from_node_group(327, 78)
-  #ug.scan_node(327, "post_jenkins_deploy")
-  #ug.scan_diff(28158, 28123)
+  ug.create_lock
+  state = ug.read_state
+  events = ug.events_since_last_run(state)
+  if events.count == 0
+    ug.quit('No events to process, nothing to do.')
+  else
+    puts "Found #{events.count} event(s) to process"
+    tickets = ug.get_failing_jira_tickets
+    puts "Found #{tickets['total']} tickets(s) to validate"
+    ug.validate_jira_tickets(events, tickets)
+    ug.quit('Done')
+  end
 end
 
 class UpGuard
+  @file_name_state = "#{File.basename(__FILE__)}.json"
+  @file_name_lock  = "#{File.basename(__FILE__)}.lock"
 
-  @@file_name = File.basename(__FILE__)
-  puts @file_name
-  @@jira_hostname = 'https://my-jira.instance.net'
-  @@jira_username = 'username@domain.com'
-  @@jira_password = 'password'
-  @@jira_project_id = 'project_id'
+  @jira_hostname    = 'https://your.jira.instance'
+  @jira_username    = 'username'
+  @jira_password    = 'password'
+  @jira_project_id  = 'project name'
 
+  @hostname  = 'https://your.upguard.instance'
+  api_key    = 'api key'
+  secret_key = 'secret key'
+  @auth      = "#{api_key}#{secret_key}"
 
+  @events_index = "#{@hostname}/api/v2/events"
 
+  class << self; attr_accessor :file_name_state, :file_name_lock,
+                               :jira_hostname, :jira_username, :jira_password, :jira_project_id,
+                               :hostname, :auth,
+                               :events_index
+  end
 
-
-
-  #$api_key    = 'api_key'
-  #$secret_key = 'secret_key'
-  #$website    = 'https://my.appliance.url'
-
-  # Endpoints
-  #$nodes_index_endpoint                 = "#{$website}/api/v2/nodes"
-  #$nodes_show_endpoint                  = "#{$website}/api/v2/nodes/{{id}}"
-  #$nodes_scan_endpoint                  = "#{$website}/api/v2/nodes/{{id}}/start_scan?label={{label}}"
-  #$node_add_to_node_group_endpoint      = "#{$website}/api/v2/nodes/{{id}}/add_to_node_group?node_group_id={{node_group_id}}"
-  #$node_remove_from_node_group_endpoint = "#{$website}/api/v2/nodes/{{id}}/remove_from_node_group?node_group_id={{node_group_id}}"
-  #$node_groups_index_endpoint           = "#{$website}/api/v2/node_groups"
-  #$node_diff_endpoint                   = "#{$website}/api/v2/nodes/diff?scan_id={{scan_id}}&compare_scan_id={{compare_scan_id}}"
-
-  def get_jira_ticket(node_name)
-    begin
-      # Filter on project first to speed up query.
-      jql = ERB::Util.url_encode("project = #{@@jira_project_id} AND labels = #{node_name}")
-      auth = { :username => "#{@@jira_username}", :password => "#{@@jira_password}" }
-      response = HTTParty.get("#{@@jira_hostname}/rest/api/2/search?jql=#{jql}",
-                               :headers  => { 'Content-Type' => 'application/json', 'Accept' => 'application/json' },
-                               :basic_auth => auth).to_hash
-    rescue StandardError => e
-      puts "FATAL: retrieving JIRA ticket: #{e}"
-      exit
+  def validate_jira_tickets(node_events, failing_tickets)
+    if !node_events.is_a?(Array) || !failing_tickets.is_a?(Hash)
+      quit("FATAL: node events or tickets not supplied")
     end
 
-    puts response
+    updated_count = 0
+    created_count = 0
+
+    node_events.each do |node|
+      jira_ticket         = nil
+      node_name           = node[:node_name]
+      node_policies       = node[:policies]
+      node_overall_faling = node[:overall_failing]
+
+      # Go see if a JIRA ticket exists already for this node
+
+      if failing_tickets['total'] > 0
+        failing_tickets['issues'].each do |t|
+          # Hacky. Node name needs to be the first label.
+          next unless t['fields']['labels'][0] == node_name
+          # Found our ticket.
+          jira_ticket = t
+        end
+      end
+
+      # The meat and potatoes of the integration.
+
+      if !node_overall_faling
+        if jira_ticket.nil?
+          # Do nothing. UpGuard policy is passing. No JIRA ticket to update.
+        else
+          # We have a failing ticket to update. Transition the ticket to the "Passing" status
+          transition_jira_ticket(jira_ticket, 'Passed')
+          create_jira_comment(jira_ticket, node_policies)
+          updated_count += 1
+        end
+      else # UpGuard policy is failing.
+        if jira_ticket.nil?
+          # Create a ticket.
+          create_jira_ticket(node_name, node_policies)
+          # Update our list of failing tickets.
+          failing_tickets = get_failing_jira_tickets
+          created_count += 1
+        else
+          # Found a ticket to update with a comment.
+          create_jira_comment(jira_ticket, node_policies)
+          updated_count += 1
+        end
+      end
+    end
+
+    puts "Created #{created_count} ticket(s)"
+    puts "Updated #{updated_count} ticket(s)"
   end
 
-  def create_node_group(name)
+  def create_jira_comment(ticket, policies)
+    comment = {}
+    policy_table = ''
+    policies.each do |p|
+      p['variables']['success'] ? policy_status = 'passing' : policy_status = 'failing'
+      policy_table += "#{p['variables']['policy']} is #{policy_status}\n"
+    end
 
-    node_group = {
-        :node_group => {
-            :name => name
-        }
-    }
+    comment[:body] = policy_table
+    auth = { :username => "#{UpGuard.jira_username}", :password => "#{UpGuard.jira_password}" }
+    comment_response = HTTParty.post("#{UpGuard.jira_hostname}/rest/api/2/issue/#{ticket['id']}/comment",
+                                    :headers  => { 'Content-Type' => 'application/json',
+                                                   'Accept' => 'application/json' },
+                                    :body => comment.to_json,
+                                    :basic_auth => auth
+    ).to_hash
 
-    response = HTTParty.post($node_groups_index_endpoint,
-                             :headers  => { 'Content-Type' => 'application/json', 'Accept' => 'application/json', 'Authorization' => "Token token=\"#{$api_key}#{$secret_key}\"" },
-                             :body => node_group.to_json)
-
-    puts response
+    if comment_response['id'].nil?
+      quit('FATAL: comment could not be created')
+    end
   end
 
-  def add_node_to_node_group(node_id, to_node_group)
-    $node_add_to_node_group_endpoint.sub!('{{id}}', node_id.to_s)
-    $node_add_to_node_group_endpoint.sub!('{{node_group_id}}', to_node_group.to_s)
+  def transition_jira_ticket(ticket, status)
+    # Ticket created. Lookup transitions available and move ticket to destination status.
+    auth = { :username => "#{UpGuard.jira_username}", :password => "#{UpGuard.jira_password}" }
+    transitions_response = HTTParty.get("#{UpGuard.jira_hostname}/rest/api/2/issue/#{ticket['id']}/transitions",
+                                        :headers  => { 'Content-Type' => 'application/json',
+                                                       'Accept' => 'application/json' },
+                                        :basic_auth => auth
+    ).to_hash
 
-    response = HTTParty.post($node_add_to_node_group_endpoint,
-                             :headers  => { 'Content-Type' => 'application/json', 'Accept' => 'application/json', 'Authorization' => "Token token=\"#{$api_key}#{$secret_key}\"" })
+    puts transitions_response
 
-    puts response
+    if transitions_response['transitions'].nil?
+      quit ('FATAL: unable to get available ticket transitions')
+    end
+
+    failed_transition_id = -1
+    transitions_response['transitions'].each do |transition|
+      failed_transition_id = transition['id'] if transition['to']['name'] == status
+    end
+
+    puts failed_transition_id
+
+    if failed_transition_id == -1
+      quit ('FATAL: could not find the failure transition')
+    end
+
+    transition = {}
+    transition['transition'] = {}
+    transition['transition']['id'] = failed_transition_id
+
+    # Time to move the ticket along to the desired status.
+    move_response = HTTParty.post("#{UpGuard.jira_hostname}/rest/api/2/issue/#{ticket['id']}/transitions",
+                                  :headers  => { 'Content-Type' => 'application/json',
+                                                 'Accept' => 'application/json' },
+                                  :body => transition.to_json,
+                                  :basic_auth => auth
+    )
+
+    puts move_response
   end
 
-  def remove_node_from_node_group(node_id, to_node_group)
-    $node_remove_from_node_group_endpoint.sub!('{{id}}', node_id.to_s)
-    $node_remove_from_node_group_endpoint.sub!('{{node_group_id}}', to_node_group.to_s)
+  def create_jira_ticket(node_name, policies)
+    ticket = {}
+    ticket['fields'] = {}
+    ticket['fields']['project'] = {}
+    ticket['fields']['project']['key'] = 'COR'
+    ticket['fields']['summary'] = "#{node_name} policies failing"
 
-    response = HTTParty.post($node_remove_from_node_group_endpoint,
-                             :headers  => { 'Content-Type' => 'application/json', 'Accept' => 'application/json', 'Authorization' => "Token token=\"#{$api_key}#{$secret_key}\"" })
+    description = ''
+    policies.each do |p|
+      p['variables']['success'] ? policy_status = 'passing' : policy_status = 'failing'
+      description += "#{p['variables']['policy']} is #{policy_status}\n"
+    end
+    ticket['fields']['description'] = description
 
-    puts response
+    ticket['fields']['issuetype'] = {}
+    ticket['fields']['issuetype']['name'] = 'Server Scan'
+    ticket['fields']['labels'] = [node_name, 'upguard']
+
+    auth = { :username => "#{UpGuard.jira_username}", :password => "#{UpGuard.jira_password}" }
+    ticket_response = HTTParty.post("#{UpGuard.jira_hostname}/rest/api/2/issue/",
+                                    :headers  => { 'Content-Type' => 'application/json',
+                                                   'Accept' => 'application/json' },
+                                    :body => ticket.to_json,
+                                    :basic_auth => auth
+    ).to_hash
+
+    puts ticket_response
+
+    if ticket_response['id'].nil?
+      quit ('FATAL: unable to create JIRA ticket')
+    end
+
+    transition_jira_ticket(ticket_response, 'Failed')
   end
 
-  def update_node(node_id)
-    $nodes_show_endpoint.sub!('{{id}}', node_id.to_s)
-    node = {
-        :node => {
-            :name => 'MTV-TEST-11',
-            :external_id => 'MTV-TEST-11',
-            # :short_description => 'Added via api-demo.rb v1.0',
-            # :node_type => 'SV',
-            # :medium_type => 3,
-            # :medium_hostname => '10.0.6.183',
-            # :medium_port => 22,
-            # :medium_username => 'centos',
-            # :operating_system_family_id => 7,
-            # :operating_system_id => 731,
-            # :connection_manager_group_id => 1
-        }
-    }
+  def events_since_last_run(state)
+    begin
+      unless state.is_a?(Hash)
+        quit("FATAL: failed to parse state file content: state is not hashable")
+      end
 
-    response = HTTParty.put($nodes_show_endpoint,
-                             :headers  => { 'Content-Type' => 'application/json', 'Accept' => 'application/json', 'Authorization' => "Token token=\"#{$api_key}#{$secret_key}\"" },
-                             :body => node.to_json)
-    puts response
+      events = []
 
+      last_run = state['last_run']
+      response = HTTParty.get("#{UpGuard.events_index}?view_name=Policy%20Ran&date_from=#{last_run}",
+                              :headers  => { 'Content-Type' => 'application/json',
+                                             'Accept' => 'application/json',
+                                             'Authorization' => "Token token=\"#{UpGuard.auth}\"" }
+      )
+      events = JSON.parse(response.body)
+      # Update the last_run variable if we got here.
+      state['last_run'] = DateTime.now
+      File.write(UpGuard.file_name_state, JSON.pretty_generate(state))
+
+      if events.count == 0
+        return events
+      end
+
+      # We have events of policy failures. Re-organise the array to group by nodes.
+      node_events = events.group_by{|event| event['variables']['node']}
+      rekeyed_node_events = []
+      node_events.each do |event|
+        another = {}
+        another[:node_name] = event[0]
+        another[:policies] = event[1]
+        another[:overall_failing] = false
+        event[1].each do |policy|
+          if !policy['variables']['success']
+            another[:overall_failing] = true
+          end
+        end
+        rekeyed_node_events << another
+      end
+
+      rekeyed_node_events
+    rescue StandardError => e
+      quit("FATAL: retrieving UpGuard events: #{e}")
+    end
   end
 
-  def scan_node(node_id, label)
-    $nodes_scan_endpoint.sub!('{{id}}', node_id.to_s)
-    $nodes_scan_endpoint.sub!('{{label}}', label)
-
-    response = HTTParty.post($nodes_scan_endpoint,
-                             :headers  => { 'Content-Type' => 'application/json', 'Accept' => 'application/json', 'Authorization' => "Token token=\"#{$api_key}#{$secret_key}\"" })
-
-    puts response
+  def get_failing_jira_tickets
+    begin
+      jql = ERB::Util.url_encode("project = \"#{UpGuard.jira_project_id}\" AND type = \"Server Scan\" AND status = Failed order by created desc")
+      auth = { :username => "#{UpGuard.jira_username}", :password => "#{UpGuard.jira_password}" }
+      response = HTTParty.get("#{UpGuard.jira_hostname}/rest/api/2/search?jql=#{jql}",
+                              :headers  => { 'Content-Type' => 'application/json',
+                                             'Accept' => 'application/json' },
+                              :basic_auth => auth
+      ).to_hash
+      response
+    rescue StandardError => e
+      quit("FATAL: retrieving JIRA ticket: #{e}")
+    end
   end
 
-  def scan_diff(scan_id, compare_scan_id)
-    $node_diff_endpoint.sub!('{{scan_id}}', scan_id.to_s)
-    $node_diff_endpoint.sub!('{{compare_scan_id}}', compare_scan_id.to_s)
-
-    response = HTTParty.get($node_diff_endpoint,
-                             :headers  => { 'Content-Type' => 'application/json', 'Accept' => 'application/json', 'Authorization' => "Token token=\"#{$api_key}#{$secret_key}\"" })
-
-    puts response
+  def quit(message = nil)
+    puts message unless message.nil?
+    delete_lock
+    exit
   end
 
+  def create_lock
+    puts 'Creating lock file'
+    FileUtils.touch(UpGuard.file_name_lock) unless File.exist?(UpGuard.file_name_lock)
+  end
+
+  def delete_lock
+    puts 'Deleting lock file'
+    FileUtils.rm(UpGuard.file_name_lock) if File.exist?(UpGuard.file_name_lock)
+  end
+
+  def read_state
+    if File.exist?(UpGuard.file_name_state)
+      puts 'Reading state file'
+      file_state = File.read(UpGuard.file_name_state)
+      JSON.parse(file_state).to_hash
+    else
+      # Initialize the state file.
+      puts 'State file missing, creating'
+      content = {}
+      content[:last_run] = DateTime.now
+      File.write(UpGuard.file_name_state, JSON.pretty_generate(content))
+      content
+    end
+  end
 end
 
 main
-

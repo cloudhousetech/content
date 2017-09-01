@@ -12,19 +12,20 @@ def main
   state = ug.read_state
   events = ug.events_since_last_run(state)
   if events.count == 0
-    ug.quit('No events to process, nothing to do.')
+    ug.my_quit('no events to process, nothing to do, quitting')
   else
-    puts "Found #{events.count} event(s) to process"
+    ug.my_puts('INFO', "found #{events.count} node(s) to process")
     tickets = ug.get_failing_jira_tickets
-    puts "Found #{tickets['total']} tickets(s) to validate"
+    ug.my_puts('INFO', "found #{tickets['total']} tickets(s) to validate")
     ug.validate_jira_tickets(events, tickets)
-    ug.quit('Done')
+    ug.my_quit('done')
   end
 end
 
 class UpGuard
-  @file_name_state = "#{File.basename(__FILE__)}.json"
-  @file_name_lock  = "#{File.basename(__FILE__)}.lock"
+  @file_name       = File.basename(__FILE__)
+  @file_name_state = "#{@file_name}.json"
+  @file_name_lock  = "#{@file_name}.lock"
 
   @jira_hostname    = 'https://your.jira.instance'
   @jira_username    = 'username'
@@ -38,7 +39,7 @@ class UpGuard
 
   @events_index = "#{@hostname}/api/v2/events"
 
-  class << self; attr_accessor :file_name_state, :file_name_lock,
+  class << self; attr_accessor :file_name, :file_name_state, :file_name_lock,
                                :jira_hostname, :jira_username, :jira_password, :jira_project_id,
                                :hostname, :auth,
                                :events_index
@@ -46,17 +47,17 @@ class UpGuard
 
   def validate_jira_tickets(node_events, failing_tickets)
     if !node_events.is_a?(Array) || !failing_tickets.is_a?(Hash)
-      quit("FATAL: node events or tickets not supplied")
+      my_quit('node events or tickets not supplied')
     end
 
     updated_count = 0
     created_count = 0
 
     node_events.each do |node|
-      jira_ticket         = nil
-      node_name           = node[:node_name]
-      node_policies       = node[:policies]
-      node_overall_faling = node[:overall_failing]
+      jira_ticket          = nil
+      node_name            = node[:node_name]
+      node_policies        = node[:policies]
+      node_overall_failing = node[:overall_failing]
 
       # Go see if a JIRA ticket exists already for this node
 
@@ -71,7 +72,7 @@ class UpGuard
 
       # The meat and potatoes of the integration.
 
-      if !node_overall_faling
+      if !node_overall_failing
         if jira_ticket.nil?
           # Do nothing. UpGuard policy is passing. No JIRA ticket to update.
         else
@@ -95,8 +96,8 @@ class UpGuard
       end
     end
 
-    puts "Created #{created_count} ticket(s)"
-    puts "Updated #{updated_count} ticket(s)"
+    my_puts('INFO', "created #{created_count} ticket(s)")
+    my_puts('INFO', "updated #{updated_count} ticket(s)")
   end
 
   def create_jira_comment(ticket, policies)
@@ -116,8 +117,10 @@ class UpGuard
                                     :basic_auth => auth
     ).to_hash
 
+    my_puts('DEBUG', "comment response: #{comment_response}")
+
     if comment_response['id'].nil?
-      quit('FATAL: comment could not be created')
+      my_quit('comment could not be created')
     end
   end
 
@@ -130,10 +133,10 @@ class UpGuard
                                         :basic_auth => auth
     ).to_hash
 
-    puts transitions_response
+    my_puts('DEBUG', "transition response: #{transitions_response}")
 
     if transitions_response['transitions'].nil?
-      quit ('FATAL: unable to get available ticket transitions')
+      my_quit('unable to get available ticket transitions')
     end
 
     failed_transition_id = -1
@@ -141,10 +144,10 @@ class UpGuard
       failed_transition_id = transition['id'] if transition['to']['name'] == status
     end
 
-    puts failed_transition_id
+    my_puts('DEBUG',"failure_transition_id: #{failed_transition_id}")
 
     if failed_transition_id == -1
-      quit ('FATAL: could not find the failure transition')
+      my_quit('could not find the failure transition')
     end
 
     transition = {}
@@ -159,7 +162,7 @@ class UpGuard
                                   :basic_auth => auth
     )
 
-    puts move_response
+    my_puts('DEBUG',"move response: #{move_response}")
   end
 
   def create_jira_ticket(node_name, policies)
@@ -188,10 +191,10 @@ class UpGuard
                                     :basic_auth => auth
     ).to_hash
 
-    puts ticket_response
+    my_puts('DEBUG', "ticket_create_response: #{ticket_response}")
 
     if ticket_response['id'].nil?
-      quit ('FATAL: unable to create JIRA ticket')
+      my_quit ('unable to create JIRA ticket')
     end
 
     transition_jira_ticket(ticket_response, 'Failed')
@@ -200,7 +203,7 @@ class UpGuard
   def events_since_last_run(state)
     begin
       unless state.is_a?(Hash)
-        quit("FATAL: failed to parse state file content: state is not hashable")
+        my_quit('failed to parse state file content: state is not a hash')
       end
 
       events = []
@@ -220,25 +223,31 @@ class UpGuard
         return events
       end
 
+      # Sort events by created_at descending.
+      time_desc_events = events.sort {|a,b| b['created_at'] <=> a['created_at']}
+      # Unique will consider "uniqueness" based on the first element it seems. Since elements are
+      # sorted by time desc, this will be the "latest" policy failure ran event.
+      unique_policies = time_desc_events.uniq {|a| a['variables']['policy_id']}
       # We have events of policy failures. Re-organise the array to group by nodes.
-      node_events = events.group_by{|event| event['variables']['node']}
+      node_events = unique_policies.group_by{|event| event['variables']['node']}
+
       rekeyed_node_events = []
       node_events.each do |event|
-        another = {}
-        another[:node_name] = event[0]
-        another[:policies] = event[1]
-        another[:overall_failing] = false
+        rekeyed_event = {}
+        rekeyed_event[:node_name] = event[0]
+        rekeyed_event[:policies] = event[1]
+        rekeyed_event[:overall_failing] = false
         event[1].each do |policy|
-          if !policy['variables']['success']
-            another[:overall_failing] = true
+          unless policy['variables']['success']
+            rekeyed_event[:overall_failing] = true
           end
         end
-        rekeyed_node_events << another
+        rekeyed_node_events << rekeyed_event
       end
 
       rekeyed_node_events
     rescue StandardError => e
-      quit("FATAL: retrieving UpGuard events: #{e}")
+      my_quit("retrieving UpGuard events: #{e}")
     end
   end
 
@@ -246,41 +255,52 @@ class UpGuard
     begin
       jql = ERB::Util.url_encode("project = \"#{UpGuard.jira_project_id}\" AND type = \"Server Scan\" AND status = Failed order by created desc")
       auth = { :username => "#{UpGuard.jira_username}", :password => "#{UpGuard.jira_password}" }
-      response = HTTParty.get("#{UpGuard.jira_hostname}/rest/api/2/search?jql=#{jql}",
-                              :headers  => { 'Content-Type' => 'application/json',
-                                             'Accept' => 'application/json' },
-                              :basic_auth => auth
+      failing_tickets = HTTParty.get("#{UpGuard.jira_hostname}/rest/api/2/search?jql=#{jql}",
+                                     :headers  => { 'Content-Type' => 'application/json',
+                                                    'Accept' => 'application/json' },
+                                     :basic_auth => auth
       ).to_hash
-      response
+      my_puts('DEBUG', "failing_tickets: #{failing_tickets}")
+      failing_tickets
     rescue StandardError => e
-      quit("FATAL: retrieving JIRA ticket: #{e}")
+      my_quit("retrieving JIRA tickets: #{e}")
     end
   end
 
-  def quit(message = nil)
-    puts message unless message.nil?
+  def my_quit(message=nil)
+    my_puts('FATAL', message) unless message.nil?
     delete_lock
     exit
   end
 
+  def my_puts(log_level=nil, message=nil)
+    if log_level.nil?
+      log_level = 'LOG_LEVEL_EXCEPTION'
+    end
+    if message.nil?
+      message = 'no message provided'
+    end
+    puts "#{UpGuard.file_name}: #{log_level}: #{message}"
+  end
+
   def create_lock
-    puts 'Creating lock file'
+    my_puts('INFO', 'creating lock file')
     FileUtils.touch(UpGuard.file_name_lock) unless File.exist?(UpGuard.file_name_lock)
   end
 
   def delete_lock
-    puts 'Deleting lock file'
+    my_puts('INFO','deleting lock file')
     FileUtils.rm(UpGuard.file_name_lock) if File.exist?(UpGuard.file_name_lock)
   end
 
   def read_state
     if File.exist?(UpGuard.file_name_state)
-      puts 'Reading state file'
+      my_puts('INFO', 'reading state file')
       file_state = File.read(UpGuard.file_name_state)
       JSON.parse(file_state).to_hash
     else
       # Initialize the state file.
-      puts 'State file missing, creating'
+      my_puts('INFO','state file missing, creating')
       content = {}
       content[:last_run] = DateTime.now
       File.write(UpGuard.file_name_state, JSON.pretty_generate(content))

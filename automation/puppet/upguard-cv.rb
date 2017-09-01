@@ -207,6 +207,7 @@ class UpGuard
       end
 
       events = []
+      node_events = []
 
       last_run = state['last_run']
       response = HTTParty.get("#{UpGuard.events_index}?view_name=Policy%20Ran&date_from=#{last_run}",
@@ -225,17 +226,21 @@ class UpGuard
 
       # We have events of policy failures. Re-organise the array to group by nodes.
       grouped_events = events.group_by{|event| event['variables']['node']}
-      node_events = []
+      my_puts('DEBUG', "grouped_events: #{grouped_events}")
+
       grouped_events.each do |event|
         node = {}
         node[:node_name] = event[0]
         # Sort events by created_at descending.
         time_desc_events = event[1].sort {|a,b| b['created_at'] <=> a['created_at']}
+        my_puts('DEBUG', "time_desc_events: #{time_desc_events}")
         # Unique will consider "uniqueness" based on the first element it seems. Since elements are
         # sorted by time desc, this will be the "latest" policy failure ran event.
         unique_policies = time_desc_events.uniq {|a| a['variables']['policy_id']}
+        my_puts('DEBUG', "unique_policies: #{unique_policies}")
         # Finally, sort the policies alphabetically.
         alphabetical_policies = unique_policies.sort {|a,b| a['variables']['policy'] <=> b['variables']['policy']}
+        my_puts('DEBUG', "alphabetical_policies: #{alphabetical_policies}")
         node[:policies] = alphabetical_policies
         node[:overall_failing] = false
         node[:policies].each do |policy|
@@ -246,6 +251,7 @@ class UpGuard
         node_events << node
       end
 
+      my_puts('DEBUG', "node_events: #{node_events}")
       node_events
     rescue StandardError => e
       my_quit("retrieving UpGuard events: #{e}")

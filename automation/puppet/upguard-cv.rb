@@ -1,10 +1,21 @@
+########################################################################################################
+#                                                                                                      #
+# Author: UpGuard (support@upguard.com)                                                                #
+#                                                                                                      #
+# Description: Synchronize UpGuard policy results with a corresponding JIRA ticket.                    #
+# When an UpGuard policy fails, a failing ticket is create in JIRA if one does not already exist.      #
+# If a ticket does exist, append a comment with the latest policy failure results and a link to the    #
+# node scan. A passing UpGuard policy with a corresponding failing JIRA ticket will update the JIRA    #
+# ticket status to "Passing" and append a comment with the passing UpGuard policy results.             #
+# Finally, a passing UpGuard policy with no corresponding JIRA ticket will not do anything.            #
+#                                                                                                      #
+# Usage: This script is intended to be scheduled and run every minute using a tool such as crontab.    #
+# UpGuard class variables will need to be set as per your UpGuard and JIRA instances.                  #
+#                                                                                                      #
+########################################################################################################
+
 require 'httparty'
 require 'fileutils'
-
-# Fail -> Fail = Comment with "Policy still failing" + latest node scan
-# Fail -> Pass = Comment + Close
-# Pass -> Fail = Create ticket
-# Pass -> Pass = Do nothing.
 
 def main
   ug = UpGuard.new
@@ -23,6 +34,7 @@ def main
 end
 
 class UpGuard
+  @version         = 'v0.0.1'
   @file_name       = File.basename(__FILE__)
   @file_name_state = "#{@file_name}.json"
   @file_name_lock  = "#{@file_name}.lock"
@@ -39,7 +51,7 @@ class UpGuard
 
   @events_index = "#{@hostname}/api/v2/events"
 
-  class << self; attr_accessor :file_name, :file_name_state, :file_name_lock,
+  class << self; attr_accessor :version, :file_name, :file_name_state, :file_name_lock,
                                :jira_hostname, :jira_username, :jira_password, :jira_project_id,
                                :hostname, :auth,
                                :events_index
@@ -55,8 +67,6 @@ class UpGuard
 
     node_events.each do |node|
       jira_ticket          = nil
-      node_name            = node[:node_name]
-      node_policies        = node[:policies]
       node_overall_failing = node[:overall_failing]
 
       # Go see if a JIRA ticket exists already for this node
@@ -64,7 +74,7 @@ class UpGuard
       if failing_tickets['total'] > 0
         failing_tickets['issues'].each do |t|
           # Hacky. Node name needs to be the first label.
-          next unless t['fields']['labels'][0] == node_name
+          next unless t['fields']['labels'][0] == node[:node_name]
           # Found our ticket.
           jira_ticket = t
         end
@@ -78,19 +88,19 @@ class UpGuard
         else
           # We have a failing ticket to update. Transition the ticket to the "Passing" status
           transition_jira_ticket(jira_ticket, 'Passed')
-          create_jira_comment(jira_ticket, node_policies)
+          create_jira_comment(jira_ticket, node)
           updated_count += 1
         end
       else # UpGuard policy is failing.
         if jira_ticket.nil?
           # Create a ticket.
-          create_jira_ticket(node_name, node_policies)
+          create_jira_ticket(node)
           # Update our list of failing tickets.
           failing_tickets = get_failing_jira_tickets
           created_count += 1
         else
           # Found a ticket to update with a comment.
-          create_jira_comment(jira_ticket, node_policies)
+          create_jira_comment(jira_ticket, node)
           updated_count += 1
         end
       end
@@ -100,15 +110,10 @@ class UpGuard
     my_puts('INFO', "updated #{updated_count} ticket(s)")
   end
 
-  def create_jira_comment(ticket, policies)
+  def create_jira_comment(ticket, node)
     comment = {}
-    policy_table = ''
-    policies.each do |p|
-      p['variables']['success'] ? policy_status = 'passing' : policy_status = 'failing'
-      policy_table += "#{p['variables']['policy']} is #{policy_status}\n"
-    end
+    comment[:body] = draw_policy_table(node)
 
-    comment[:body] = policy_table
     auth = { :username => "#{UpGuard.jira_username}", :password => "#{UpGuard.jira_password}" }
     comment_response = HTTParty.post("#{UpGuard.jira_hostname}/rest/api/2/issue/#{ticket['id']}/comment",
                                     :headers  => { 'Content-Type' => 'application/json',
@@ -122,6 +127,16 @@ class UpGuard
     if comment_response['id'].nil?
       my_quit('comment could not be created')
     end
+  end
+
+  def draw_policy_table(node)
+    policy_table = "||Policy Name||Result||\n"
+    node[:policies].each do |p|
+      p['variables']['success'] ? policy_status = '{color:#14892c}PASS{color}' : policy_status = '{color:red}FAIL{color}'
+      policy_table += "|#{p['variables']['policy']}|#{policy_status}|\n"
+    end
+    policy_table += "#{UpGuard.hostname}/node_groups#/nodes/#{node[:node_id]}?state=show&scan_id=#{node[:scan_id]}"
+    policy_table
   end
 
   def transition_jira_ticket(ticket, status)
@@ -165,23 +180,16 @@ class UpGuard
     my_puts('DEBUG',"move response: #{move_response}")
   end
 
-  def create_jira_ticket(node_name, policies)
+  def create_jira_ticket(node)
     ticket = {}
     ticket['fields'] = {}
     ticket['fields']['project'] = {}
     ticket['fields']['project']['key'] = 'COR'
-    ticket['fields']['summary'] = "#{node_name} policies failing"
-
-    description = ''
-    policies.each do |p|
-      p['variables']['success'] ? policy_status = 'passing' : policy_status = 'failing'
-      description += "#{p['variables']['policy']} is #{policy_status}\n"
-    end
-    ticket['fields']['description'] = description
-
+    ticket['fields']['summary'] = "#{node[:node_name]} policies failing"
+    ticket['fields']['description'] = draw_policy_table(node)
     ticket['fields']['issuetype'] = {}
     ticket['fields']['issuetype']['name'] = 'Server Scan'
-    ticket['fields']['labels'] = [node_name, 'upguard']
+    ticket['fields']['labels'] = [node[:node_name], 'upguard']
 
     auth = { :username => "#{UpGuard.jira_username}", :password => "#{UpGuard.jira_password}" }
     ticket_response = HTTParty.post("#{UpGuard.jira_hostname}/rest/api/2/issue/",
@@ -242,6 +250,8 @@ class UpGuard
         alphabetical_policies = unique_policies.sort {|a,b| a['variables']['policy'] <=> b['variables']['policy']}
         my_puts('DEBUG', "alphabetical_policies: #{alphabetical_policies}")
         node[:policies] = alphabetical_policies
+        node[:node_id] = node[:policies][0]['variables']['node_id']
+        node[:scan_id] = node[:policies][0]['variables']['scan_id']
         node[:overall_failing] = false
         node[:policies].each do |policy|
           unless policy['variables']['success']
@@ -287,7 +297,7 @@ class UpGuard
     if message.nil?
       message = 'no message provided'
     end
-    puts "#{UpGuard.file_name}: #{log_level}: #{message}"
+    puts "#{UpGuard.file_name}: #{UpGuard.version}: #{log_level}: #{message}"
   end
 
   def create_lock

@@ -223,29 +223,30 @@ class UpGuard
         return events
       end
 
-      # Sort events by created_at descending.
-      time_desc_events = events.sort {|a,b| b['created_at'] <=> a['created_at']}
-      # Unique will consider "uniqueness" based on the first element it seems. Since elements are
-      # sorted by time desc, this will be the "latest" policy failure ran event.
-      unique_policies = time_desc_events.uniq {|a| a['variables']['policy_id']}
       # We have events of policy failures. Re-organise the array to group by nodes.
-      node_events = unique_policies.group_by{|event| event['variables']['node']}
-
-      rekeyed_node_events = []
-      node_events.each do |event|
-        rekeyed_event = {}
-        rekeyed_event[:node_name] = event[0]
-        rekeyed_event[:policies] = event[1]
-        rekeyed_event[:overall_failing] = false
-        event[1].each do |policy|
+      grouped_events = events.group_by{|event| event['variables']['node']}
+      node_events = []
+      grouped_events.each do |event|
+        node = {}
+        node[:node_name] = event[0]
+        # Sort events by created_at descending.
+        time_desc_events = event[1].sort {|a,b| b['created_at'] <=> a['created_at']}
+        # Unique will consider "uniqueness" based on the first element it seems. Since elements are
+        # sorted by time desc, this will be the "latest" policy failure ran event.
+        unique_policies = time_desc_events.uniq {|a| a['variables']['policy_id']}
+        # Finally, sort the policies alphabetically.
+        alphabetical_policies = unique_policies.sort {|a,b| a['variables']['policy'] <=> b['variables']['policy']}
+        node[:policies] = alphabetical_policies
+        node[:overall_failing] = false
+        node[:policies].each do |policy|
           unless policy['variables']['success']
-            rekeyed_event[:overall_failing] = true
+            node[:overall_failing] = true
           end
         end
-        rekeyed_node_events << rekeyed_event
+        node_events << node
       end
 
-      rekeyed_node_events
+      node_events
     rescue StandardError => e
       my_quit("retrieving UpGuard events: #{e}")
     end

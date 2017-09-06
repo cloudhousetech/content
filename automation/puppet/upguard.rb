@@ -53,63 +53,69 @@ Puppet::Reports.register_report(:upguard) do
 
     Puppet.info("#{log_prefix} status=#{status}")
 
-    # For most scenarios, make sure the node is added to upguard and is being scanned.
-    if test_env ? status == 'unchanged' : status == 'changed'
-
-      ##########################################################################
-      # PUPPET DB (PDB) METHODS                                                #
-      ##########################################################################
-
-      # Get the node name
-      node_ip_hostname = pdb_get_hostname(self.host)
-      # We use this to tag node scans with the puppet "file(s)" that have caused the change
-      manifest_filename = pdb_manifest_files(self.logs)
-      # Used to set the node OS type in UpGuard
-      os = pdb_get_os(node_ip_hostname)
-      Puppet.info("#{log_prefix} status=#{status} os=#{os}")
-      # Get trusted facts from Puppet (once)
-      trusted_facts = pdb_get_trusted_facts(node_ip_hostname)
-      # Extract the role
-      node_group_name = pdb_get_role(trusted_facts)
-      # Extract the environment
-      environment_name = pdb_get_environment(trusted_facts)
-      # Extract the datacenter
-      datacenter_name = pdb_get_datacenter(trusted_facts)
-      # The format for environment names is datacenter_environment
-      environment_name = generate_environment_name(datacenter_name, environment_name)
-
-      ##########################################################################
-      # DRIVER METHODS                                                         #
-      ##########################################################################
-
-      # Get node group id from UpGuard
-      node_group_id = lookup_or_create_node_group(node_group_name, nil)
-      os_node_group_id = -1
-      if os == 'CentOS'
-        os_node_group_id = lookup_or_create_node_group('Linux_Static', nil)
-      elsif os == 'windows'
-        os_node_group_id = lookup_or_create_node_group('Windows_Static', nil)
-      end
-      # Get environment id from UpGuard
-      environment_id = lookup_or_create_environment(environment_name)
-      # Determine if we can find the node or if we need to create it
-      node = lookup_or_create_node(node_ip_hostname, os, datacenter_name)
-      # Make sure to add the node to the node group
-      add_node_to_group(node[:id], node_group_id)
-      if os_node_group_id != -1
-        add_node_to_group(node[:id], os_node_group_id)
-      end
-      # Make sure to add the node to the environment
-      add_node_to_environment(node[:id], environment_id)
-      # For new nodes, sleep to let Puppet catch up
-      if node[:created]
-        Puppet.info("#{log_prefix} new node, sleeping for #{SLEEP_BEFORE_SCAN} seconds...")
-        sleep SLEEP_BEFORE_SCAN
-        # Kick off a vuln scan only for newly created nodes
-        vuln_scan(node[:id], node_ip_hostname)
-      end
-      node_scan(node[:id], node_ip_hostname, manifest_filename)
+    if test_env
+      # Unchanged here so that you can run `puppet agent -t` over and over.
+      run_states = %w(unchanged)
+    else
+      run_states = %w(changed failed)
     end
+
+    # For most scenarios, make sure the node is added to upguard and is being scanned.
+    return unless run_states.include?(status)
+
+    ##########################################################################
+    # PUPPET DB (PDB) METHODS                                                #
+    ##########################################################################
+
+    # Get the node name
+    node_ip_hostname = pdb_get_hostname(self.host)
+    # We use this to tag node scans with the puppet "file(s)" that have caused the change
+    manifest_filename = pdb_manifest_files(self.logs)
+    # Used to set the node OS type in UpGuard
+    os = pdb_get_os(node_ip_hostname)
+    Puppet.info("#{log_prefix} status=#{status} os=#{os}")
+    # Get trusted facts from Puppet (once)
+    trusted_facts = pdb_get_trusted_facts(node_ip_hostname)
+    # Extract the role
+    node_group_name = pdb_get_role(trusted_facts)
+    # Extract the environment
+    environment_name = pdb_get_environment(trusted_facts)
+    # Extract the datacenter
+    datacenter_name = pdb_get_datacenter(trusted_facts)
+    # The format for environment names is datacenter_environment
+    environment_name = generate_environment_name(datacenter_name, environment_name)
+
+    ##########################################################################
+    # DRIVER METHODS                                                         #
+    ##########################################################################
+
+    # Get node group id from UpGuard
+    node_group_id = lookup_or_create_node_group(node_group_name, nil)
+    os_node_group_id = -1
+    if os == 'CentOS'
+      os_node_group_id = lookup_or_create_node_group('Linux_Static', nil)
+    elsif os == 'windows'
+      os_node_group_id = lookup_or_create_node_group('Windows_Static', nil)
+    end
+    # Get environment id from UpGuard
+    environment_id = lookup_or_create_environment(environment_name)
+    # Determine if we can find the node or if we need to create it
+    node = lookup_or_create_node(node_ip_hostname, os, datacenter_name)
+    # Make sure to add the node to the node group
+    add_node_to_group(node[:id], node_group_id)
+    if os_node_group_id != -1
+      add_node_to_group(node[:id], os_node_group_id)
+    end
+    # Make sure to add the node to the environment
+    add_node_to_environment(node[:id], environment_id)
+    # For new nodes, sleep to let Puppet catch up
+    if node[:created]
+      Puppet.info("#{log_prefix} new node, sleeping for #{SLEEP_BEFORE_SCAN} seconds...")
+      sleep SLEEP_BEFORE_SCAN
+      # Kick off a vuln scan only for newly created nodes
+      # vuln_scan(node[:id], node_ip_hostname)
+    end
+    node_scan(node[:id], node_ip_hostname, manifest_filename)
   end
 
   ##############################################################################

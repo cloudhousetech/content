@@ -15,6 +15,7 @@
 #:test_linux_hostname: 'linux hostname'
 
 :sleep_before_scan: 120
+:ignore_hostname_prefix: 'test'
 
 :sites:
   - name: 'mtv'

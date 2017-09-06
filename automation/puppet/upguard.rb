@@ -30,6 +30,7 @@ Puppet::Reports.register_report(:upguard) do
   TEST_WINDOWS_HOSTNAME    = config[:test_windows_hostname]
   UNKNOWN_OS_NODE_GROUP_ID = config[:unknown_os_node_group_id]
   SLEEP_BEFORE_SCAN        = config[:sleep_before_scan]
+  IGNORE_HOSTNAME_PREFIX   = config[:ignore_hostname_prefix]
 
   def process
     Puppet.info("#{log_prefix} starting report processor #{VERSION}")
@@ -48,6 +49,7 @@ Puppet::Reports.register_report(:upguard) do
     Puppet.info("#{log_prefix} TEST_WINDOWS_HOSTNAME=#{TEST_WINDOWS_HOSTNAME}")
     Puppet.info("#{log_prefix} UNKNOWN_OS_NODE_GROUP_ID=#{UNKNOWN_OS_NODE_GROUP_ID}")
     Puppet.info("#{log_prefix} SLEEP_BEFORE_SCAN=#{SLEEP_BEFORE_SCAN}")
+    Puppet.info("#{log_prefix} IGNORE_HOSTNAME_PREFIX=#{IGNORE_HOSTNAME_PREFIX}")
 
     self.status != nil ? status = self.status : status = 'undefined'
 
@@ -61,7 +63,10 @@ Puppet::Reports.register_report(:upguard) do
     end
 
     # For most scenarios, make sure the node is added to upguard and is being scanned.
-    return unless run_states.include?(status)
+    unless run_states.include?(status)
+      Puppet.info("#{log_prefix} returning early, '#{status}' not in run_states")
+      return
+    end
 
     ##########################################################################
     # PUPPET DB (PDB) METHODS                                                #
@@ -69,6 +74,11 @@ Puppet::Reports.register_report(:upguard) do
 
     # Get the node name
     node_ip_hostname = pdb_get_hostname(self.host)
+    if node_ip_hostname.start_with?(IGNORE_HOSTNAME_PREFIX)
+      Puppet.info("#{log_prefix} returning early, '#{node_ip_hostname}' starts with '#{IGNORE_HOSTNAME_PREFIX}'")
+      return
+    end
+
     # We use this to tag node scans with the puppet "file(s)" that have caused the change
     manifest_filename = pdb_manifest_files(self.logs)
     # Used to set the node OS type in UpGuard

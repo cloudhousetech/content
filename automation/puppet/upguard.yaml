@@ -4,23 +4,27 @@
 :compile_master_pem: 'name_of_compile_master.pem'
 :service_key: 'upguard_service_key'
 :secret_key: 'upguard_secret_key'
-:unknown_os_node_group_id: 99
-:domains:
-  - name: 'domain-one.com'
-    ssh_connection_manager_groups:
-      - id: 1
-        service_account: 'username'
-        service_password: 'password'
-    windows_connection_manager_groups:
-      - id: 2
-        service_account: 'username'
-        service_password: 'password'
-  - name: 'domain-two.com'
-    ssh_connection_manager_groups:
-      - id: 3
-        service_account: 'username'
-        service_password: 'password'
-    windows_connection_manager_groups:
-      - id: 4
-        service_account: 'username'
-        service_password: 'password'
+:unknown_os_node_group_id: check for id in upguard
+:windows_node_group_id: check for id in upguard
+:linux_node_group_id: check for id in upguard
+
+#:environment: 'test'
+#:test_os: 'centos or windows'
+#:test_node_name: 'the name of the node'
+#:test_windows_hostname: 'windows hostname'
+#:test_linux_hostname: 'linux hostname'
+
+:sleep_before_scan: 120
+
+:sites:
+  - name: 'mtv'
+    domains:
+      - name: 'domain.com'
+        ssh_connection_manager_groups:
+          - id: 1
+            service_account: 'username'
+            service_password: 'password'
+        windows_connection_manager_groups:
+          - id: 12
+            service_account: ''
+            service_password: ''

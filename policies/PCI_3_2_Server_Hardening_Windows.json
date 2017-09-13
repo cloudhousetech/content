@@ -1,0 +1,499 @@
+{
+    "policy": {
+        "name": "github-server-hardening",
+        "short_description": "github-server-hardening",
+        "description": "",
+        "settings": {
+            "tests": {
+                "output_format": null
+            }
+        },
+        "operating_system_family_id": null,
+        "operating_system_id": null,
+        "type": null
+    },
+    "data": [
+        {
+            "2.2.2.a  Select a sample of system components and inspect enabled system services, daemons, and protocols  to verify that only necessary services or protocols are  enable": [
+                {
+                    "id": "2-2-2-a-Select-a-sample-of-system-components-and-inspect-enabled-system-services-daemons-and-protocols-to-verify-that-only-necessary-services-or-protocols-are-enable-PCI-Server-Hardening-Make-sure-Fax-Service-is-not-installed",
+                    "name": "[PCI: Server-Hardening] Make sure Fax Service is not installed",
+                    "error": false,
+                    "checks": {
+                        "present": [
+                            {
+                                "exp": "true",
+                                "check": "equals",
+                                "expected": "true",
+                                "background": "Make sure Fax Service is not installed"
+                            }
+                        ],
+                        "FaxInstalledStatus": [
+                            {
+                                "exp": "False",
+                                "check": "equals",
+                                "expected": "False"
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Make sure Fax Service is disabled"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "$obj = New-Object psobject; IF (gwmi win32_Service | where {$_.Name -match \"fax\"}){  $obj | add-member -Type Noteproperty \"FaxInstalledStatus\" -Value $True; } else {   $obj | add-member -Type Noteproperty \"FaxInstalledStatus\" -Value $False; }  $obj;",
+                        "description": "[PCI: Server-Hardening] Make sure Fax Service is not installed"
+                    },
+                    "description": "[PCI: Server-Hardening] Make sure Fax Service is not installed",
+                    "nodeGroupsOpen": true
+                },
+                {
+                    "id": "2-2-2-a-Select-a-sample-of-system-components-and-inspect-enabled-system-services-daemons-and-protocols-to-verify-that-only-necessary-services-or-protocols-are-enable-PCI-Server-Hardening-Make-sure-FTP-is-not-installed",
+                    "name": "[PCI: Server-Hardening] Make sure FTP is not installed",
+                    "error": false,
+                    "checks": {
+                        "present": [
+                            {
+                                "check": "equals",
+                                "expected": "true"
+                            }
+                        ],
+                        "FTPInstalledStatus": [
+                            {
+                                "check": "equals",
+                                "expected": "False",
+                                "background": "Make sure FTP is not installed",
+                                "valueSelectList": null,
+                                "attributeSelectList": null,
+                                "availableAttributes": null
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Make sure FTP is not installed"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "$obj = New-Object psobject; If (gwmi win32_ServerFeature | where {$_.Name -match \"FTP\"}){  $obj | add-member -Type Noteproperty \"FTPInstalledStatus\" -Value $True; } else {   $obj | add-member -Type Noteproperty \"FTPInstalledStatus\" -Value $False; }  $obj;",
+                        "description": "[PCI: Server-Hardening] Make sure FTP is not installed"
+                    },
+                    "selectList": [
+                        "*"
+                    ],
+                    "description": "[PCI: Server-Hardening] Make sure FTP is not installed",
+                    "nodeGroupsOpen": true
+                },
+                {
+                    "id": "2-2-2-a-Select-a-sample-of-system-components-and-inspect-enabled-system-services-daemons-and-protocols-to-verify-that-only-necessary-services-or-protocols-are-enable-PCI-Server-Hardening-Remove-or-disable-the-Simple-TCP-IP-Services-simptcp-service",
+                    "name": "[PCI: Server-Hardening] Remove or disable the Simple TCP/IP Services (simptcp) service",
+                    "error": false,
+                    "checks": {
+                        "present": [
+                            {
+                                "check": "equals",
+                                "expected": "true"
+                            }
+                        ],
+                        "simptcpInstalledStatus": [
+                            {
+                                "check": "equals",
+                                "expected": "False",
+                                "background": "Remove or disable the Simple TCP/IP Services (simptcp) service.",
+                                "valueSelectList": null,
+                                "attributeSelectList": null,
+                                "availableAttributes": null
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Remove or disable the Simple TCP/IP Services (simptcp) service."
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "$obj = New-Object psobject; IF (gwmi win32_Service | where {$_.Name -match \"simptcp\"}){  $obj | add-member -Type Noteproperty \"simptcpInstalledStatus\" -Value $True; } else {  $obj | add-member -Type Noteproperty \"simptcpInstalledStatus\" -Value $False; } $obj;",
+                        "description": "[PCI: Server-Hardening] Remove or disable the Simple TCP/IP Services (simptcp) service"
+                    },
+                    "description": "[PCI: Server-Hardening] Remove or disable the Simple TCP/IP Services (simptcp) service",
+                    "nodeGroupsOpen": true
+                },
+                {
+                    "id": "2-2-2-a-Select-a-sample-of-system-components-and-inspect-enabled-system-services-daemons-and-protocols-to-verify-that-only-necessary-services-or-protocols-are-enable-PCI-Server-Hardening-Verify-the-Peer-Network-Identity-Manager-p2pimsvc-service-is-not-installed-or-is-disabled",
+                    "name": "[PCI: Server-Hardening] Verify the Peer Network Identity Manager (p2pimsvc) service is not installed or is disabled",
+                    "error": false,
+                    "checks": {
+                        "present": [
+                            {
+                                "check": "equals",
+                                "expected": "true"
+                            }
+                        ],
+                        "p2pimsvcInstalledStatus": [
+                            {
+                                "check": "equals",
+                                "expected": "False",
+                                "background": "Verify the Peer Network Identity Manager (p2pimsvc) service is not installed or is disabled.",
+                                "valueSelectList": null,
+                                "attributeSelectList": null,
+                                "availableAttributes": null
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Verify the Peer Network Identity Manager (p2pimsvc) service is not installed or is disabled."
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "$obj = New-Object psobject; IF (gwmi win32_Service | where {$_.Name -match \"p2pimsvc\"}){  $obj | add-member -Type Noteproperty \"p2pimsvcInstalledStatus\" -Value $True; } else {  $obj | add-member -Type Noteproperty \"p2pimsvcInstalledStatus\" -Value $False; } $obj;",
+                        "description": "[PCI: Server-Hardening] Verify the Peer Network Identity Manager (p2pimsvc) service is not installed or is disabled"
+                    },
+                    "description": "[PCI: Server-Hardening] Verify the Peer Network Identity Manager (p2pimsvc) service is not installed or is disabled",
+                    "nodeGroupsOpen": true
+                },
+                {
+                    "id": "2-2-2-a-Select-a-sample-of-system-components-and-inspect-enabled-system-services-daemons-and-protocols-to-verify-that-only-necessary-services-or-protocols-are-enable-PCI-Server-Hardening-Verify-the-Telnet-tlntsvr-service-is-not-installed-or-is-disabled-WN12-SV-000105",
+                    "name": "[PCI: Server-Hardening] Verify the Telnet (tlntsvr) service is not installed or is disabled. WN12-SV-000105",
+                    "error": false,
+                    "checks": {
+                        "present": [
+                            {
+                                "check": "equals",
+                                "expected": "true"
+                            }
+                        ],
+                        "tlntsvrInstalledStatus": [
+                            {
+                                "check": "equals",
+                                "expected": "False",
+                                "background": "Verify the Telnet (tlntsvr) service is not installed or is disabled.  WN12-SV-000105",
+                                "valueSelectList": null,
+                                "attributeSelectList": null,
+                                "availableAttributes": null
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Verify the Telnet (tlntsvr) service is not installed or is disabled.  WN12-SV-000105"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "$obj = New-Object psobject;  IF (gwmi win32_Service | where {$_.Name -match \"tlntsvr\"}){  $obj | add-member -Type Noteproperty \"tlntsvrInstalledStatus\" -Value $True; } else {  $obj | add-member -Type Noteproperty \"tlntsvrInstalledStatus\" -Value $False; }  $obj;",
+                        "description": "[PCI: Server-Hardening] Verify the Telnet (tlntsvr) service is not installed or is disabled. WN12-SV-000105"
+                    },
+                    "description": "[PCI: Server-Hardening] Verify the Telnet (tlntsvr) service is not installed or is disabled. WN12-SV-000105",
+                    "nodeGroupsOpen": true
+                }
+            ]
+        },
+        {
+            "2.2.3 .a Inspect  configuration settings to verify that security  features are documented and implemented for all insecure  services, daemons, or protocols": [
+                {
+                    "id": "2-2-3-a-Inspect-configuration-settings-to-verify-that-security-features-are-documented-and-implemented-for-all-insecure-services-daemons-or-protocols-PCI-Server-Hardening-Named-pipes-that-can-be-accessed-anonymously-must-be-configured-with-limited-values-on-domain-controllers-WN12-SO-000055-DC",
+                    "name": "[PCI: Server-Hardening] Named pipes that can be accessed anonymously must be configured with limited values on domain controllers. WN12-SO-000055-DC",
+                    "error": false,
+                    "checks": {
+                        "present": [
+                            {
+                                "check": "equals",
+                                "expected": "true"
+                            }
+                        ],
+                        "NullSessionPipes": [
+                            {
+                                "exp": "1",
+                                "check": "equals",
+                                "expected": "1",
+                                "background": "Named pipes that can be accessed anonymously must be configured with limited values on domain controllers. WN12-SO-000055-DC"
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Named pipes that can be accessed anonymously must be configured with limited values on domain controllers. WN12-SO-000055-DC"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "$Value=0; Try{ $Value= (Get-ItemProperty -Path 'HKLM:\\\\SYSTEM\\CurrentControlSet\\Services\\LanManServer\\Parameters' -Name NullSessionPipes -ErrorAction Stop) | Select -ExpandProperty NullSessionPipes } Catch { } ; $obj = New-Object psobject; If ($Value -match \"netlogon|samr|lsarpc\"){ $Value =1;}else { $Value=0;}  $obj | add-member -Type Noteproperty \"NullSessionPipes\" -Value ($Value ); $obj;",
+                        "description": "[PCI: Server-Hardening] Named pipes that can be accessed anonymously must be configured with limited values on domain controllers. WN    12-SO-000055-DC"
+                    },
+                    "description": "[PCI: Server-Hardening] Named pipes that can be accessed anonymously must be configured with limited values on domain controllers. WN12-SO-000055-DC",
+                    "nodeGroupsOpen": true
+                },
+                {
+                    "id": "2-2-3-a-Inspect-configuration-settings-to-verify-that-security-features-are-documented-and-implemented-for-all-insecure-services-daemons-or-protocols-PCI-Server-Hardening-FTP-servers-must-be-configured-to-prevent-access-to-the-system-drive-WN12-GE-000027",
+                    "name": "[PCI: Server-Hardening] FTP servers must be configured to prevent access to the system drive. WN12-GE-000027",
+                    "error": false,
+                    "checks": {
+                        "FTP": [
+                            {
+                                "check": "equals",
+                                "expected": "YES",
+                                "valueSelectList": null,
+                                "attributeSelectList": null,
+                                "availableAttributes": null
+                            }
+                        ],
+                        "present": [
+                            {
+                                "check": "equals",
+                                "expected": "true"
+                            }
+                        ],
+                        "FTPSystemAccess": {
+                            "check": "equals",
+                            "expected": "NO",
+                            "valueSelectList": null,
+                            "attributeSelectList": null,
+                            "availableAttributes": null
+                        }
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "FTP servers must be configured to prevent access to the system drive. WN12-GE-000027"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "$obj = New-Object psobject; If (gwmi win32_ServerFeature | where {$_.Name -match \"FTP\"}){ $ftp=$True; $obj | add-member -Type Noteproperty \"FTP\" -Value \"YES\" } else {  $ftp=$False; $obj | add-member -Type Noteproperty \"FTP\" -Value \"NO\"; }  IF ($ftp){  $Cmdtext = \"Open 127.0.0.1`ntypeusername`ntypepassword`ndir`nbye\"; $Cmdtext | Set-Content 'C:\\ftpcmd.txt';   $ftpoutput= Invoke-Expression \"ftp -i -s:C:\\ftpcmd.txt\"; If ($ftpoutput| Select-String -pattern \"Windows|Program Files\") { $obj | add-member -Type Noteproperty \"FTPSystemAccess\" -Value \"YES\"; }  else  { $obj | add-member -Type Noteproperty \"FTPSystemAccess\" -Value \"NO\"; }  Remove-Item C:\\ftpcmd.txt; }  $obj;",
+                        "description": "[PCI: Server-Hardening] FTP servers must be configured to prevent access to the system drive. WN12-GE-000027"
+                    },
+                    "description": "[PCI: Server-Hardening] FTP servers must be configured to prevent access to the system drive. WN12-GE-000027",
+                    "nodeGroupsOpen": true
+                }
+            ]
+        },
+        {
+            "2.2.4.c Select a sample of system components and inspect the common security parameters to verify that they  are set appropriately and in accordance with the  configuration standards": [
+                {
+                    "id": "2-2-4-c-Select-a-sample-of-system-components-and-inspect-the-common-security-parameters-to-verify-that-they-are-set-appropriately-and-in-accordance-with-the-configuration-standards-PCI-Server-Hardening-Reversible-password-encryption-must-be-disabled",
+                    "name": "[PCI: Server-Hardening] Reversible password encryption must be disabled",
+                    "error": false,
+                    "checks": {
+                        "present": [
+                            {
+                                "check": "equals",
+                                "expected": "true"
+                            }
+                        ],
+                        "ClearTextPassword": [
+                            {
+                                "exp": "1",
+                                "check": "equals",
+                                "expected": "1",
+                                "background": "Reversible password encryption must be disabled."
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Reversible password encryption must be disabled. WN12-AC-000009"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "Invoke-Expression \"C:\\windows\\system32\\secedit.exe /export /cfg c:\\2.txt /quiet\"  $arr=@((cat C:\\2.txt | Select-string  \"ClearTextPassword\" ) -split \"=\").trim()  $obj = New-Object psobject  $obj | add-member  -Type Noteproperty \"ClearTextPassword\" -Value $arr[1]  $obj;  Remove-Item C:\\2.txt;",
+                        "description": "[PCI: Server-Hardening] Reversible password encryption must be disabled"
+                    },
+                    "description": "[PCI: Server-Hardening] Reversible password encryption must be disabled",
+                    "nodeGroupsOpen": true
+                },
+                {
+                    "id": "2-2-4-c-Select-a-sample-of-system-components-and-inspect-the-common-security-parameters-to-verify-that-they-are-set-appropriately-and-in-accordance-with-the-configuration-standards-PCI-Server-Hardening-Optional-Subsystems-must-not-be-permitted-to-operate-on-the-system-WN12-SO-000088",
+                    "name": "[PCI: Server-Hardening] Optional Subsystems must not be permitted to operate on the system. WN12-SO-000088",
+                    "error": false,
+                    "checks": {
+                        "present": [
+                            {
+                                "check": "equals",
+                                "expected": "true"
+                            }
+                        ],
+                        "OptionalSubSystems": [
+                            {
+                                "check": "equals",
+                                "expected": "1",
+                                "background": "Optional Subsystems must not be permitted to operate on the system. WN12-SO-000088",
+                                "valueSelectList": null,
+                                "attributeSelectList": null,
+                                "availableAttributes": null
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Optional Subsystems must not be permitted to operate on the system. WN12-SO-000088"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "$Value=0; Try{ $Value= (Get-ItemProperty -Path 'HKLM:\\\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Subsystems' -Name Optional -ErrorAction Stop) | Select -ExpandProperty Optional } Catch { } ; $obj = New-Object psobject; If($Value -eq $null) { $Value =1; }else { $Value=0;} $obj | add-member -Type Noteproperty \"OptionalSubSystems\" -Value $Value; $obj;",
+                        "description": "[PCI: Server-Hardening] Optional Subsystems must not be permitted to operate on the system. WN12-SO-000088"
+                    },
+                    "description": "[PCI: Server-Hardening] Optional Subsystems must not be permitted to operate on the system. WN12-SO-000088",
+                    "nodeGroupsOpen": true
+                }
+            ]
+        },
+        {
+            "2.2.5.a Select a sample of system components and inspect the configurations to verify that all unnecessary  functionality (for  example, scripts, drivers, features,  subsystems, file systems, etc.) is removed": [
+                {
+                    "id": "2-2-5-a-Select-a-sample-of-system-components-and-inspect-the-configurations-to-verify-that-all-unnecessary-functionality-for-example-scripts-drivers-features-subsystems-file-systems-etc-is-removed-PCI-Server-Hardening-Autoplay-must-be-disabled-for-all-drives-WIN12-CC-000074",
+                    "name": "[PCI: Server-Hardening] Autoplay must be disabled for all drives. WIN12-CC-000074",
+                    "error": false,
+                    "checks": {
+                        "present": [
+                            {
+                                "check": "equals",
+                                "expected": "true"
+                            }
+                        ],
+                        "NoDriveTypeAutoRun": [
+                            {
+                                "check": "equals",
+                                "expected": "255",
+                                "background": "Autoplay must be disabled for all drives. WIN12-CC-000074",
+                                "valueSelectList": null,
+                                "attributeSelectList": null,
+                                "availableAttributes": null
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Autoplay must be disabled for all drives. WIN12-CC-000074"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "$Value=0; Try{ $Value= (Get-ItemProperty -Path 'HKLM:\\\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\Explorer' -Name NoDriveTypeAutoRun -ErrorAction Stop) | Select -ExpandProperty NoDriveTypeAutoRun } Catch { } ; $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"NoDriveTypeAutoRun\" -Value $Value; $obj;",
+                        "description": "[PCI: Server-Hardening] Autoplay must be disabled for all drives. WIN12-CC-000074"
+                    },
+                    "description": "[PCI: Server-Hardening] Autoplay must be disabled for all drives. WIN12-CC-000074",
+                    "nodeGroupsOpen": true
+                },
+                {
+                    "id": "2-2-5-a-Select-a-sample-of-system-components-and-inspect-the-configurations-to-verify-that-all-unnecessary-functionality-for-example-scripts-drivers-features-subsystems-file-systems-etc-is-removed-PCI-Server-Hardening-The-use-of-biometrics-must-be-disabled-WN12-CC-000075",
+                    "name": "[PCI: Server-Hardening] The use of biometrics must be disabled. WN12-CC-000075",
+                    "error": false,
+                    "checks": {
+                        "present": [
+                            {
+                                "check": "equals",
+                                "expected": "true"
+                            }
+                        ],
+                        "BiometricsStatus": [
+                            {
+                                "check": "equals",
+                                "expected": "0",
+                                "background": "The use of biometrics must be disabled. WN12-CC-000075",
+                                "valueSelectList": null,
+                                "attributeSelectList": null,
+                                "availableAttributes": null
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "The use of biometrics must be disabled. WN12-CC-000075"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "$Value=0; Try{ $Value= (Get-ItemProperty -Path 'HKLM:\\\\SOFTWARE\\Policies\\Microsoft\\Biometric' -Name Enabled -ErrorAction Stop) | Select -ExpandProperty Enabled } Catch { } ; $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"BiometricsStatus\" -Value $Value; $obj;",
+                        "description": "[PCI: Server-Hardening] The use of biometrics must be disabled. WN12-CC-000075"
+                    },
+                    "description": "[PCI: Server-Hardening] The use of biometrics must be disabled. WN12-CC-000075",
+                    "nodeGroupsOpen": true
+                }
+            ]
+        },
+        {
+            "Version": [
+                {
+                    "id": "Version-PCI-Server-Hardening-Policy-Version",
+                    "name": "[PCI: Server-Hardening] Policy Version",
+                    "error": false,
+                    "checks": {
+                        "present": [
+                            {
+                                "check": "equals",
+                                "expected": "true"
+                            }
+                        ]
+                    },
+                    "ci_path": null,
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "echo \"20170913-0\"",
+                        "description": "[PCI: Server-Hardening] Policy Version"
+                    },
+                    "description": "[PCI: Server-Hardening] Policy Version",
+                    "nodeGroupsOpen": true
+                }
+            ]
+        }
+    ],
+    "scan_options": {
+        "powershell_queries": [
+            {
+                "description": "[PCI: Server-Hardening] Make sure Fax Service is not installed",
+                "query": "$obj = New-Object psobject; IF (gwmi win32_Service | where {$_.Name -match \"fax\"}){  $obj | add-member -Type Noteproperty \"FaxInstalledStatus\" -Value $True; } else {   $obj | add-member -Type Noteproperty \"FaxInstalledStatus\" -Value $False; }  $obj;"
+            },
+            {
+                "description": "[PCI: Server-Hardening] Make sure FTP is not installed",
+                "query": "$obj = New-Object psobject; If (gwmi win32_ServerFeature | where {$_.Name -match \"FTP\"}){  $obj | add-member -Type Noteproperty \"FTPInstalledStatus\" -Value $True; } else {   $obj | add-member -Type Noteproperty \"FTPInstalledStatus\" -Value $False; }  $obj;"
+            },
+            {
+                "description": "[PCI: Server-Hardening] Remove or disable the Simple TCP/IP Services (simptcp) service",
+                "query": "$obj = New-Object psobject; IF (gwmi win32_Service | where {$_.Name -match \"simptcp\"}){  $obj | add-member -Type Noteproperty \"simptcpInstalledStatus\" -Value $True; } else {  $obj | add-member -Type Noteproperty \"simptcpInstalledStatus\" -Value $False; } $obj;"
+            },
+            {
+                "description": "[PCI: Server-Hardening] Verify the Peer Network Identity Manager (p2pimsvc) service is not installed or is disabled",
+                "query": "$obj = New-Object psobject; IF (gwmi win32_Service | where {$_.Name -match \"p2pimsvc\"}){  $obj | add-member -Type Noteproperty \"p2pimsvcInstalledStatus\" -Value $True; } else {  $obj | add-member -Type Noteproperty \"p2pimsvcInstalledStatus\" -Value $False; } $obj;"
+            },
+            {
+                "description": "[PCI: Server-Hardening] Verify the Telnet (tlntsvr) service is not installed or is disabled. WN12-SV-000105",
+                "query": "$obj = New-Object psobject;  IF (gwmi win32_Service | where {$_.Name -match \"tlntsvr\"}){  $obj | add-member -Type Noteproperty \"tlntsvrInstalledStatus\" -Value $True; } else {  $obj | add-member -Type Noteproperty \"tlntsvrInstalledStatus\" -Value $False; }  $obj;"
+            },
+            {
+                "description": "[PCI: Server-Hardening] Named pipes that can be accessed anonymously must be configured with limited values on domain controllers. WN    12-SO-000055-DC",
+                "query": "$Value=0; Try{ $Value= (Get-ItemProperty -Path 'HKLM:\\\\SYSTEM\\CurrentControlSet\\Services\\LanManServer\\Parameters' -Name NullSessionPipes -ErrorAction Stop) | Select -ExpandProperty NullSessionPipes } Catch { } ; $obj = New-Object psobject; If ($Value -match \"netlogon|samr|lsarpc\"){ $Value =1;}else { $Value=0;}  $obj | add-member -Type Noteproperty \"NullSessionPipes\" -Value ($Value ); $obj;"
+            },
+            {
+                "description": "[PCI: Server-Hardening] FTP servers must be configured to prevent access to the system drive. WN12-GE-000027",
+                "query": "$obj = New-Object psobject; If (gwmi win32_ServerFeature | where {$_.Name -match \"FTP\"}){ $ftp=$True; $obj | add-member -Type Noteproperty \"FTP\" -Value \"YES\" } else {  $ftp=$False; $obj | add-member -Type Noteproperty \"FTP\" -Value \"NO\"; }  IF ($ftp){  $Cmdtext = \"Open 127.0.0.1`ntypeusername`ntypepassword`ndir`nbye\"; $Cmdtext | Set-Content 'C:\\ftpcmd.txt';   $ftpoutput= Invoke-Expression \"ftp -i -s:C:\\ftpcmd.txt\"; If ($ftpoutput| Select-String -pattern \"Windows|Program Files\") { $obj | add-member -Type Noteproperty \"FTPSystemAccess\" -Value \"YES\"; }  else  { $obj | add-member -Type Noteproperty \"FTPSystemAccess\" -Value \"NO\"; }  Remove-Item C:\\ftpcmd.txt; }  $obj;"
+            },
+            {
+                "description": "[PCI: Server-Hardening] Reversible password encryption must be disabled",
+                "query": "Invoke-Expression \"C:\\windows\\system32\\secedit.exe /export /cfg c:\\2.txt /quiet\"  $arr=@((cat C:\\2.txt | Select-string  \"ClearTextPassword\" ) -split \"=\").trim()  $obj = New-Object psobject  $obj | add-member  -Type Noteproperty \"ClearTextPassword\" -Value $arr[1]  $obj;  Remove-Item C:\\2.txt;"
+            },
+            {
+                "description": "[PCI: Server-Hardening] Optional Subsystems must not be permitted to operate on the system. WN12-SO-000088",
+                "query": "$Value=0; Try{ $Value= (Get-ItemProperty -Path 'HKLM:\\\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Subsystems' -Name Optional -ErrorAction Stop) | Select -ExpandProperty Optional } Catch { } ; $obj = New-Object psobject; If($Value -eq $null) { $Value =1; }else { $Value=0;} $obj | add-member -Type Noteproperty \"OptionalSubSystems\" -Value $Value; $obj;"
+            },
+            {
+                "description": "[PCI: Server-Hardening] Autoplay must be disabled for all drives. WIN12-CC-000074",
+                "query": "$Value=0; Try{ $Value= (Get-ItemProperty -Path 'HKLM:\\\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\Explorer' -Name NoDriveTypeAutoRun -ErrorAction Stop) | Select -ExpandProperty NoDriveTypeAutoRun } Catch { } ; $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"NoDriveTypeAutoRun\" -Value $Value; $obj;"
+            },
+            {
+                "description": "[PCI: Server-Hardening] The use of biometrics must be disabled. WN12-CC-000075",
+                "query": "$Value=0; Try{ $Value= (Get-ItemProperty -Path 'HKLM:\\\\SOFTWARE\\Policies\\Microsoft\\Biometric' -Name Enabled -ErrorAction Stop) | Select -ExpandProperty Enabled } Catch { } ; $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"BiometricsStatus\" -Value $Value; $obj;"
+            },
+            {
+                "description": "[PCI: Server-Hardening] Policy Version",
+                "query": "echo \"20170913-0\""
+            }
+        ]
+    }
+}

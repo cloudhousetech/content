@@ -14,7 +14,7 @@
     },
     "data": [
         {
-            "2.2.2.a  Select a sample of system components and inspect enabled system services, daemons, and protocols  to verify that only necessary services or protocols are  enable": [
+            "2.2.2.a Select a sample of system components and inspect enabled system services, daemons, and protocols to verify that only necessary services or protocols are enabled": [
                 {
                     "id": "2-2-2-a-Select-a-sample-of-system-components-and-inspect-enabled-system-services-daemons-and-protocols-to-verify-that-only-necessary-services-or-protocols-are-enable-PCI-Server-Hardening-Make-sure-Fax-Service-is-not-installed",
                     "name": "[PCI: Server-Hardening] Make sure Fax Service is not installed",
@@ -195,7 +195,7 @@
             ]
         },
         {
-            "2.2.3 .a Inspect  configuration settings to verify that security  features are documented and implemented for all insecure  services, daemons, or protocols": [
+            "2.2.3.a Inspect configuration settings to verify that security features are documented and implemented for all insecure services, daemons, or protocols": [
                 {
                     "id": "2-2-3-a-Inspect-configuration-settings-to-verify-that-security-features-are-documented-and-implemented-for-all-insecure-services-daemons-or-protocols-PCI-Server-Hardening-Named-pipes-that-can-be-accessed-anonymously-must-be-configured-with-limited-values-on-domain-controllers-WN12-SO-000055-DC",
                     "name": "[PCI: Server-Hardening] Named pipes that can be accessed anonymously must be configured with limited values on domain controllers. WN12-SO-000055-DC",
@@ -224,7 +224,7 @@
                     "check_type": "powershell",
                     "powershell": {
                         "query": "$Value=0; Try{ $Value= (Get-ItemProperty -Path 'HKLM:\\\\SYSTEM\\CurrentControlSet\\Services\\LanManServer\\Parameters' -Name NullSessionPipes -ErrorAction Stop) | Select -ExpandProperty NullSessionPipes } Catch { } ; $obj = New-Object psobject; If ($Value -match \"netlogon|samr|lsarpc\"){ $Value =1;}else { $Value=0;}  $obj | add-member -Type Noteproperty \"NullSessionPipes\" -Value ($Value ); $obj;",
-                        "description": "[PCI: Server-Hardening] Named pipes that can be accessed anonymously must be configured with limited values on domain controllers. WN    12-SO-000055-DC"
+                        "description": "[PCI: Server-Hardening] Named pipes that can be accessed anonymously must be configured with limited values on domain controllers. WN12-SO-000055-DC"
                     },
                     "description": "[PCI: Server-Hardening] Named pipes that can be accessed anonymously must be configured with limited values on domain controllers. WN12-SO-000055-DC",
                     "nodeGroupsOpen": true
@@ -273,7 +273,7 @@
             ]
         },
         {
-            "2.2.4.c Select a sample of system components and inspect the common security parameters to verify that they  are set appropriately and in accordance with the  configuration standards": [
+            "2.2.4.c Select a sample of system components and inspect the common security parameters to verify that they are set appropriately and in accordance with the configuration standards": [
                 {
                     "id": "2-2-4-c-Select-a-sample-of-system-components-and-inspect-the-common-security-parameters-to-verify-that-they-are-set-appropriately-and-in-accordance-with-the-configuration-standards-PCI-Server-Hardening-Reversible-password-encryption-must-be-disabled",
                     "name": "[PCI: Server-Hardening] Reversible password encryption must be disabled",
@@ -345,7 +345,7 @@
             ]
         },
         {
-            "2.2.5.a Select a sample of system components and inspect the configurations to verify that all unnecessary  functionality (for  example, scripts, drivers, features,  subsystems, file systems, etc.) is removed": [
+            "2.2.5.a Select a sample of system components and inspect the configurations to verify that all unnecessary functionality (for example, scripts, drivers, features, subsystems, file systems, etc.) is removed": [
                 {
                     "id": "2-2-5-a-Select-a-sample-of-system-components-and-inspect-the-configurations-to-verify-that-all-unnecessary-functionality-for-example-scripts-drivers-features-subsystems-file-systems-etc-is-removed-PCI-Server-Hardening-Autoplay-must-be-disabled-for-all-drives-WIN12-CC-000074",
                     "name": "[PCI: Server-Hardening] Autoplay must be disabled for all drives. WIN12-CC-000074",
@@ -467,7 +467,7 @@
                 "query": "$obj = New-Object psobject;  IF (gwmi win32_Service | where {$_.Name -match \"tlntsvr\"}){  $obj | add-member -Type Noteproperty \"tlntsvrInstalledStatus\" -Value $True; } else {  $obj | add-member -Type Noteproperty \"tlntsvrInstalledStatus\" -Value $False; }  $obj;"
             },
             {
-                "description": "[PCI: Server-Hardening] Named pipes that can be accessed anonymously must be configured with limited values on domain controllers. WN    12-SO-000055-DC",
+                "description": "[PCI: Server-Hardening] Named pipes that can be accessed anonymously must be configured with limited values on domain controllers. WN12-SO-000055-DC",
                 "query": "$Value=0; Try{ $Value= (Get-ItemProperty -Path 'HKLM:\\\\SYSTEM\\CurrentControlSet\\Services\\LanManServer\\Parameters' -Name NullSessionPipes -ErrorAction Stop) | Select -ExpandProperty NullSessionPipes } Catch { } ; $obj = New-Object psobject; If ($Value -match \"netlogon|samr|lsarpc\"){ $Value =1;}else { $Value=0;}  $obj | add-member -Type Noteproperty \"NullSessionPipes\" -Value ($Value ); $obj;"
             },
             {

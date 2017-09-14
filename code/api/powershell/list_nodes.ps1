@@ -24,6 +24,7 @@ The resulting API response is stored in the $nodeArr variable which is an array 
 UpGuard Support Site Documentation: https://support.upguard.com/upguard/nodes-api-v2.html#index
 
 Usage Instructions:
+  - Machine must be running Powershell 3 and up
   - Please provide the secret_key, api_key, url, and appropriate scheme of your UpGuard Appliance
     in the fields above in order to run this script.
     

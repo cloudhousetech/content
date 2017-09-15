@@ -1,7 +1,7 @@
 {
     "policy": {
         "name": "copy_of_pci_32_ms_sql_check",
-        "short_description": "Copy of PCI: 3.2 MS SQL Check",
+        "short_description": "Copy of PCI 3.2 MS SQL Check",
         "description": null,
         "settings": {
             "tests": {
@@ -165,7 +165,7 @@
                     "check_type": "powershell",
                     "powershell": {
                         "query": "Invoke-Sqlcmd -Query \"EXEC sp_MSforeachdb 'USE [?] EXEC sp_change_users_login @Action=''Report''';\"  | Measure-object",
-                    "description": "[PCI: MS-SQL] Query Orphaned Users"
+                        "description": "[PCI: MS-SQL] Query Orphaned Users"
                     },
                     "description": "[PCI: MS-SQL] Query Orphaned Users",
                     "nodeGroupsOpen": true
@@ -275,7 +275,7 @@
                     "check_type": "powershell",
                     "powershell": {
                         "query": "Invoke-Sqlcmd -Query \"SELECT *  FROM master.sys.server_permissions WHERE (grantee_principal_id = SUSER_SID(N'public') and state_desc LIKE 'GRANT%') AND NOT (state_desc = 'GRANT' and [permission_name] = 'VIEW ANY DATABASE' and class_desc = 'SERVER') AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 2)  AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 3) AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 4) AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 5);\"  | Measure-object",
-                       "description": "[PCI: MS-SQL] Query non-default permissions granted to the public server role"
+                        "description": "[PCI: MS-SQL] Query non-default permissions granted to the public server role"
                     },
                     "description": "[PCI: MS-SQL] Query non-default permissions granted to the public server role",
                     "nodeGroupsOpen": true
@@ -750,7 +750,7 @@
                 "query": "Invoke-Sqlcmd -Query \"USE [msdb] SELECT sp.name AS proxyname FROM dbo.sysproxylogin spl JOIN sys.database_principals dp ON dp.sid = spl.sid JOIN sysproxies sp ON   sp.proxy_id = spl.proxy_id WHERE principal_id = USER_ID('public');\" | Measure-object"
             },
             {
-                "description": "[PCI: MS-SQL] Query Local System account (aka  NT AUTHORITY\\SYSTEM) used for the MSSQL service",
+                "description": "[PCI: MS-SQL] Query Local System account (aka NT AUTHORITY\\SYSTEM) used for the MSSQL service",
                 "query": "Invoke-Sqlcmd -Query \"select [servicename], [service_account] from sys.dm_server_services where [service_account] = 'NT AUTHORITY\\SYSTEM';\" | Measure-object"
             },
             {
@@ -766,7 +766,7 @@
                 "query": "$q = Invoke-Sqlcmd -Query \"select SUBSTRING ([service_account], CHARINDEX('\\', [service_account]) + 1, LEN([service_account])) as q_res from sys.dm_server_services where [servicename] = 'SQL Full-text Filter Daemon Launcher (MSSQLSERVER)';\";$u = $q | Select-object  -ExpandProperty  q_res;net localgroup administrators | Where {$_ -match $u} | Measure-object"
             },
             {
-                "description": "[PCI: MS-SQL] Query CHECK_EXPIRATION Option set to OFF for SQL Authenticated Logins Within the Sysadmin Role",
+                "description": "[PCI: MS-SQL] Query CHECK_EXPIRATION Option set to OFF",
                 "query": "Invoke-Sqlcmd -Query \"SELECT l.[name], 'sysadmin membership' AS 'Access_Method' FROM sys.sql_logins AS l WHERE IS_SRVROLEMEMBER('sysadmin',name) = 1 AND l.is_expiration_checked != 1 UNION ALL SELECT l.[name], 'CONTROL SERVER' AS 'Access_Method' FROM sys.sql_logins AS l JOIN sys.server_permissions AS p  ON l.principal_id = p.grantee_principal_id WHERE p.type = 'CL' AND p.state IN ('G', 'W') AND l.is_expiration_checked != 1;\" | Measure-object"
             },
             {
@@ -780,3 +780,4 @@
         ]
     }
 }
+

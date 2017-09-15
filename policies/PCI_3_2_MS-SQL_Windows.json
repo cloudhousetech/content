@@ -43,7 +43,8 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "Invoke-Sqlcmd -Query \"SELECT SERVERPROPERTY('ProductLevel') as SP_installed, SERVERPROPERTY('ProductVersion') as Version;\""
+                        "query": "Invoke-Sqlcmd -Query \"SELECT SERVERPROPERTY('ProductLevel') as SP_installed, SERVERPROPERTY('ProductVersion') as Version;\"",
+                        "description": "[PCI: MS-SQL] Query Product Level and Product Version"
                     },
                     "description": "[PCI: MS-SQL] Query Product Level and Product Version",
                     "nodeGroupsOpen": true
@@ -83,7 +84,8 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "Invoke-Sqlcmd -Query  \"SELECT SERVERPROPERTY('IsIntegratedSecurityOnly') as [login_mode];\""
+                        "query": "Invoke-Sqlcmd -Query  \"SELECT SERVERPROPERTY('IsIntegratedSecurityOnly') as [login_mode];\"",
+                        "description": "[PCI: MS-SQL] Query Server Authentication Property"
                     },
                     "description": "[PCI: MS-SQL] Query Server Authentication Property",
                     "nodeGroupsOpen": true
@@ -120,7 +122,8 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "Invoke-Sqlcmd -Query \"declare @result table (DatabaseName varchar(1000), Database_User varchar(1000), permission_name varchar(1000), state_desc varchar(1000)); insert into @result EXEC sp_MSforeachdb 'USE [?] SELECT DB_NAME() AS DatabaseName, ''guest'' AS Database_User,[permission_name], [state_desc] FROM sys.database_permissions WHERE [grantee_principal_id] = DATABASE_PRINCIPAL_ID(''guest'') AND [state_desc] LIKE ''GRANT%'' AND [permission_name] = ''CONNECT'''; select * from @result where DatabaseName not in ('master','tempdb','msdb');\" | Measure-object"
+                        "query": "Invoke-Sqlcmd -Query \"declare @result table (DatabaseName varchar(1000), Database_User varchar(1000), permission_name varchar(1000), state_desc varchar(1000)); insert into @result EXEC sp_MSforeachdb 'USE [?] SELECT DB_NAME() AS DatabaseName, ''guest'' AS Database_User,[permission_name], [state_desc] FROM sys.database_permissions WHERE [grantee_principal_id] = DATABASE_PRINCIPAL_ID(''guest'') AND [state_desc] LIKE ''GRANT%'' AND [permission_name] = ''CONNECT'''; select * from @result where DatabaseName not in ('master','tempdb','msdb');\" | Measure-object",
+                        "description": "[PCI: MS-SQL] Query CONNECT permission granted to guest user"
                     },
                     "selectList": [
                         "*"
@@ -161,7 +164,8 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "Invoke-Sqlcmd -Query \"EXEC sp_MSforeachdb 'USE [?] EXEC sp_change_users_login @Action=''Report''';\"  | Measure-object"
+                        "query": "Invoke-Sqlcmd -Query \"EXEC sp_MSforeachdb 'USE [?] EXEC sp_change_users_login @Action=''Report''';\"  | Measure-object",
+                    "description": "[PCI: MS-SQL] Query Orphaned Users"
                     },
                     "description": "[PCI: MS-SQL] Query Orphaned Users",
                     "nodeGroupsOpen": true
@@ -199,7 +203,8 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "Invoke-Sqlcmd -Query \"EXEC sp_MSforeachdb 'USE [?] SELECT name AS DBUser FROM sys.database_principals WHERE name NOT IN   (''dbo'',''Information_Schema'',''sys'',''guest'') AND type IN (''U'',''S'',''G'') AND authentication_type = 2';\"  | Measure-object"
+                        "query": "Invoke-Sqlcmd -Query \"EXEC sp_MSforeachdb 'USE [?] SELECT name AS DBUser FROM sys.database_principals WHERE name NOT IN   (''dbo'',''Information_Schema'',''sys'',''guest'') AND type IN (''U'',''S'',''G'') AND authentication_type = 2';\"  | Measure-object",
+                        "description": "[PCI: MS-SQL] Query the use of SQL Authentication"
                     },
                     "description": "[PCI: MS-SQL] Query the use of SQL Authentication",
                     "nodeGroupsOpen": true
@@ -269,7 +274,8 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "Invoke-Sqlcmd -Query \"SELECT *  FROM master.sys.server_permissions WHERE (grantee_principal_id = SUSER_SID(N'public') and state_desc LIKE 'GRANT%') AND NOT (state_desc = 'GRANT' and [permission_name] = 'VIEW ANY DATABASE' and class_desc = 'SERVER') AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 2)  AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 3) AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 4) AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 5);\"  | Measure-object"
+                        "query": "Invoke-Sqlcmd -Query \"SELECT *  FROM master.sys.server_permissions WHERE (grantee_principal_id = SUSER_SID(N'public') and state_desc LIKE 'GRANT%') AND NOT (state_desc = 'GRANT' and [permission_name] = 'VIEW ANY DATABASE' and class_desc = 'SERVER') AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 2)  AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 3) AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 4) AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 5);\"  | Measure-object",
+                       "description": "[PCI: MS-SQL] Query non-default permissions granted to the public server role"
                     },
                     "description": "[PCI: MS-SQL] Query non-default permissions granted to the public server role",
                     "nodeGroupsOpen": true
@@ -325,7 +331,8 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "Invoke-Sqlcmd -Query \"SELECT pr.[name], pe.[permission_name], pe.[state_desc] FROM sys.server_principals pr JOIN sys.server_permissions pe ON pr.principal_id = pe.grantee_principal_id WHERE pr.name like 'BUILTIN%';\" | Measure-object"
+                        "query": "Invoke-Sqlcmd -Query \"SELECT pr.[name], pe.[permission_name], pe.[state_desc] FROM sys.server_principals pr JOIN sys.server_permissions pe ON pr.principal_id = pe.grantee_principal_id WHERE pr.name like 'BUILTIN%';\" | Measure-object",
+                        "description": "[PCI: MS-SQL] Query Windows BUILTIN groups or accounts have been added as SQL Server Logins"
                     },
                     "description": "[PCI: MS-SQL] Query Windows BUILTIN groups or accounts have been added as SQL Server Logins",
                     "nodeGroupsOpen": true
@@ -381,7 +388,8 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "Invoke-Sqlcmd -Query \"USE [master] SELECT pr.[name] AS LocalGroupName, pe.[permission_name], pe.[state_desc] FROM sys.server_principals pr JOIN sys.server_permissions   pe ON pr.[principal_id] = pe.[grantee_principal_id] WHERE pr.[type_desc] = 'WINDOWS_GROUP' AND pr.[name] like CAST(SERVERPROPERTY('MachineName') AS nvarchar) + '%';\" | Measure-object"
+                        "query": "Invoke-Sqlcmd -Query \"USE [master] SELECT pr.[name] AS LocalGroupName, pe.[permission_name], pe.[state_desc] FROM sys.server_principals pr JOIN sys.server_permissions   pe ON pr.[principal_id] = pe.[grantee_principal_id] WHERE pr.[type_desc] = 'WINDOWS_GROUP' AND pr.[name] like CAST(SERVERPROPERTY('MachineName') AS nvarchar) + '%';\" | Measure-object",
+                        "description": "[PCI: MS-SQL] Query Windows local groups that are SQL Logins"
                     },
                     "description": "[PCI: MS-SQL] Query Windows local groups that are SQL Logins",
                     "nodeGroupsOpen": true
@@ -433,7 +441,8 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "Invoke-Sqlcmd -Query \"USE [msdb] SELECT sp.name AS proxyname FROM dbo.sysproxylogin spl JOIN sys.database_principals dp ON dp.sid = spl.sid JOIN sysproxies sp ON   sp.proxy_id = spl.proxy_id WHERE principal_id = USER_ID('public');\" | Measure-object"
+                        "query": "Invoke-Sqlcmd -Query \"USE [msdb] SELECT sp.name AS proxyname FROM dbo.sysproxylogin spl JOIN sys.database_principals dp ON dp.sid = spl.sid JOIN sysproxies sp ON   sp.proxy_id = spl.proxy_id WHERE principal_id = USER_ID('public');\" | Measure-object",
+                        "description": "[PCI: MS-SQL] Query public role in the msdb database with granted access to SQL Agent proxies"
                     },
                     "description": "[PCI: MS-SQL] Query public role in the msdb database with granted access to SQL Agent proxies",
                     "nodeGroupsOpen": true
@@ -469,14 +478,15 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "Invoke-Sqlcmd -Query \"select [servicename], [service_account] from sys.dm_server_services where [service_account] = 'NT AUTHORITY\\SYSTEM';\" | Measure-object"
+                        "query": "Invoke-Sqlcmd -Query \"select [servicename], [service_account] from sys.dm_server_services where [service_account] = 'NT AUTHORITY\\SYSTEM';\" | Measure-object",
+                        "description": "[PCI: MS-SQL] Query Local System account (aka NT AUTHORITY\\SYSTEM) used for the MSSQL service"
                     },
                     "description": "[PCI: MS-SQL] Query Local System account (aka NT AUTHORITY\\SYSTEM) used for the MSSQL service",
                     "nodeGroupsOpen": true
                 },
                 {
                     "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-MSSQL-Service-Account-as-Administrator",
-                    "name": "[PCI: MS-SQL]Query MSSQL Service Account as Administrator",
+                    "name": "[PCI: MS-SQL] Query MSSQL Service Account as Administrator",
                     "error": false,
                     "checks": {
                         "Count": [
@@ -507,11 +517,12 @@
                     "ci_path": [
                         "PowerShell",
                         "Queries",
-                        "[PCI: MS-SQL]Query MSSQL Service Account as Administrator"
+                        "[PCI: MS-SQL] Query MSSQL Service Account as Administrator"
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$q = Invoke-Sqlcmd -Query \"select SUBSTRING ([service_account], CHARINDEX('\\', [service_account]) + 1, LEN([service_account])) as q_res from sys.dm_server_services where [servicename] = 'SQL Server (MSSQLSERVER)';\";$u = $q | Select-object  -ExpandProperty  q_res;net localgroup administrators | Where {$_ -match $u} | Measure-object"
+                        "query": "$q = Invoke-Sqlcmd -Query \"select SUBSTRING ([service_account], CHARINDEX('\\', [service_account]) + 1, LEN([service_account])) as q_res from sys.dm_server_services where [servicename] = 'SQL Server (MSSQLSERVER)';\";$u = $q | Select-object  -ExpandProperty  q_res;net localgroup administrators | Where {$_ -match $u} | Measure-object",
+                        "description": "[PCI: MS-SQL]Query MSSQL Service Account as Administrator"
                     },
                     "description": "[PCI: MS-SQL]Query MSSQL Service Account as Administrator",
                     "nodeGroupsOpen": true
@@ -549,7 +560,8 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$q = Invoke-Sqlcmd -Query \"select SUBSTRING ([service_account], CHARINDEX('\\', [service_account]) + 1, LEN([service_account])) as q_res from sys.dm_server_services where [servicename] = 'SQL Server Agent (MSSQLSERVER)';\";$u = $q | Select-object  -ExpandProperty  q_res;net localgroup administrators | Where {$_ -match $u} | Measure-object"
+                        "query": "$q = Invoke-Sqlcmd -Query \"select SUBSTRING ([service_account], CHARINDEX('\\', [service_account]) + 1, LEN([service_account])) as q_res from sys.dm_server_services where [servicename] = 'SQL Server Agent (MSSQLSERVER)';\";$u = $q | Select-object  -ExpandProperty  q_res;net localgroup administrators | Where {$_ -match $u} | Measure-object",
+                        "description": "[PCI: MS-SQL] Query SQLAgent Service Account as Administrator"
                     },
                     "description": "[PCI: MS-SQL] Query SQLAgent Service Account as Administrator",
                     "nodeGroupsOpen": true
@@ -587,7 +599,8 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$q = Invoke-Sqlcmd -Query \"select SUBSTRING ([service_account], CHARINDEX('\\', [service_account]) + 1, LEN([service_account])) as q_res from sys.dm_server_services where [servicename] = 'SQL Full-text Filter Daemon Launcher (MSSQLSERVER)';\";$u = $q | Select-object  -ExpandProperty  q_res;net localgroup administrators | Where {$_ -match $u} | Measure-object"
+                        "query": "$q = Invoke-Sqlcmd -Query \"select SUBSTRING ([service_account], CHARINDEX('\\', [service_account]) + 1, LEN([service_account])) as q_res from sys.dm_server_services where [servicename] = 'SQL Full-text Filter Daemon Launcher (MSSQLSERVER)';\";$u = $q | Select-object  -ExpandProperty  q_res;net localgroup administrators | Where {$_ -match $u} | Measure-object",
+                        "description": "[PCI: MS-SQL] Query Full-Text Service Account as Administrator"
                     },
                     "description": "[PCI: MS-SQL] Query Full-Text Service Account as Administrator",
                     "nodeGroupsOpen": true
@@ -623,7 +636,8 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "Invoke-Sqlcmd -Query \"SELECT l.[name], 'sysadmin membership' AS 'Access_Method' FROM sys.sql_logins AS l WHERE IS_SRVROLEMEMBER('sysadmin',name) = 1 AND l.is_expiration_checked != 1 UNION ALL SELECT l.[name], 'CONTROL SERVER' AS 'Access_Method' FROM sys.sql_logins AS l JOIN sys.server_permissions AS p  ON l.principal_id = p.grantee_principal_id WHERE p.type = 'CL' AND p.state IN ('G', 'W') AND l.is_expiration_checked != 1;\" | Measure-object"
+                        "query": "Invoke-Sqlcmd -Query \"SELECT l.[name], 'sysadmin membership' AS 'Access_Method' FROM sys.sql_logins AS l WHERE IS_SRVROLEMEMBER('sysadmin',name) = 1 AND l.is_expiration_checked != 1 UNION ALL SELECT l.[name], 'CONTROL SERVER' AS 'Access_Method' FROM sys.sql_logins AS l JOIN sys.server_permissions AS p  ON l.principal_id = p.grantee_principal_id WHERE p.type = 'CL' AND p.state IN ('G', 'W') AND l.is_expiration_checked != 1;\" | Measure-object",
+                        "description": "[PCI: MS-SQL] Query CHECK_EXPIRATION Option set to OFF"
                     },
                     "description": "[PCI: MS-SQL] Query CHECK_EXPIRATION Option set to OFF",
                     "nodeGroupsOpen": true
@@ -659,7 +673,8 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "Invoke-Sqlcmd -Query \"SELECT name, is_disabled FROM sys.sql_logins WHERE is_policy_checked = 0;\" | Measure-object"
+                        "query": "Invoke-Sqlcmd -Query \"SELECT name, is_disabled FROM sys.sql_logins WHERE is_policy_checked = 0;\" | Measure-object",
+                        "description": "[PCI: MS-SQL] Query CHECK_POLICY Option set to OFF"
                     },
                     "description": "[PCI: MS-SQL] Query CHECK_POLICY Option set to OFF",
                     "nodeGroupsOpen": true
@@ -687,7 +702,8 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "echo \"20170914-0\""
+                        "query": "echo \"20170914-0\"",
+                        "description": "[PCI: MS-SQL] Policy Version"
                     },
                     "description": "[PCI: MS-SQL] Policy Version",
                     "nodeGroupsOpen": true
@@ -698,67 +714,67 @@
     "scan_options": {
         "powershell_queries": [
             {
-                "description": null,
+                "description": "[PCI: MS-SQL] Query Product Level and Product Version",
                 "query": "Invoke-Sqlcmd -Query \"SELECT SERVERPROPERTY('ProductLevel') as SP_installed, SERVERPROPERTY('ProductVersion') as Version;\""
             },
             {
-                "description": null,
+                "description": "[PCI: MS-SQL] Query Server Authentication Property",
                 "query": "Invoke-Sqlcmd -Query  \"SELECT SERVERPROPERTY('IsIntegratedSecurityOnly') as [login_mode];\""
             },
             {
-                "description": null,
+                "description": "[PCI: MS-SQL] Query CONNECT permission granted to guest user",
                 "query": "Invoke-Sqlcmd -Query \"declare @result table (DatabaseName varchar(1000), Database_User varchar(1000), permission_name varchar(1000), state_desc varchar(1000)); insert into @result EXEC sp_MSforeachdb 'USE [?] SELECT DB_NAME() AS DatabaseName, ''guest'' AS Database_User,[permission_name], [state_desc] FROM sys.database_permissions WHERE [grantee_principal_id] = DATABASE_PRINCIPAL_ID(''guest'') AND [state_desc] LIKE ''GRANT%'' AND [permission_name] = ''CONNECT'''; select * from @result where DatabaseName not in ('master','tempdb','msdb');\" | Measure-object"
             },
             {
-                "description": null,
+                "description": "[PCI: MS-SQL] Query Orphaned Users",
                 "query": "Invoke-Sqlcmd -Query \"EXEC sp_MSforeachdb 'USE [?] EXEC sp_change_users_login @Action=''Report''';\"  | Measure-object"
             },
             {
-                "description": null,
+                "description": "[PCI: MS-SQL] Query the use of SQL Authentication",
                 "query": "Invoke-Sqlcmd -Query \"EXEC sp_MSforeachdb 'USE [?] SELECT name AS DBUser FROM sys.database_principals WHERE name NOT IN   (''dbo'',''Information_Schema'',''sys'',''guest'') AND type IN (''U'',''S'',''G'') AND authentication_type = 2';\"  | Measure-object"
             },
             {
-                "description": null,
+                "description": "[PCI: MS-SQL] Query non-default permissions granted to the public server role",
                 "query": "Invoke-Sqlcmd -Query \"SELECT *  FROM master.sys.server_permissions WHERE (grantee_principal_id = SUSER_SID(N'public') and state_desc LIKE 'GRANT%') AND NOT (state_desc = 'GRANT' and [permission_name] = 'VIEW ANY DATABASE' and class_desc = 'SERVER') AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 2)  AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 3) AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 4) AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 5);\"  | Measure-object"
             },
             {
-                "description": null,
+                "description": "[PCI: MS-SQL] Query Windows BUILTIN groups or accounts have been added as SQL Server Logins",
                 "query": "Invoke-Sqlcmd -Query \"SELECT pr.[name], pe.[permission_name], pe.[state_desc] FROM sys.server_principals pr JOIN sys.server_permissions pe ON pr.principal_id = pe.grantee_principal_id WHERE pr.name like 'BUILTIN%';\" | Measure-object"
             },
             {
-                "description": null,
+                "description": "[PCI: MS-SQL] Query Windows local groups that are SQL Logins",
                 "query": "Invoke-Sqlcmd -Query \"USE [master] SELECT pr.[name] AS LocalGroupName, pe.[permission_name], pe.[state_desc] FROM sys.server_principals pr JOIN sys.server_permissions   pe ON pr.[principal_id] = pe.[grantee_principal_id] WHERE pr.[type_desc] = 'WINDOWS_GROUP' AND pr.[name] like CAST(SERVERPROPERTY('MachineName') AS nvarchar) + '%';\" | Measure-object"
             },
             {
-                "description": null,
+                "description": "[PCI: MS-SQL] Query public role in the msdb database with granted access to SQL Agent proxies",
                 "query": "Invoke-Sqlcmd -Query \"USE [msdb] SELECT sp.name AS proxyname FROM dbo.sysproxylogin spl JOIN sys.database_principals dp ON dp.sid = spl.sid JOIN sysproxies sp ON   sp.proxy_id = spl.proxy_id WHERE principal_id = USER_ID('public');\" | Measure-object"
             },
             {
-                "description": null,
+                "description": "[PCI: MS-SQL] Query Local System account (aka  NT AUTHORITY\\SYSTEM) used for the MSSQL service",
                 "query": "Invoke-Sqlcmd -Query \"select [servicename], [service_account] from sys.dm_server_services where [service_account] = 'NT AUTHORITY\\SYSTEM';\" | Measure-object"
             },
             {
-                "description": null,
+                "description": "[PCI: MS-SQL] Query MSSQL Service Account as Administrator",
                 "query": "$q = Invoke-Sqlcmd -Query \"select SUBSTRING ([service_account], CHARINDEX('\\', [service_account]) + 1, LEN([service_account])) as q_res from sys.dm_server_services where [servicename] = 'SQL Server (MSSQLSERVER)';\";$u = $q | Select-object  -ExpandProperty  q_res;net localgroup administrators | Where {$_ -match $u} | Measure-object"
             },
             {
-                "description": null,
+                "description": "[PCI: MS-SQL] Query SQLAgent Service Account as Administrator",
                 "query": "$q = Invoke-Sqlcmd -Query \"select SUBSTRING ([service_account], CHARINDEX('\\', [service_account]) + 1, LEN([service_account])) as q_res from sys.dm_server_services where [servicename] = 'SQL Server Agent (MSSQLSERVER)';\";$u = $q | Select-object  -ExpandProperty  q_res;net localgroup administrators | Where {$_ -match $u} | Measure-object"
             },
             {
-                "description": null,
+                "description": "[PCI: MS-SQL] Query Full-Text Service Account as Administrator",
                 "query": "$q = Invoke-Sqlcmd -Query \"select SUBSTRING ([service_account], CHARINDEX('\\', [service_account]) + 1, LEN([service_account])) as q_res from sys.dm_server_services where [servicename] = 'SQL Full-text Filter Daemon Launcher (MSSQLSERVER)';\";$u = $q | Select-object  -ExpandProperty  q_res;net localgroup administrators | Where {$_ -match $u} | Measure-object"
             },
             {
-                "description": null,
+                "description": "[PCI: MS-SQL] Query CHECK_EXPIRATION Option set to OFF for SQL Authenticated Logins Within the Sysadmin Role",
                 "query": "Invoke-Sqlcmd -Query \"SELECT l.[name], 'sysadmin membership' AS 'Access_Method' FROM sys.sql_logins AS l WHERE IS_SRVROLEMEMBER('sysadmin',name) = 1 AND l.is_expiration_checked != 1 UNION ALL SELECT l.[name], 'CONTROL SERVER' AS 'Access_Method' FROM sys.sql_logins AS l JOIN sys.server_permissions AS p  ON l.principal_id = p.grantee_principal_id WHERE p.type = 'CL' AND p.state IN ('G', 'W') AND l.is_expiration_checked != 1;\" | Measure-object"
             },
             {
-                "description": null,
+                "description": "[PCI: MS-SQL] Query CHECK_POLICY Option set to OFF",
                 "query": "Invoke-Sqlcmd -Query \"SELECT name, is_disabled FROM sys.sql_logins WHERE is_policy_checked = 0;\" | Measure-object"
             },
             {
-                "description": null,
+                "description": "[PCI: MS-SQL] Policy Version",
                 "query": "echo \"20170914-0\""
             }
         ]

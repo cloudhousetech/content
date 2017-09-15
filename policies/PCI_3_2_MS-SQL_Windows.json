@@ -1,7 +1,7 @@
 {
     "policy": {
         "name": "copy_of_pci_32_ms_sql_check",
-        "short_description": "Copy of PCI 3.2 MS SQL Check",
+        "short_description": "Copy of PCI: 3.2 MS SQL Check",
         "description": null,
         "settings": {
             "tests": {
@@ -17,7 +17,7 @@
             "Ensure Latest SQL Server Service Packs and Hotfixes are Installed": [
                 {
                     "id": "Ensure-Latest-SQL-Server-Service-Packs-and-Hotfixes-are-InstalledQuery-Product-Level-and-Product-Version",
-                    "name": "Query Product Level and Product Version",
+                    "name": "[PCI: MS-SQL] Query Product Level and Product Version",
                     "error": false,
                     "checks": {
                         "Version": [
@@ -39,13 +39,13 @@
                     "ci_path": [
                         "PowerShell",
                         "Queries",
-                        "Query Product Level and Product Version"
+                        "[PCI: MS-SQL] Query Product Level and Product Version"
                     ],
                     "check_type": "powershell",
                     "powershell": {
                         "query": "Invoke-Sqlcmd -Query \"SELECT SERVERPROPERTY('ProductLevel') as SP_installed, SERVERPROPERTY('ProductVersion') as Version;\""
                     },
-                    "description": "Query Product Level and Product Version",
+                    "description": "[PCI: MS-SQL] Query Product Level and Product Version",
                     "nodeGroupsOpen": true
                 }
             ]
@@ -54,7 +54,7 @@
             "8.7.a Review database and application configuration settings and verify that all users are authenticated prior to access.": [
                 {
                     "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-Server-Authentication-Property",
-                    "name": "Query Server Authentication Property",
+                    "name": "[PCI: MS-SQL] Query Server Authentication Property",
                     "error": false,
                     "checks": {
                         "present": [
@@ -79,18 +79,18 @@
                     "ci_path": [
                         "PowerShell",
                         "Queries",
-                        "Query Server Authentication Property"
+                        "[PCI: MS-SQL] Query Server Authentication Property"
                     ],
                     "check_type": "powershell",
                     "powershell": {
                         "query": "Invoke-Sqlcmd -Query  \"SELECT SERVERPROPERTY('IsIntegratedSecurityOnly') as [login_mode];\""
                     },
-                    "description": "Query Server Authentication Property",
+                    "description": "[PCI: MS-SQL] Query Server Authentication Property",
                     "nodeGroupsOpen": true
                 },
                 {
                     "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-CONNECT-permission-granted-to-guest-user",
-                    "name": "Query CONNECT permission granted to guest user",
+                    "name": "[PCI: MS-SQL] Query CONNECT permission granted to guest user",
                     "error": false,
                     "checks": {
                         "Count": [
@@ -116,7 +116,7 @@
                     "ci_path": [
                         "PowerShell",
                         "Queries",
-                        "Query CONNECT permission granted to guest user"
+                        "[PCI: MS-SQL] Query CONNECT permission granted to guest user"
                     ],
                     "check_type": "powershell",
                     "powershell": {
@@ -125,12 +125,12 @@
                     "selectList": [
                         "*"
                     ],
-                    "description": "Query CONNECT permission granted to guest user",
+                    "description": "[PCI: MS-SQL] Query CONNECT permission granted to guest user",
                     "nodeGroupsOpen": true
                 },
                 {
                     "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-Orphaned-Users",
-                    "name": "Query Orphaned Users",
+                    "name": "[PCI: MS-SQL] Query Orphaned Users",
                     "error": false,
                     "checks": {
                         "Count": [
@@ -157,18 +157,18 @@
                     "ci_path": [
                         "PowerShell",
                         "Queries",
-                        "Query Orphaned Users"
+                        "[PCI: MS-SQL] Query Orphaned Users"
                     ],
                     "check_type": "powershell",
                     "powershell": {
                         "query": "Invoke-Sqlcmd -Query \"EXEC sp_MSforeachdb 'USE [?] EXEC sp_change_users_login @Action=''Report''';\"  | Measure-object"
                     },
-                    "description": "Query Orphaned Users",
+                    "description": "[PCI: MS-SQL] Query Orphaned Users",
                     "nodeGroupsOpen": true
                 },
                 {
                     "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-the-use-of-SQL-Authentication",
-                    "name": "Query the use of SQL Authentication",
+                    "name": "[PCI: MS-SQL] Query the use of SQL Authentication",
                     "error": false,
                     "checks": {
                         "Count": [
@@ -195,18 +195,18 @@
                     "ci_path": [
                         "PowerShell",
                         "Queries",
-                        "Query the use of SQL Authentication"
+                        "[PCI: MS-SQL] Query the use of SQL Authentication"
                     ],
                     "check_type": "powershell",
                     "powershell": {
                         "query": "Invoke-Sqlcmd -Query \"EXEC sp_MSforeachdb 'USE [?] SELECT name AS DBUser FROM sys.database_principals WHERE name NOT IN   (''dbo'',''Information_Schema'',''sys'',''guest'') AND type IN (''U'',''S'',''G'') AND authentication_type = 2';\"  | Measure-object"
                     },
-                    "description": "Query the use of SQL Authentication",
+                    "description": "[PCI: MS-SQL] Query the use of SQL Authentication",
                     "nodeGroupsOpen": true
                 },
                 {
                     "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-non-default-permissions-granted-to-the-public-server-role",
-                    "name": "Query non-default permissions granted to the public server role",
+                    "name": "[PCI: MS-SQL] Query non-default permissions granted to the public server role",
                     "error": false,
                     "checks": {
                         "Count": [
@@ -265,18 +265,18 @@
                     "ci_path": [
                         "PowerShell",
                         "Queries",
-                        "Query non-default permissions granted to the public server role"
+                        "[PCI: MS-SQL] Query non-default permissions granted to the public server role"
                     ],
                     "check_type": "powershell",
                     "powershell": {
                         "query": "Invoke-Sqlcmd -Query \"SELECT *  FROM master.sys.server_permissions WHERE (grantee_principal_id = SUSER_SID(N'public') and state_desc LIKE 'GRANT%') AND NOT (state_desc = 'GRANT' and [permission_name] = 'VIEW ANY DATABASE' and class_desc = 'SERVER') AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 2)  AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 3) AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 4) AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 5);\"  | Measure-object"
                     },
-                    "description": "Query non-default permissions granted to the public server role",
+                    "description": "[PCI: MS-SQL] Query non-default permissions granted to the public server role",
                     "nodeGroupsOpen": true
                 },
                 {
                     "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-Windows-BUILTIN-groups-or-accounts-have-been-added-as-SQL-Server-Logins",
-                    "name": "Query Windows BUILTIN groups or accounts have been added as SQL Server Logins",
+                    "name": "[PCI: MS-SQL] Query Windows BUILTIN groups or accounts have been added as SQL Server Logins",
                     "error": false,
                     "checks": {
                         "Count": [
@@ -321,18 +321,18 @@
                     "ci_path": [
                         "PowerShell",
                         "Queries",
-                        "Query Windows BUILTIN groups or accounts have been added as SQL Server Logins"
+                        "[PCI: MS-SQL] Query Windows BUILTIN groups or accounts have been added as SQL Server Logins"
                     ],
                     "check_type": "powershell",
                     "powershell": {
                         "query": "Invoke-Sqlcmd -Query \"SELECT pr.[name], pe.[permission_name], pe.[state_desc] FROM sys.server_principals pr JOIN sys.server_permissions pe ON pr.principal_id = pe.grantee_principal_id WHERE pr.name like 'BUILTIN%';\" | Measure-object"
                     },
-                    "description": "Query Windows BUILTIN groups or accounts have been added as SQL Server Logins",
+                    "description": "[PCI: MS-SQL] Query Windows BUILTIN groups or accounts have been added as SQL Server Logins",
                     "nodeGroupsOpen": true
                 },
                 {
                     "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-Windows-local-groups-that-are-SQL-Logins",
-                    "name": "Query Windows local groups that are SQL Logins",
+                    "name": "[PCI: MS-SQL] Query Windows local groups that are SQL Logins",
                     "error": false,
                     "checks": {
                         "Count": [
@@ -377,18 +377,18 @@
                     "ci_path": [
                         "PowerShell",
                         "Queries",
-                        "Query Windows local groups that are SQL Logins"
+                        "[PCI: MS-SQL] Query Windows local groups that are SQL Logins"
                     ],
                     "check_type": "powershell",
                     "powershell": {
                         "query": "Invoke-Sqlcmd -Query \"USE [master] SELECT pr.[name] AS LocalGroupName, pe.[permission_name], pe.[state_desc] FROM sys.server_principals pr JOIN sys.server_permissions   pe ON pr.[principal_id] = pe.[grantee_principal_id] WHERE pr.[type_desc] = 'WINDOWS_GROUP' AND pr.[name] like CAST(SERVERPROPERTY('MachineName') AS nvarchar) + '%';\" | Measure-object"
                     },
-                    "description": "Query Windows local groups that are SQL Logins",
+                    "description": "[PCI: MS-SQL] Query Windows local groups that are SQL Logins",
                     "nodeGroupsOpen": true
                 },
                 {
                     "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-public-role-in-the-msdb-database-with-granted-access-to-SQL-Agent-proxies",
-                    "name": "Query public role in the msdb database with granted access to SQL Agent proxies",
+                    "name": "[PCI: MS-SQL] Query public role in the msdb database with granted access to SQL Agent proxies",
                     "error": false,
                     "checks": {
                         "Count": [
@@ -429,18 +429,18 @@
                     "ci_path": [
                         "PowerShell",
                         "Queries",
-                        "Query public role in the msdb database with granted access to SQL Agent proxies"
+                        "[PCI: MS-SQL] Query public role in the msdb database with granted access to SQL Agent proxies"
                     ],
                     "check_type": "powershell",
                     "powershell": {
                         "query": "Invoke-Sqlcmd -Query \"USE [msdb] SELECT sp.name AS proxyname FROM dbo.sysproxylogin spl JOIN sys.database_principals dp ON dp.sid = spl.sid JOIN sysproxies sp ON   sp.proxy_id = spl.proxy_id WHERE principal_id = USER_ID('public');\" | Measure-object"
                     },
-                    "description": "Query public role in the msdb database with granted access to SQL Agent proxies",
+                    "description": "[PCI: MS-SQL] Query public role in the msdb database with granted access to SQL Agent proxies",
                     "nodeGroupsOpen": true
                 },
                 {
                     "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-LocalSystem-account-aka-NT-AUTHORITY-SYSTEM-used-for-the-MSSQL-service",
-                    "name": "Query Local System account (aka NT AUTHORITY\\SYSTEM) used for the MSSQL service",
+                    "name": "[PCI: MS-SQL] Query Local System account (aka NT AUTHORITY\\SYSTEM) used for the MSSQL service",
                     "error": false,
                     "checks": {
                         "Count": [
@@ -465,18 +465,18 @@
                     "ci_path": [
                         "PowerShell",
                         "Queries",
-                        "Query LocalSystem account (aka  NT AUTHORITY\\SYSTEM) used for the MSSQL service"
+                        "[PCI: MS-SQL] Query Local System account (aka  NT AUTHORITY\\SYSTEM) used for the MSSQL service"
                     ],
                     "check_type": "powershell",
                     "powershell": {
                         "query": "Invoke-Sqlcmd -Query \"select [servicename], [service_account] from sys.dm_server_services where [service_account] = 'NT AUTHORITY\\SYSTEM';\" | Measure-object"
                     },
-                    "description": "Query Local System account (aka NT AUTHORITY\\SYSTEM) used for the MSSQL service",
+                    "description": "[PCI: MS-SQL] Query Local System account (aka NT AUTHORITY\\SYSTEM) used for the MSSQL service",
                     "nodeGroupsOpen": true
                 },
                 {
                     "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-MSSQL-Service-Account-as-Administrator",
-                    "name": "Query MSSQL Service Account as Administrator",
+                    "name": "[PCI: MS-SQL]Query MSSQL Service Account as Administrator",
                     "error": false,
                     "checks": {
                         "Count": [
@@ -507,18 +507,18 @@
                     "ci_path": [
                         "PowerShell",
                         "Queries",
-                        "Query MSSQL Service Account as Administrator"
+                        "[PCI: MS-SQL]Query MSSQL Service Account as Administrator"
                     ],
                     "check_type": "powershell",
                     "powershell": {
                         "query": "$q = Invoke-Sqlcmd -Query \"select SUBSTRING ([service_account], CHARINDEX('\\', [service_account]) + 1, LEN([service_account])) as q_res from sys.dm_server_services where [servicename] = 'SQL Server (MSSQLSERVER)';\";$u = $q | Select-object  -ExpandProperty  q_res;net localgroup administrators | Where {$_ -match $u} | Measure-object"
                     },
-                    "description": "Query MSSQL Service Account as Administrator",
+                    "description": "[PCI: MS-SQL]Query MSSQL Service Account as Administrator",
                     "nodeGroupsOpen": true
                 },
                 {
                     "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-SQLAgent-Service-Account-as-Administrator",
-                    "name": "Query SQLAgent Service Account as Administrator",
+                    "name": "[PCI: MS-SQL] Query SQLAgent Service Account as Administrator",
                     "error": false,
                     "checks": {
                         "Count": [
@@ -545,18 +545,18 @@
                     "ci_path": [
                         "PowerShell",
                         "Queries",
-                        "Query SQLAgent Service Account as Administrator"
+                        "[PCI: MS-SQL] Query SQLAgent Service Account as Administrator"
                     ],
                     "check_type": "powershell",
                     "powershell": {
                         "query": "$q = Invoke-Sqlcmd -Query \"select SUBSTRING ([service_account], CHARINDEX('\\', [service_account]) + 1, LEN([service_account])) as q_res from sys.dm_server_services where [servicename] = 'SQL Server Agent (MSSQLSERVER)';\";$u = $q | Select-object  -ExpandProperty  q_res;net localgroup administrators | Where {$_ -match $u} | Measure-object"
                     },
-                    "description": "Query SQLAgent Service Account as Administrator",
+                    "description": "[PCI: MS-SQL] Query SQLAgent Service Account as Administrator",
                     "nodeGroupsOpen": true
                 },
                 {
                     "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-Full-Text-Service-Account-as-Administrator",
-                    "name": "Query Full-Text Service Account as Administrator",
+                    "name": "[PCI: MS-SQL] Query Full-Text Service Account as Administrator",
                     "error": false,
                     "checks": {
                         "Count": [
@@ -583,18 +583,18 @@
                     "ci_path": [
                         "PowerShell",
                         "Queries",
-                        "Query Full-Text Service Account as Administrator"
+                        "[PCI: MS-SQL] Query Full-Text Service Account as Administrator"
                     ],
                     "check_type": "powershell",
                     "powershell": {
                         "query": "$q = Invoke-Sqlcmd -Query \"select SUBSTRING ([service_account], CHARINDEX('\\', [service_account]) + 1, LEN([service_account])) as q_res from sys.dm_server_services where [servicename] = 'SQL Full-text Filter Daemon Launcher (MSSQLSERVER)';\";$u = $q | Select-object  -ExpandProperty  q_res;net localgroup administrators | Where {$_ -match $u} | Measure-object"
                     },
-                    "description": "Query Full-Text Service Account as Administrator",
+                    "description": "[PCI: MS-SQL] Query Full-Text Service Account as Administrator",
                     "nodeGroupsOpen": true
                 },
                 {
                     "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-accessQuery-CHECK-EXPIRATION-Option-set-to-OFF",
-                    "name": "Query CHECK_EXPIRATION Option set to OFF",
+                    "name": "[PCI: MS-SQL] Query CHECK_EXPIRATION Option set to OFF",
                     "error": false,
                     "checks": {
                         "Count": [
@@ -619,18 +619,18 @@
                     "ci_path": [
                         "PowerShell",
                         "Queries",
-                        "Query CHECK_EXPIRATION Option set to OFF for SQL Authenticated Logins Within the Sysadmin Role"
+                        "[PCI: MS-SQL] Query CHECK_EXPIRATION Option set to OFF for SQL Authenticated Logins Within the Sysadmin Role"
                     ],
                     "check_type": "powershell",
                     "powershell": {
                         "query": "Invoke-Sqlcmd -Query \"SELECT l.[name], 'sysadmin membership' AS 'Access_Method' FROM sys.sql_logins AS l WHERE IS_SRVROLEMEMBER('sysadmin',name) = 1 AND l.is_expiration_checked != 1 UNION ALL SELECT l.[name], 'CONTROL SERVER' AS 'Access_Method' FROM sys.sql_logins AS l JOIN sys.server_permissions AS p  ON l.principal_id = p.grantee_principal_id WHERE p.type = 'CL' AND p.state IN ('G', 'W') AND l.is_expiration_checked != 1;\" | Measure-object"
                     },
-                    "description": "Query CHECK_EXPIRATION Option set to OFF",
+                    "description": "[PCI: MS-SQL] Query CHECK_EXPIRATION Option set to OFF",
                     "nodeGroupsOpen": true
                 },
                 {
                     "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-accessQuery-CHECK-POLICY-Option-set-to-OFF",
-                    "name": "Query CHECK_POLICY Option set to OFF",
+                    "name": "[PCI: MS-SQL] Query CHECK_POLICY Option set to OFF",
                     "error": false,
                     "checks": {
                         "Count": {
@@ -655,13 +655,13 @@
                     "ci_path": [
                         "PowerShell",
                         "Queries",
-                        "Query CHECK_POLICY Option set to OFF"
+                        "[PCI: MS-SQL] Query CHECK_POLICY Option set to OFF"
                     ],
                     "check_type": "powershell",
                     "powershell": {
                         "query": "Invoke-Sqlcmd -Query \"SELECT name, is_disabled FROM sys.sql_logins WHERE is_policy_checked = 0;\" | Measure-object"
                     },
-                    "description": "Query CHECK_POLICY Option set to OFF",
+                    "description": "[PCI: MS-SQL] Query CHECK_POLICY Option set to OFF",
                     "nodeGroupsOpen": true
                 }
             ]
@@ -670,7 +670,7 @@
             "Version": [
                 {
                     "id": "Version-PCI-MS-SQL-Policy-Version",
-                    "name": "[PCI MS-SQL] Policy Version",
+                    "name": "[PCI: MS-SQL] Policy Version",
                     "error": false,
                     "checks": {
                         "present": [
@@ -683,13 +683,13 @@
                     "ci_path": [
                         "PowerShell",
                         "Queries",
-                        "[PCI MS-SQL] Policy Version"
+                        "[PCI: MS-SQL] Policy Version"
                     ],
                     "check_type": "powershell",
                     "powershell": {
                         "query": "echo \"20170914-0\""
                     },
-                    "description": "[PCI MS-SQL] Policy Version",
+                    "description": "[PCI: MS-SQL] Policy Version",
                     "nodeGroupsOpen": true
                 }
             ]

@@ -522,9 +522,9 @@
                     "check_type": "powershell",
                     "powershell": {
                         "query": "$q = Invoke-Sqlcmd -Query \"select SUBSTRING ([service_account], CHARINDEX('\\', [service_account]) + 1, LEN([service_account])) as q_res from sys.dm_server_services where [servicename] = 'SQL Server (MSSQLSERVER)';\";$u = $q | Select-object  -ExpandProperty  q_res;net localgroup administrators | Where {$_ -match $u} | Measure-object",
-                        "description": "[PCI: MS-SQL]Query MSSQL Service Account as Administrator"
+                        "description": "[PCI: MS-SQL] Query MSSQL Service Account as Administrator"
                     },
-                    "description": "[PCI: MS-SQL]Query MSSQL Service Account as Administrator",
+                    "description": "[PCI: MS-SQL] Query MSSQL Service Account as Administrator",
                     "nodeGroupsOpen": true
                 },
                 {

@@ -591,13 +591,9 @@
                     },
                     "description": "Query Full-Text Service Account as Administrator",
                     "nodeGroupsOpen": true
-                }
-            ]
-        },
-        {
-            "8.7.a Review database and application configuration settings and verify that all users are authenticated prior to access.-2": [
+                },
                 {
-                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-2Query-CHECK-EXPIRATION-Option-set-to-OFF",
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-accessQuery-CHECK-EXPIRATION-Option-set-to-OFF",
                     "name": "Query CHECK_EXPIRATION Option set to OFF",
                     "error": false,
                     "checks": {
@@ -633,7 +629,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-2Query-CHECK-POLICY-Option-set-to-OFF",
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-accessQuery-CHECK-POLICY-Option-set-to-OFF",
                     "name": "Query CHECK_POLICY Option set to OFF",
                     "error": false,
                     "checks": {

@@ -1,0 +1,770 @@
+{
+    "policy": {
+        "name": "copy_of_pci_32_ms_sql_check",
+        "short_description": "Copy of PCI 3.2 MS SQL Check",
+        "description": null,
+        "settings": {
+            "tests": {
+                "output_format": null
+            }
+        },
+        "operating_system_family_id": null,
+        "operating_system_id": null,
+        "type": null
+    },
+    "data": [
+        {
+            "Ensure Latest SQL Server Service Packs and Hotfixes are Installed": [
+                {
+                    "id": "Ensure-Latest-SQL-Server-Service-Packs-and-Hotfixes-are-InstalledQuery-Product-Level-and-Product-Version",
+                    "name": "Query Product Level and Product Version",
+                    "error": false,
+                    "checks": {
+                        "Version": [
+                            {
+                                "check": "equals",
+                                "expected": "12.0.5000.0",
+                                "valueSelectList": null,
+                                "attributeSelectList": null,
+                                "availableAttributes": null
+                            }
+                        ],
+                        "present": [
+                            {
+                                "check": "equals",
+                                "expected": "true"
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Query Product Level and Product Version"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "Invoke-Sqlcmd -Query \"SELECT SERVERPROPERTY('ProductLevel') as SP_installed, SERVERPROPERTY('ProductVersion') as Version;\""
+                    },
+                    "description": "Query Product Level and Product Version",
+                    "nodeGroupsOpen": true
+                }
+            ]
+        },
+        {
+            "8.7.a Review database and application configuration settings and verify that all users are authenticated prior to access.": [
+                {
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-Server-Authentication-Property",
+                    "name": "Query Server Authentication Property",
+                    "error": false,
+                    "checks": {
+                        "present": [
+                            {
+                                "exp": "true",
+                                "check": "equals",
+                                "expected": "true",
+                                "background": "Ensure 'Server Authentication' Property is set to 'Windows Authentication Mode'.\nWindows provides a more robust authentication mechanism than SQL Server authentication.",
+                                "remediation": "Via the SSMS GUI - \nPerform the following steps: \n1. Open SQL Server Management Studio. \n2. Open the Object Explorer tab and connect to the target database instance. \n3. Right click the instance name and select Properties. \n4. Select the Security page from the left menu. \n5. Set the Server authentication setting to Windows Authentication Mode. \n\nor \n\nRun the following T-SQL in a Query Window: \n \nUSE [master]\nGO\nEXEC xp_instance_regwrite N'HKEY_LOCAL_MACHINE',\nN'Software\\Microsoft\\MSSQLServer\\MSSQLServer', N'LoginMode', REG_DWORD, 1\nGO\n\nRestart the SQL Server service for the change to take effect."
+                            }
+                        ],
+                        "login_mode": [
+                            {
+                                "check": "equals",
+                                "expected": "1",
+                                "valueSelectList": null,
+                                "attributeSelectList": null,
+                                "availableAttributes": null
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Query Server Authentication Property"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "Invoke-Sqlcmd -Query  \"SELECT SERVERPROPERTY('IsIntegratedSecurityOnly') as [login_mode];\""
+                    },
+                    "description": "Query Server Authentication Property",
+                    "nodeGroupsOpen": true
+                },
+                {
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-CONNECT-permission-granted-to-guest-user",
+                    "name": "Query CONNECT permission granted to guest user",
+                    "error": false,
+                    "checks": {
+                        "Count": [
+                            {
+                                "check": "equals",
+                                "expected": "0",
+                                "valueSelectList": null,
+                                "attributeSelectList": null,
+                                "availableAttributes": null
+                            }
+                        ],
+                        "present": [
+                            {
+                                "exp": "true",
+                                "check": "equals",
+                                "expected": "true",
+                                "background": "Ensure CONNECT permissions on the 'guest' user is Revoked within all SQL Server databases excluding the master, msdb and tempdb.\nA login assumes the identity of the guest user when a login has access to SQL Server but does not have access to a database through its own account and the database has a guest user account. Revoking the CONNECT permission for the guest user will ensure that a login is not able to access database information without explicit access to do so.",
+                                "absent_pass": true,
+                                "remediation": "The following code snippet revokes CONNECT permissions from the guest user in a database. \nReplace <database_name> as appropriate: \n \nUSE [<database_name>];\nGO\nREVOKE CONNECT FROM guest;"
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Query CONNECT permission granted to guest user"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "Invoke-Sqlcmd -Query \"declare @result table (DatabaseName varchar(1000), Database_User varchar(1000), permission_name varchar(1000), state_desc varchar(1000)); insert into @result EXEC sp_MSforeachdb 'USE [?] SELECT DB_NAME() AS DatabaseName, ''guest'' AS Database_User,[permission_name], [state_desc] FROM sys.database_permissions WHERE [grantee_principal_id] = DATABASE_PRINCIPAL_ID(''guest'') AND [state_desc] LIKE ''GRANT%'' AND [permission_name] = ''CONNECT'''; select * from @result where DatabaseName not in ('master','tempdb','msdb');\" | Measure-object"
+                    },
+                    "selectList": [
+                        "*"
+                    ],
+                    "description": "Query CONNECT permission granted to guest user",
+                    "nodeGroupsOpen": true
+                },
+                {
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-Orphaned-Users",
+                    "name": "Query Orphaned Users",
+                    "error": false,
+                    "checks": {
+                        "Count": [
+                            {
+                                "check": "equals",
+                                "expected": "0",
+                                "valueSelectList": null,
+                                "attributeSelectList": null,
+                                "availableAttributes": [
+                                    {}
+                                ]
+                            }
+                        ],
+                        "present": [
+                            {
+                                "exp": "true",
+                                "check": "equals",
+                                "expected": "true",
+                                "background": "Ensure 'Orphaned Users' are Dropped From SQL Server Databases.\nOrphan users should be removed to avoid potential misuse of those broken users in any way.",
+                                "remediation": "If the orphaned user cannot or should not be matched to an existing or new login using the Microsoft documented process referenced below, run the following T-SQL query in the appropriate database to remove an orphan user: \n \nUSE [<database_name>];\nGO\nDROP USER <username>;"
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Query Orphaned Users"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "Invoke-Sqlcmd -Query \"EXEC sp_MSforeachdb 'USE [?] EXEC sp_change_users_login @Action=''Report''';\"  | Measure-object"
+                    },
+                    "description": "Query Orphaned Users",
+                    "nodeGroupsOpen": true
+                },
+                {
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-the-use-of-SQL-Authentication",
+                    "name": "Query the use of SQL Authentication",
+                    "error": false,
+                    "checks": {
+                        "Count": [
+                            {
+                                "check": "equals",
+                                "expected": "0",
+                                "valueSelectList": null,
+                                "attributeSelectList": null,
+                                "availableAttributes": [
+                                    {}
+                                ]
+                            }
+                        ],
+                        "present": [
+                            {
+                                "exp": "true",
+                                "check": "equals",
+                                "expected": "true",
+                                "background": "Ensure SQL Authentication is not used in contained databases.\nThe absence of an enforced password policy may increase the likelihood of a weak credential being established in a contained database.",
+                                "remediation": "Leverage Windows Authenticated users in contained databases."
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Query the use of SQL Authentication"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "Invoke-Sqlcmd -Query \"EXEC sp_MSforeachdb 'USE [?] SELECT name AS DBUser FROM sys.database_principals WHERE name NOT IN   (''dbo'',''Information_Schema'',''sys'',''guest'') AND type IN (''U'',''S'',''G'') AND authentication_type = 2';\"  | Measure-object"
+                    },
+                    "description": "Query the use of SQL Authentication",
+                    "nodeGroupsOpen": true
+                },
+                {
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-non-default-permissions-granted-to-the-public-server-role",
+                    "name": "Query non-default permissions granted to the public server role",
+                    "error": false,
+                    "checks": {
+                        "Count": [
+                            {
+                                "check": "equals",
+                                "expected": "0",
+                                "valueSelectList": null,
+                                "attributeSelectList": [
+                                    "class",
+                                    "class_desc",
+                                    "grantee_principal_id",
+                                    "grantor_principal_id",
+                                    "HasErrors",
+                                    "ItemArray",
+                                    "major_id",
+                                    "minor_id",
+                                    "permission_name",
+                                    "RowError",
+                                    "RowState",
+                                    "state",
+                                    "state_desc",
+                                    "Table",
+                                    "type"
+                                ],
+                                "availableAttributes": [
+                                    {
+                                        "type": "ALDB",
+                                        "Table": "",
+                                        "class": "100",
+                                        "state": "G",
+                                        "RowError": "",
+                                        "RowState": "Detached",
+                                        "major_id": "0",
+                                        "minor_id": "0",
+                                        "HasErrors": "False",
+                                        "ItemArray": "System.Object[]",
+                                        "class_desc": "SERVER",
+                                        "state_desc": "GRANT",
+                                        "permission_name": "ALTER ANY DATABASE",
+                                        "grantee_principal_id": "2",
+                                        "grantor_principal_id": "1"
+                                    }
+                                ]
+                            }
+                        ],
+                        "present": [
+                            {
+                                "exp": "true",
+                                "check": "equals",
+                                "expected": "true",
+                                "background": "Ensure only the default permissions specified by Microsoft are granted to the public server role.\n\nEvery SQL Server login belongs to the public role and cannot be removed from this role. Therefore, any permissions granted to this role will be available to all logins unless they have been explicitly denied to specific logins or user-defined server roles.",
+                                "remediation": "1. Add the extraneous permissions found in the Audit query results to the specific \nlogins to user-defined server roles which require the access. \n2. Revoke the <permission_name> from the public role as shown below \n\nUSE [master]\nGO\nREVOKE <permission_name> FROM public;\nGO"
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Query non-default permissions granted to the public server role"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "Invoke-Sqlcmd -Query \"SELECT *  FROM master.sys.server_permissions WHERE (grantee_principal_id = SUSER_SID(N'public') and state_desc LIKE 'GRANT%') AND NOT (state_desc = 'GRANT' and [permission_name] = 'VIEW ANY DATABASE' and class_desc = 'SERVER') AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 2)  AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 3) AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 4) AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 5);\"  | Measure-object"
+                    },
+                    "description": "Query non-default permissions granted to the public server role",
+                    "nodeGroupsOpen": true
+                },
+                {
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-Windows-BUILTIN-groups-or-accounts-have-been-added-as-SQL-Server-Logins",
+                    "name": "Query Windows BUILTIN groups or accounts have been added as SQL Server Logins",
+                    "error": false,
+                    "checks": {
+                        "Count": [
+                            {
+                                "check": "equals",
+                                "expected": "0",
+                                "valueSelectList": null,
+                                "attributeSelectList": [
+                                    "HasErrors",
+                                    "ItemArray",
+                                    "name",
+                                    "permission_name",
+                                    "RowError",
+                                    "RowState",
+                                    "state_desc",
+                                    "Table"
+                                ],
+                                "availableAttributes": [
+                                    {
+                                        "name": "BUILTIN\\Administrators",
+                                        "Table": "",
+                                        "RowError": "",
+                                        "RowState": "Detached",
+                                        "HasErrors": "False",
+                                        "ItemArray": "System.Object[]",
+                                        "state_desc": "GRANT",
+                                        "permission_name": "CONNECT SQL"
+                                    }
+                                ]
+                            }
+                        ],
+                        "present": [
+                            {
+                                "exp": "true",
+                                "check": "equals",
+                                "expected": "true",
+                                "background": "Ensure Windows BUILTIN groups are not SQL Logins.\nThe BUILTIN groups (Administrators, Everyone, Authenticated Users, Guests, etc.) generally contain very broad memberships which would not meet the best practice of ensuring only the necessary users have been granted access to a SQL Server instance. These groups should not be used for any level of access into a SQL Server Database Engine instance.",
+                                "remediation": "1. For each BUILTIN login, if needed create a more restrictive AD group containing only \nthe required user accounts. \n2. Add the AD group or individual Windows accounts as a SQL Server login and grant it \nthe permissions required. \n3. Drop the BUILTIN login using the syntax below after replacing <name> in \n[BUILTIN\\<name>]. \n\nUSE [master];\nGO\nDROP LOGIN [BUILTIN\\<name>];\nGO"
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Query Windows BUILTIN groups or accounts have been added as SQL Server Logins"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "Invoke-Sqlcmd -Query \"SELECT pr.[name], pe.[permission_name], pe.[state_desc] FROM sys.server_principals pr JOIN sys.server_permissions pe ON pr.principal_id = pe.grantee_principal_id WHERE pr.name like 'BUILTIN%';\" | Measure-object"
+                    },
+                    "description": "Query Windows BUILTIN groups or accounts have been added as SQL Server Logins",
+                    "nodeGroupsOpen": true
+                },
+                {
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-Windows-local-groups-that-are-SQL-Logins",
+                    "name": "Query Windows local groups that are SQL Logins",
+                    "error": false,
+                    "checks": {
+                        "Count": [
+                            {
+                                "check": "equals",
+                                "expected": "0",
+                                "valueSelectList": null,
+                                "attributeSelectList": [
+                                    "HasErrors",
+                                    "ItemArray",
+                                    "LocalGroupName",
+                                    "permission_name",
+                                    "RowError",
+                                    "RowState",
+                                    "state_desc",
+                                    "Table"
+                                ],
+                                "availableAttributes": [
+                                    {
+                                        "Table": "",
+                                        "RowError": "",
+                                        "RowState": "Detached",
+                                        "HasErrors": "False",
+                                        "ItemArray": "System.Object[]",
+                                        "state_desc": "GRANT",
+                                        "LocalGroupName": "EC2AMAZ-ULB4L5F\\test_group",
+                                        "permission_name": "CONNECT SQL"
+                                    }
+                                ]
+                            }
+                        ],
+                        "present": [
+                            {
+                                "exp": "true",
+                                "check": "equals",
+                                "expected": "true",
+                                "background": "Ensure Windows local groups are not SQL Logins.\nAllowing local Windows groups as SQL Logins provides a loophole whereby anyone with OS level administrator rights (and no SQL Server rights) could add users to the local Windows groups and thereby give themselves or others access to the SQL Server instance.",
+                                "remediation": "1. For each LocalGroupName login, if needed create an equivalent AD group containing only the required user accounts. \n2. Add the AD group or individual Windows accounts as a SQL Server login and grant it the permissions required. \n3. Drop the LocalGroupName login using the syntax below after replacing <name>.  \n\nUSE [master]\nGO\nDROP LOGIN [<name>]\nGO"
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Query Windows local groups that are SQL Logins"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "Invoke-Sqlcmd -Query \"USE [master] SELECT pr.[name] AS LocalGroupName, pe.[permission_name], pe.[state_desc] FROM sys.server_principals pr JOIN sys.server_permissions   pe ON pr.[principal_id] = pe.[grantee_principal_id] WHERE pr.[type_desc] = 'WINDOWS_GROUP' AND pr.[name] like CAST(SERVERPROPERTY('MachineName') AS nvarchar) + '%';\" | Measure-object"
+                    },
+                    "description": "Query Windows local groups that are SQL Logins",
+                    "nodeGroupsOpen": true
+                },
+                {
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-public-role-in-the-msdb-database-with-granted-access-to-SQL-Agent-proxies",
+                    "name": "Query public role in the msdb database with granted access to SQL Agent proxies",
+                    "error": false,
+                    "checks": {
+                        "Count": [
+                            {
+                                "check": "equals",
+                                "expected": "0",
+                                "valueSelectList": null,
+                                "attributeSelectList": [
+                                    "HasErrors",
+                                    "ItemArray",
+                                    "proxyname",
+                                    "RowError",
+                                    "RowState",
+                                    "Table"
+                                ],
+                                "availableAttributes": [
+                                    {
+                                        "Table": "",
+                                        "RowError": "",
+                                        "RowState": "Detached",
+                                        "HasErrors": "False",
+                                        "ItemArray": "System.Object[]",
+                                        "proxyname": "Catalog application proxy 2"
+                                    }
+                                ]
+                            }
+                        ],
+                        "present": [
+                            {
+                                "exp": "true",
+                                "check": "equals",
+                                "expected": "true",
+                                "background": "Ensure the public role in the msdb database is not granted access to SQL Agent proxies.\nGranting access to SQL Agent proxies for the public role would allow all users to utilize the proxy which may have high privileges. This would likely break the principle of least privileges.",
+                                "remediation": "1. Ensure the required security principals are explicitly granted access to the proxy (use sp_grant_login_to_proxy). \n2. Revoke access to the <proxyname> from the public role.  \nUSE [msdb]\nGO \nEXEC dbo.sp_revoke_login_from_proxy @name = N'public', @proxy_name = \nN'<proxyname>';\nGO"
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Query public role in the msdb database with granted access to SQL Agent proxies"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "Invoke-Sqlcmd -Query \"USE [msdb] SELECT sp.name AS proxyname FROM dbo.sysproxylogin spl JOIN sys.database_principals dp ON dp.sid = spl.sid JOIN sysproxies sp ON   sp.proxy_id = spl.proxy_id WHERE principal_id = USER_ID('public');\" | Measure-object"
+                    },
+                    "description": "Query public role in the msdb database with granted access to SQL Agent proxies",
+                    "nodeGroupsOpen": true
+                },
+                {
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-LocalSystem-account-aka-NT-AUTHORITY-SYSTEM-used-for-the-MSSQL-service",
+                    "name": "Query Local System account (aka NT AUTHORITY\\SYSTEM) used for the MSSQL service",
+                    "error": false,
+                    "checks": {
+                        "Count": [
+                            {
+                                "check": "equals",
+                                "expected": "0",
+                                "valueSelectList": null,
+                                "attributeSelectList": null,
+                                "availableAttributes": null
+                            }
+                        ],
+                        "present": [
+                            {
+                                "exp": "true",
+                                "check": "equals",
+                                "expected": "true",
+                                "background": "Account known as LocalSystem (aka NT AUTHORITY\\SYSTEM) should not be used for the MSSQL service as this account has higher privileges than the SQL Server service requires.",
+                                "remediation": "In the case where LocalSystem is used, use SQL Server Configuration Manager to change to a less privileged account."
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Query LocalSystem account (aka  NT AUTHORITY\\SYSTEM) used for the MSSQL service"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "Invoke-Sqlcmd -Query \"select [servicename], [service_account] from sys.dm_server_services where [service_account] = 'NT AUTHORITY\\SYSTEM';\" | Measure-object"
+                    },
+                    "description": "Query Local System account (aka NT AUTHORITY\\SYSTEM) used for the MSSQL service",
+                    "nodeGroupsOpen": true
+                },
+                {
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-MSSQL-Service-Account-as-Administrator",
+                    "name": "Query MSSQL Service Account as Administrator",
+                    "error": false,
+                    "checks": {
+                        "Count": [
+                            {
+                                "check": "equals",
+                                "expected": "0",
+                                "valueSelectList": null,
+                                "attributeSelectList": [
+                                    "Value"
+                                ],
+                                "availableAttributes": [
+                                    {
+                                        "Value": "NT SERVICE\\MSSQLSERVER"
+                                    }
+                                ]
+                            }
+                        ],
+                        "present": [
+                            {
+                                "exp": "true",
+                                "check": "equals",
+                                "expected": "true",
+                                "background": "Ensure the SQL Server’s MSSQL Service Account is Not an Administrator.",
+                                "remediation": "Remove the account or service SID from the Administrators group. You may need to run the SQL Server Configuration Manager if underlying permissions had been changed or if SQL Server Configuration Manager was not originally used to set the service account."
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Query MSSQL Service Account as Administrator"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "$q = Invoke-Sqlcmd -Query \"select SUBSTRING ([service_account], CHARINDEX('\\', [service_account]) + 1, LEN([service_account])) as q_res from sys.dm_server_services where [servicename] = 'SQL Server (MSSQLSERVER)';\";$u = $q | Select-object  -ExpandProperty  q_res;net localgroup administrators | Where {$_ -match $u} | Measure-object"
+                    },
+                    "description": "Query MSSQL Service Account as Administrator",
+                    "nodeGroupsOpen": true
+                },
+                {
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-SQLAgent-Service-Account-as-Administrator",
+                    "name": "Query SQLAgent Service Account as Administrator",
+                    "error": false,
+                    "checks": {
+                        "Count": [
+                            {
+                                "check": "equals",
+                                "expected": "0",
+                                "valueSelectList": null,
+                                "attributeSelectList": null,
+                                "availableAttributes": [
+                                    {}
+                                ]
+                            }
+                        ],
+                        "present": [
+                            {
+                                "exp": "true",
+                                "check": "equals",
+                                "expected": "true",
+                                "background": "Ensure the SQL Server’s SQLAgent Service Account is Not an Administrator.",
+                                "remediation": "Remove the account or service SID from the Administrators group. You may need to run the SQL Server Configuration Manager if underlying permissions had been changed or if SQL Server Configuration Manager was not originally used to set the service account."
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Query SQLAgent Service Account as Administrator"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "$q = Invoke-Sqlcmd -Query \"select SUBSTRING ([service_account], CHARINDEX('\\', [service_account]) + 1, LEN([service_account])) as q_res from sys.dm_server_services where [servicename] = 'SQL Server Agent (MSSQLSERVER)';\";$u = $q | Select-object  -ExpandProperty  q_res;net localgroup administrators | Where {$_ -match $u} | Measure-object"
+                    },
+                    "description": "Query SQLAgent Service Account as Administrator",
+                    "nodeGroupsOpen": true
+                },
+                {
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-Full-Text-Service-Account-as-Administrator",
+                    "name": "Query Full-Text Service Account as Administrator",
+                    "error": false,
+                    "checks": {
+                        "Count": [
+                            {
+                                "check": "equals",
+                                "expected": "0",
+                                "valueSelectList": null,
+                                "attributeSelectList": null,
+                                "availableAttributes": [
+                                    {}
+                                ]
+                            }
+                        ],
+                        "present": [
+                            {
+                                "exp": "true",
+                                "check": "equals",
+                                "expected": "true",
+                                "background": "Ensure the SQL Server’s Full-Text Service Account is Not an Administrator.",
+                                "remediation": "Remove the account or service SID from the Administrators group. You may need to run the SQL Server Configuration Manager if underlying permissions had been changed or if SQL Server Configuration Manager was not originally used to set the service account."
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Query Full-Text Service Account as Administrator"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "$q = Invoke-Sqlcmd -Query \"select SUBSTRING ([service_account], CHARINDEX('\\', [service_account]) + 1, LEN([service_account])) as q_res from sys.dm_server_services where [servicename] = 'SQL Full-text Filter Daemon Launcher (MSSQLSERVER)';\";$u = $q | Select-object  -ExpandProperty  q_res;net localgroup administrators | Where {$_ -match $u} | Measure-object"
+                    },
+                    "description": "Query Full-Text Service Account as Administrator",
+                    "nodeGroupsOpen": true
+                }
+            ]
+        },
+        {
+            "8.7.a Review database and application configuration settings and verify that all users are authenticated prior to access.-2": [
+                {
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-2Query-CHECK-EXPIRATION-Option-set-to-OFF",
+                    "name": "Query CHECK_EXPIRATION Option set to OFF",
+                    "error": false,
+                    "checks": {
+                        "Count": [
+                            {
+                                "check": "equals",
+                                "expected": "0",
+                                "valueSelectList": null,
+                                "attributeSelectList": null,
+                                "availableAttributes": null
+                            }
+                        ],
+                        "present": [
+                            {
+                                "exp": "true",
+                                "check": "equals",
+                                "expected": "true",
+                                "background": "Ensure 'CHECK_EXPIRATION' Option is set to 'ON' for All SQL Authenticated Logins Within the Sysadmin Role.\nEnsuring SQL logins comply with the secure password policy applied by the Windows Server Benchmark will ensure the passwords for SQL logins with sysadmin privileges are changed on a frequent basis to help prevent compromise via a brute force attack. CONTROLSERVER is an equivalent permission to sysadmin and logins with that permission should also be required to have expiring passwords.",
+                                "remediation": "For each <login_name> found by the Audit Procedure, execute the following T-SQL statement: \nALTER LOGIN [<login_name>] WITH CHECK_EXPIRATION = ON;"
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Query CHECK_EXPIRATION Option set to OFF for SQL Authenticated Logins Within the Sysadmin Role"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "Invoke-Sqlcmd -Query \"SELECT l.[name], 'sysadmin membership' AS 'Access_Method' FROM sys.sql_logins AS l WHERE IS_SRVROLEMEMBER('sysadmin',name) = 1 AND l.is_expiration_checked != 1 UNION ALL SELECT l.[name], 'CONTROL SERVER' AS 'Access_Method' FROM sys.sql_logins AS l JOIN sys.server_permissions AS p  ON l.principal_id = p.grantee_principal_id WHERE p.type = 'CL' AND p.state IN ('G', 'W') AND l.is_expiration_checked != 1;\" | Measure-object"
+                    },
+                    "description": "Query CHECK_EXPIRATION Option set to OFF",
+                    "nodeGroupsOpen": true
+                },
+                {
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-2Query-CHECK-POLICY-Option-set-to-OFF",
+                    "name": "Query CHECK_POLICY Option set to OFF",
+                    "error": false,
+                    "checks": {
+                        "Count": {
+                            "check": "equals",
+                            "expected": "0",
+                            "valueSelectList": null,
+                            "attributeSelectList": null,
+                            "availableAttributes": [
+                                {}
+                            ]
+                        },
+                        "present": [
+                            {
+                                "exp": "true",
+                                "check": "equals",
+                                "expected": "true",
+                                "background": "Ensure 'CHECK_POLICY' Option is set to 'ON' for All SQL Authenticated Logins.\nEnsure SQL authenticated login passwords comply with the secure password policy applied by the Windows Server Benchmark so that they cannot be easily compromised via brute force attack.",
+                                "remediation": "The is_policy_checked value of 0 indicates that the CHECK_POLICY option is OFF; value of 1 is ON. If is_disabled value is 1, then the login is disabled and unusable. If no rows are returned then either no SQL Authenticated logins exist or they all have CHECK_POLICY ON.\n \nALTER LOGIN [<login_name>] WITH CHECK_POLICY = ON;"
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "Query CHECK_POLICY Option set to OFF"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "Invoke-Sqlcmd -Query \"SELECT name, is_disabled FROM sys.sql_logins WHERE is_policy_checked = 0;\" | Measure-object"
+                    },
+                    "description": "Query CHECK_POLICY Option set to OFF",
+                    "nodeGroupsOpen": true
+                }
+            ]
+        },
+        {
+            "Version": [
+                {
+                    "id": "Version-PCI-MS-SQL-Policy-Version",
+                    "name": "[PCI MS-SQL] Policy Version",
+                    "error": false,
+                    "checks": {
+                        "present": [
+                            {
+                                "check": "equals",
+                                "expected": "true"
+                            }
+                        ]
+                    },
+                    "ci_path": [
+                        "PowerShell",
+                        "Queries",
+                        "[PCI MS-SQL] Policy Version"
+                    ],
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "echo \"20170914-0\""
+                    },
+                    "description": "[PCI MS-SQL] Policy Version",
+                    "nodeGroupsOpen": true
+                }
+            ]
+        }
+    ],
+    "scan_options": {
+        "powershell_queries": [
+            {
+                "description": null,
+                "query": "Invoke-Sqlcmd -Query \"SELECT SERVERPROPERTY('ProductLevel') as SP_installed, SERVERPROPERTY('ProductVersion') as Version;\""
+            },
+            {
+                "description": null,
+                "query": "Invoke-Sqlcmd -Query  \"SELECT SERVERPROPERTY('IsIntegratedSecurityOnly') as [login_mode];\""
+            },
+            {
+                "description": null,
+                "query": "Invoke-Sqlcmd -Query \"declare @result table (DatabaseName varchar(1000), Database_User varchar(1000), permission_name varchar(1000), state_desc varchar(1000)); insert into @result EXEC sp_MSforeachdb 'USE [?] SELECT DB_NAME() AS DatabaseName, ''guest'' AS Database_User,[permission_name], [state_desc] FROM sys.database_permissions WHERE [grantee_principal_id] = DATABASE_PRINCIPAL_ID(''guest'') AND [state_desc] LIKE ''GRANT%'' AND [permission_name] = ''CONNECT'''; select * from @result where DatabaseName not in ('master','tempdb','msdb');\" | Measure-object"
+            },
+            {
+                "description": null,
+                "query": "Invoke-Sqlcmd -Query \"EXEC sp_MSforeachdb 'USE [?] EXEC sp_change_users_login @Action=''Report''';\"  | Measure-object"
+            },
+            {
+                "description": null,
+                "query": "Invoke-Sqlcmd -Query \"EXEC sp_MSforeachdb 'USE [?] SELECT name AS DBUser FROM sys.database_principals WHERE name NOT IN   (''dbo'',''Information_Schema'',''sys'',''guest'') AND type IN (''U'',''S'',''G'') AND authentication_type = 2';\"  | Measure-object"
+            },
+            {
+                "description": null,
+                "query": "Invoke-Sqlcmd -Query \"SELECT *  FROM master.sys.server_permissions WHERE (grantee_principal_id = SUSER_SID(N'public') and state_desc LIKE 'GRANT%') AND NOT (state_desc = 'GRANT' and [permission_name] = 'VIEW ANY DATABASE' and class_desc = 'SERVER') AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 2)  AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 3) AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 4) AND NOT (state_desc = 'GRANT' and [permission_name] = 'CONNECT' and class_desc = 'ENDPOINT' and major_id = 5);\"  | Measure-object"
+            },
+            {
+                "description": null,
+                "query": "Invoke-Sqlcmd -Query \"SELECT pr.[name], pe.[permission_name], pe.[state_desc] FROM sys.server_principals pr JOIN sys.server_permissions pe ON pr.principal_id = pe.grantee_principal_id WHERE pr.name like 'BUILTIN%';\" | Measure-object"
+            },
+            {
+                "description": null,
+                "query": "Invoke-Sqlcmd -Query \"USE [master] SELECT pr.[name] AS LocalGroupName, pe.[permission_name], pe.[state_desc] FROM sys.server_principals pr JOIN sys.server_permissions   pe ON pr.[principal_id] = pe.[grantee_principal_id] WHERE pr.[type_desc] = 'WINDOWS_GROUP' AND pr.[name] like CAST(SERVERPROPERTY('MachineName') AS nvarchar) + '%';\" | Measure-object"
+            },
+            {
+                "description": null,
+                "query": "Invoke-Sqlcmd -Query \"USE [msdb] SELECT sp.name AS proxyname FROM dbo.sysproxylogin spl JOIN sys.database_principals dp ON dp.sid = spl.sid JOIN sysproxies sp ON   sp.proxy_id = spl.proxy_id WHERE principal_id = USER_ID('public');\" | Measure-object"
+            },
+            {
+                "description": null,
+                "query": "Invoke-Sqlcmd -Query \"select [servicename], [service_account] from sys.dm_server_services where [service_account] = 'NT AUTHORITY\\SYSTEM';\" | Measure-object"
+            },
+            {
+                "description": null,
+                "query": "$q = Invoke-Sqlcmd -Query \"select SUBSTRING ([service_account], CHARINDEX('\\', [service_account]) + 1, LEN([service_account])) as q_res from sys.dm_server_services where [servicename] = 'SQL Server (MSSQLSERVER)';\";$u = $q | Select-object  -ExpandProperty  q_res;net localgroup administrators | Where {$_ -match $u} | Measure-object"
+            },
+            {
+                "description": null,
+                "query": "$q = Invoke-Sqlcmd -Query \"select SUBSTRING ([service_account], CHARINDEX('\\', [service_account]) + 1, LEN([service_account])) as q_res from sys.dm_server_services where [servicename] = 'SQL Server Agent (MSSQLSERVER)';\";$u = $q | Select-object  -ExpandProperty  q_res;net localgroup administrators | Where {$_ -match $u} | Measure-object"
+            },
+            {
+                "description": null,
+                "query": "$q = Invoke-Sqlcmd -Query \"select SUBSTRING ([service_account], CHARINDEX('\\', [service_account]) + 1, LEN([service_account])) as q_res from sys.dm_server_services where [servicename] = 'SQL Full-text Filter Daemon Launcher (MSSQLSERVER)';\";$u = $q | Select-object  -ExpandProperty  q_res;net localgroup administrators | Where {$_ -match $u} | Measure-object"
+            },
+            {
+                "description": null,
+                "query": "Invoke-Sqlcmd -Query \"SELECT l.[name], 'sysadmin membership' AS 'Access_Method' FROM sys.sql_logins AS l WHERE IS_SRVROLEMEMBER('sysadmin',name) = 1 AND l.is_expiration_checked != 1 UNION ALL SELECT l.[name], 'CONTROL SERVER' AS 'Access_Method' FROM sys.sql_logins AS l JOIN sys.server_permissions AS p  ON l.principal_id = p.grantee_principal_id WHERE p.type = 'CL' AND p.state IN ('G', 'W') AND l.is_expiration_checked != 1;\" | Measure-object"
+            },
+            {
+                "description": null,
+                "query": "Invoke-Sqlcmd -Query \"SELECT name, is_disabled FROM sys.sql_logins WHERE is_policy_checked = 0;\" | Measure-object"
+            },
+            {
+                "description": null,
+                "query": "echo \"20170914-0\""
+            }
+        ]
+    }
+}

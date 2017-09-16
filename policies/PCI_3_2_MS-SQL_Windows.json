@@ -1,15 +1,15 @@
 {
     "policy": {
-        "name": "copy_of_pci_32_ms_sql_check",
-        "short_description": "Copy of PCI 3.2 MS SQL Check",
-        "description": null,
+        "name": "pci_32_ms_sql_check",
+        "short_description": "PCI 3.2 MS SQL Check",
+        "description": "",
         "settings": {
             "tests": {
                 "output_format": null
             }
         },
-        "operating_system_family_id": null,
-        "operating_system_id": null,
+        "operating_system_family_id": 1,
+        "operating_system_id": 125,
         "type": null
     },
     "data": [
@@ -780,4 +780,3 @@
         ]
     }
 }
-

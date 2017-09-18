@@ -129,7 +129,6 @@ function Invoke-UpGuardApi {
     }
 
     $headers = @{'Authorization' = 'Token token="' + $ApiKey + $SecretKey + '"'} #; 'Accept' = 'application/json'}
-    Write-OptionalDebug "Request path: $RequestPath`nFull path: $FullPath"
    
     $uri = ''
 
@@ -157,9 +156,6 @@ function Invoke-UpGuardApi {
         Write-Output "Got Status Code $($_.Exception.Response.StatusCode): $($respJson."error")"
         break
     }
-
-    Write-OptionalDebug "Got status code $($req.StatusCode)`n"
-
     $content = $req.Content
     $nodes = $json.Deserialize($content, [System.Object])
     $nodes
@@ -235,6 +231,7 @@ function Start-Main {
     if($outputFormat -eq "json") {
         $json.Serialize($nodeArr)
     } else {
+        Write-OptionalDebug "Retrieved $($nodeArr.count) nodes`n"
         ForEach($node in $nodeArr) {        
             Write-Host "Name:              $($node["name"])"
             Write-Host "Node Id:           $($node["id"])"

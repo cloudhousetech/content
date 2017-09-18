@@ -39,10 +39,11 @@ Puppet::Reports.register_report(:upguard) do
     Puppet.info("#{log_prefix} APPLIANCE_URL=#{APPLIANCE_URL}")
     Puppet.info("#{log_prefix} PUPPETDB_URL=#{PUPPETDB_URL}")
     Puppet.info("#{log_prefix} COMPILE_MASTER_PEM=#{COMPILE_MASTER_PEM}")
-    Puppet.info("#{log_prefix} SERVICE_KEY=#{SERVICE_KEY}")
-    Puppet.info("#{log_prefix} SECRET_KEY=#{SECRET_KEY}")
-    Puppet.info("#{log_prefix} API_KEY=#{API_KEY}")
-    Puppet.info("#{log_prefix} CM=#{CM}")
+    # Commenting out as these log lines contain sensitive information.
+    # Puppet.info("#{log_prefix} SERVICE_KEY=#{SERVICE_KEY}")
+    # Puppet.info("#{log_prefix} SECRET_KEY=#{SECRET_KEY}")
+    # Puppet.info("#{log_prefix} API_KEY=#{API_KEY}")
+    # Puppet.info("#{log_prefix} CM=#{CM}")
     Puppet.info("#{log_prefix} ENVIRONMENT=#{ENVIRONMENT}")
     Puppet.info("#{log_prefix} TEST_OS=#{TEST_OS}")
     Puppet.info("#{log_prefix} TEST_NODE_NAME=#{TEST_NODE_NAME}")
@@ -78,7 +79,7 @@ Puppet::Reports.register_report(:upguard) do
 
     # Get the node name
     puppet_run['node_ip_hostname'] = pdb_get_hostname(self.host)
-    if puppet_run['node_ip_hostname'].include?(IGNORE_HOSTNAME_INCLUDE)
+    if !IGNORE_HOSTNAME_INCLUDE.nil? && puppet_run['node_ip_hostname'].include?(IGNORE_HOSTNAME_INCLUDE)
       Puppet.info("#{log_prefix} returning early, '#{puppet_run['node_ip_hostname']}' includes '#{IGNORE_HOSTNAME_INCLUDE}'")
       return
     end

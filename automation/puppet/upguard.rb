@@ -75,7 +75,7 @@ Puppet::Reports.register_report(:upguard) do
     # Get the node name
     node_ip_hostname = pdb_get_hostname(self.host)
     if node_ip_hostname.include?(IGNORE_HOSTNAME_INCLUDE)
-      Puppet.info("#{log_prefix} returning early, '#{node_ip_hostname}' starts with '#{IGNORE_HOSTNAME_INCLUDE}'")
+      Puppet.info("#{log_prefix} returning early, '#{node_ip_hostname}' includes '#{IGNORE_HOSTNAME_INCLUDE}'")
       return
     end
 

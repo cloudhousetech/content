@@ -106,6 +106,8 @@ Puppet::Reports.register_report(:upguard) do
       Puppet.info("#{log_prefix} ########################################")
       Puppet.info("#{log_prefix} #       OPERATING IN OFFLINE MODE      #")
       Puppet.info("#{log_prefix} ########################################")
+      # Let the user know that this scan was done from offline mode.
+      puppet_run['manifest_filename'] += ERB::Util.url_encode(" (upguard.rb offline mode)")
       store_puppet_run(OFFLINE_MODE_FILENAME, puppet_run)
       Puppet.info("#{log_prefix} returning early, '#{APPLIANCE_URL}' is offline")
       return
@@ -489,12 +491,6 @@ Puppet::Reports.register_report(:upguard) do
       manifest_filename = ERB::Util.url_encode(manifest_filename.join(", ").slice(0..40))
     else
       manifest_filename = "#{default}"
-    end
-
-    # If this file exists then we are working through a backlog of nodes that need to be scanned.
-    # Let the user know that this scan was done from offline mode.
-    if File.exists?(OFFLINE_MODE_FILENAME)
-      manifest_filename += ERB::Util.url_encode(" (upguard.rb offline mode)")
     end
 
     Puppet.info("#{log_prefix} manifest_filename=#{manifest_filename}")

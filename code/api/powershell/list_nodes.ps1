@@ -198,8 +198,8 @@ function Start-Main {
     }
     
     $page = 1
-    $pageLimit = 500
-    $lastCount = $pageLimit
+    $perPage = 500
+    $nodeCount = $perPage
     $nodeArr = @() #Nodes are stored in an array for reuse
 
     $statusString = ""
@@ -212,9 +212,9 @@ function Start-Main {
        $lastScanString = "&lastScanStatus=$($lastScanStatus)"
     }
     
-    while($lastCount -ne 0 -AND $lastCount -eq $pageLimit) {
-        $nodes = Invoke-UpGuardApi -RequestPath "api/v2/nodes.json?page=$($page)&per_page=$($pageLimit)$($statusString)$($lastScanString)"
-        $lastCount = $nodes.Length             
+    while($nodeCount -eq $perPage) {
+        $nodes = Invoke-UpGuardApi -RequestPath "api/v2/nodes.json?page=$($page)&per_page=$($perPage)$($statusString)$($lastScanString)"
+        $nodeCount = $nodes.Length
         ForEach($node in $nodes) {
             $nodeArr += @{"name" = $node."name";
             "id" = $node."id";

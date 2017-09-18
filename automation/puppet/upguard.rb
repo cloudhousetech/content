@@ -30,7 +30,7 @@ Puppet::Reports.register_report(:upguard) do
   TEST_WINDOWS_HOSTNAME    = config[:test_windows_hostname]
   UNKNOWN_OS_NODE_GROUP_ID = config[:unknown_os_node_group_id]
   SLEEP_BEFORE_SCAN        = config[:sleep_before_scan]
-  IGNORE_HOSTNAME_PREFIX   = config[:ignore_hostname_prefix]
+  IGNORE_HOSTNAME_INCLUDE  = config[:ignore_hostname_include]
   OFFLINE_MODE_FILENAME    = config[:offline_mode_filename]
 
   def process
@@ -50,7 +50,7 @@ Puppet::Reports.register_report(:upguard) do
     Puppet.info("#{log_prefix} TEST_WINDOWS_HOSTNAME=#{TEST_WINDOWS_HOSTNAME}")
     Puppet.info("#{log_prefix} UNKNOWN_OS_NODE_GROUP_ID=#{UNKNOWN_OS_NODE_GROUP_ID}")
     Puppet.info("#{log_prefix} SLEEP_BEFORE_SCAN=#{SLEEP_BEFORE_SCAN}")
-    Puppet.info("#{log_prefix} IGNORE_HOSTNAME_PREFIX=#{IGNORE_HOSTNAME_PREFIX}")
+    Puppet.info("#{log_prefix} IGNORE_HOSTNAME_INCLUDE=#{IGNORE_HOSTNAME_INCLUDE}")
     Puppet.info("#{log_prefix} OFFLINE_MODE_FILENAME=#{OFFLINE_MODE_FILENAME}")
 
     self.status != nil ? status = self.status : status = 'undefined'
@@ -78,8 +78,8 @@ Puppet::Reports.register_report(:upguard) do
 
     # Get the node name
     puppet_run['node_ip_hostname'] = pdb_get_hostname(self.host)
-    if puppet_run['node_ip_hostname'].start_with?(IGNORE_HOSTNAME_PREFIX)
-      Puppet.info("#{log_prefix} returning early, '#{puppet_run['node_ip_hostname']}' starts with '#{IGNORE_HOSTNAME_PREFIX}'")
+    if puppet_run['node_ip_hostname'].include?(IGNORE_HOSTNAME_INCLUDE)
+      Puppet.info("#{log_prefix} returning early, '#{puppet_run['node_ip_hostname']}' includes '#{IGNORE_HOSTNAME_INCLUDE}'")
       return
     end
 

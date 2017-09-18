@@ -4,7 +4,7 @@ require 'erb'
 
 Puppet::Reports.register_report(:upguard) do
 
-  VERSION = "v1.4.4"
+  VERSION = "v1.4.5"
   VERSION_TAG = "Added by #{File.basename(__FILE__)} #{VERSION}"
   desc "Create a node (if not present) and kick off a node scan in UpGuard if changes were made."
 
@@ -74,7 +74,7 @@ Puppet::Reports.register_report(:upguard) do
 
     # Get the node name
     node_ip_hostname = pdb_get_hostname(self.host)
-    if node_ip_hostname.start_with?(IGNORE_HOSTNAME_PREFIX)
+    if node_ip_hostname.include?(IGNORE_HOSTNAME_PREFIX)
       Puppet.info("#{log_prefix} returning early, '#{node_ip_hostname}' starts with '#{IGNORE_HOSTNAME_PREFIX}'")
       return
     end

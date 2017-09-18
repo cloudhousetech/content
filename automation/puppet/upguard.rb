@@ -4,7 +4,7 @@ require 'erb'
 
 Puppet::Reports.register_report(:upguard) do
 
-  VERSION = "v1.4.4"
+  VERSION = "v1.4.5"
   VERSION_TAG = "Added by #{File.basename(__FILE__)} #{VERSION}"
   desc "Create a node (if not present) and kick off a node scan in UpGuard if changes were made."
 
@@ -30,7 +30,7 @@ Puppet::Reports.register_report(:upguard) do
   TEST_WINDOWS_HOSTNAME    = config[:test_windows_hostname]
   UNKNOWN_OS_NODE_GROUP_ID = config[:unknown_os_node_group_id]
   SLEEP_BEFORE_SCAN        = config[:sleep_before_scan]
-  IGNORE_HOSTNAME_PREFIX   = config[:ignore_hostname_prefix]
+  IGNORE_HOSTNAME_INCLUDE  = config[:ignore_hostname_include]
 
   def process
     Puppet.info("#{log_prefix} starting report processor #{VERSION}")
@@ -49,7 +49,7 @@ Puppet::Reports.register_report(:upguard) do
     Puppet.info("#{log_prefix} TEST_WINDOWS_HOSTNAME=#{TEST_WINDOWS_HOSTNAME}")
     Puppet.info("#{log_prefix} UNKNOWN_OS_NODE_GROUP_ID=#{UNKNOWN_OS_NODE_GROUP_ID}")
     Puppet.info("#{log_prefix} SLEEP_BEFORE_SCAN=#{SLEEP_BEFORE_SCAN}")
-    Puppet.info("#{log_prefix} IGNORE_HOSTNAME_PREFIX=#{IGNORE_HOSTNAME_PREFIX}")
+    Puppet.info("#{log_prefix} IGNORE_HOSTNAME_INCLUDE=#{IGNORE_HOSTNAME_INCLUDE}")
 
     self.status != nil ? status = self.status : status = 'undefined'
 
@@ -74,8 +74,8 @@ Puppet::Reports.register_report(:upguard) do
 
     # Get the node name
     node_ip_hostname = pdb_get_hostname(self.host)
-    if node_ip_hostname.start_with?(IGNORE_HOSTNAME_PREFIX)
-      Puppet.info("#{log_prefix} returning early, '#{node_ip_hostname}' starts with '#{IGNORE_HOSTNAME_PREFIX}'")
+    if node_ip_hostname.include?(IGNORE_HOSTNAME_INCLUDE)
+      Puppet.info("#{log_prefix} returning early, '#{node_ip_hostname}' starts with '#{IGNORE_HOSTNAME_INCLUDE}'")
       return
     end
 

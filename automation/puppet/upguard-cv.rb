@@ -217,7 +217,7 @@ class UpGuard
       events = []
       node_events = []
 
-      last_run = state['last_run']
+      last_run = state[:last_run]
       response = HTTParty.get("#{UpGuard.events_index}?view_name=Policy%20Ran&date_from=#{last_run}",
                               :headers  => { 'Content-Type' => 'application/json',
                                              'Accept' => 'application/json',
@@ -225,7 +225,7 @@ class UpGuard
       )
       events = JSON.parse(response.body)
       # Update the last_run variable if we got here.
-      state['last_run'] = DateTime.now
+      state[:last_run] = DateTime.now
       File.write(UpGuard.file_name_state, JSON.pretty_generate(state))
 
       if events.count == 0

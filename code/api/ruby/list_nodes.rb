@@ -77,7 +77,6 @@ end
 
 def InvokeWebrequest(scheme, url, query)
 
-
 #Print Results
 puts "Retreived #{nodes.count} nodes"
 puts JSON.pretty_generate(nodes)

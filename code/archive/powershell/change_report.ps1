@@ -116,7 +116,7 @@ function Start-Main {
         $diff_items = $json.diff_items
         $last_count = $diff_items.Count
         ForEach($diff in $diff_items) {
-            $name = "$($diff.type)-$($diff.node_name)"
+            $name = "$($diff.type)-$($diff.node_name)-$($diff.name)" #Filters changes by CI type, node name, and CI type
             if($diff_hash[$name] -eq $null) {
                 $diff_hash.Add($name, 1)
             } else {

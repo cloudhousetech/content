@@ -11,48 +11,30 @@ Puppet::Reports.register_report(:upguard) do
   configfile = File.join([File.dirname(Puppet.settings[:config]), "upguard.yaml"])
   raise(Puppet::ParseError, "upguard.yaml config file #{configfile} not readable") unless File.exist?(configfile)
   begin
-    config = YAML.load_file(configfile)
+    @@config = YAML.load_file(configfile)
   rescue TypeError => e
     raise(Puppet::ParserError, "upguard.yaml file is invalid")
   end
 
-  APPLIANCE_URL            = config[:appliance_url]
-  PUPPETDB_URL             = config[:puppetdb_url]
-  COMPILE_MASTER_PEM       = config[:compile_master_pem]
-  SERVICE_KEY              = config[:service_key]
-  SECRET_KEY               = config[:secret_key]
+  APPLIANCE_URL            = @@config[:appliance_url]
+  PUPPETDB_URL             = @@config[:puppetdb_url]
+  COMPILE_MASTER_PEM       = @@config[:compile_master_pem]
+  SERVICE_KEY              = @@config[:service_key]
+  SECRET_KEY               = @@config[:secret_key]
   API_KEY                  = "#{SERVICE_KEY}#{SECRET_KEY}"
-  CM                       = config[:sites]
-  ENVIRONMENT              = config[:environment]
-  TEST_OS                  = config[:test_os]
-  TEST_NODE_NAME           = config[:test_node_name]
-  TEST_LINUX_HOSTNAME      = config[:test_linux_hostname]
-  TEST_WINDOWS_HOSTNAME    = config[:test_windows_hostname]
-  UNKNOWN_OS_NODE_GROUP_ID = config[:unknown_os_node_group_id]
-  SLEEP_BEFORE_SCAN        = config[:sleep_before_scan]
-  IGNORE_HOSTNAME_INCLUDE  = config[:ignore_hostname_include]
-  OFFLINE_MODE_FILENAME    = config[:offline_mode_filename]
+  CM                       = @@config[:sites]
+  ENVIRONMENT              = @@config[:environment]
+  TEST_OS                  = @@config[:test_os]
+  TEST_NODE_NAME           = @@config[:test_node_name]
+  TEST_LINUX_HOSTNAME      = @@config[:test_linux_hostname]
+  TEST_WINDOWS_HOSTNAME    = @@config[:test_windows_hostname]
+  UNKNOWN_OS_NODE_GROUP_ID = @@config[:unknown_os_node_group_id]
+  SLEEP_BEFORE_SCAN        = @@config[:sleep_before_scan]
+  IGNORE_HOSTNAME_INCLUDE  = @@config[:ignore_hostname_include]
+  OFFLINE_MODE_FILENAME    = @@config[:offline_mode_filename]
 
   def process
     Puppet.info("#{log_prefix} starting report processor #{VERSION}")
-
-    Puppet.info("#{log_prefix} APPLIANCE_URL=#{APPLIANCE_URL}")
-    Puppet.info("#{log_prefix} PUPPETDB_URL=#{PUPPETDB_URL}")
-    Puppet.info("#{log_prefix} COMPILE_MASTER_PEM=#{COMPILE_MASTER_PEM}")
-    # Commenting out as these log lines contain sensitive information.
-    # Puppet.info("#{log_prefix} SERVICE_KEY=#{SERVICE_KEY}")
-    # Puppet.info("#{log_prefix} SECRET_KEY=#{SECRET_KEY}")
-    # Puppet.info("#{log_prefix} API_KEY=#{API_KEY}")
-    # Puppet.info("#{log_prefix} CM=#{CM}")
-    Puppet.info("#{log_prefix} ENVIRONMENT=#{ENVIRONMENT}")
-    Puppet.info("#{log_prefix} TEST_OS=#{TEST_OS}")
-    Puppet.info("#{log_prefix} TEST_NODE_NAME=#{TEST_NODE_NAME}")
-    Puppet.info("#{log_prefix} TEST_LINUX_HOSTNAME=#{TEST_LINUX_HOSTNAME}")
-    Puppet.info("#{log_prefix} TEST_WINDOWS_HOSTNAME=#{TEST_WINDOWS_HOSTNAME}")
-    Puppet.info("#{log_prefix} UNKNOWN_OS_NODE_GROUP_ID=#{UNKNOWN_OS_NODE_GROUP_ID}")
-    Puppet.info("#{log_prefix} SLEEP_BEFORE_SCAN=#{SLEEP_BEFORE_SCAN}")
-    Puppet.info("#{log_prefix} IGNORE_HOSTNAME_INCLUDE=#{IGNORE_HOSTNAME_INCLUDE}")
-    Puppet.info("#{log_prefix} OFFLINE_MODE_FILENAME=#{OFFLINE_MODE_FILENAME}")
 
     self.status != nil ? status = self.status : status = 'undefined'
     Puppet.info("#{log_prefix} status=#{status}")
@@ -70,6 +52,12 @@ Puppet::Reports.register_report(:upguard) do
       return
     end
 
+    # Check that all the variables we need supplied from upguard.yaml are present and return if they are not.
+    if config_variables_missing
+      Puppet.info("#{log_prefix} returning early, config variables missing")
+      return
+    end
+
     ##########################################################################
     # PUPPET DB (PDB) METHODS                                                #
     ##########################################################################
@@ -79,7 +67,7 @@ Puppet::Reports.register_report(:upguard) do
 
     # Get the node name
     puppet_run['node_ip_hostname'] = pdb_get_hostname(self.host)
-    if !IGNORE_HOSTNAME_INCLUDE.nil? && puppet_run['node_ip_hostname'].include?(IGNORE_HOSTNAME_INCLUDE)
+    if puppet_run['node_ip_hostname'].include?(IGNORE_HOSTNAME_INCLUDE)
       Puppet.info("#{log_prefix} returning early, '#{puppet_run['node_ip_hostname']}' includes '#{IGNORE_HOSTNAME_INCLUDE}'")
       return
     end
@@ -101,12 +89,6 @@ Puppet::Reports.register_report(:upguard) do
     ##########################################################################
     # DRIVER METHODS                                                         #
     ##########################################################################
-
-    # Need to know where to store past puppet runs in offline mode
-    if OFFLINE_MODE_FILENAME.nil?
-      Puppet.info("#{log_prefix} returning early, OFFLINE_MODE_FILENAME is nil")
-      return
-    end
 
     # Check to see if we need to operate in offline mode as UpGuard may not always we available.
     if upguard_offline
@@ -144,6 +126,25 @@ Puppet::Reports.register_report(:upguard) do
   ##############################################################################
   # DRIVER METHODS                                                             #
   ##############################################################################
+
+  def config_variables_missing
+    config_vars_missing  = false
+    required_config_vars = [:appliance_url, :puppetdb_url, :compile_master_pem, :service_key, :secret_key, :sites,
+                            :environment, :unknown_os_node_group_id, :sleep_before_scan, :ignore_hostname_include,
+                            :offline_mode_filename]
+    required_config_vars.each do |required_var|
+      if !@@config.key?(required_var)
+        Puppet.info("#{log_prefix} config variable #{required_var} is missing, ensure that it's present in upguard.yaml")
+        config_vars_missing = true
+      else
+        dont_print_vars = [:service_key, :secret_key, :sites]
+        unless dont_print_vars.include?(required_var)
+          Puppet.info("#{log_prefix} #{required_var}=#{@@config[required_var]}")
+        end
+      end
+    end
+    config_vars_missing
+  end
 
   def provision_node_in_upguard(puppet_run)
     # Get node group id from UpGuard
@@ -481,9 +482,9 @@ Puppet::Reports.register_report(:upguard) do
 
     if logs && logs.any?
       (logs).each do |log|
-        Puppet.info("#{log_prefix} log: #{log}")
+        # Puppet.info("#{log_prefix} log: #{log}")
         if log.file
-          Puppet.info("#{log_prefix} log.file: #{log.file}")
+          # Puppet.info("#{log_prefix} log.file: #{log.file}")
           segments = log.file.split("/")
           if segments && segments.any?
             manifest_filename.push(segments.last)
@@ -568,7 +569,7 @@ Puppet::Reports.register_report(:upguard) do
     domain_details = determine_domain_details(ip_hostname, os, datacenter_name)
     Puppet.info("#{log_prefix} node_create ip_hostname=#{ip_hostname}")
     Puppet.info("#{log_prefix} node_create os=#{os}")
-    Puppet.info("#{log_prefix} node_create cm group=#{domain_details}")
+    # Puppet.info("#{log_prefix} node_create cm group=#{domain_details}")
 
     node = {}
     node[:node] = {}
@@ -606,9 +607,9 @@ Puppet::Reports.register_report(:upguard) do
     end
 
     request = "curl -X POST -s -k -H 'Authorization: Token token=\"#{api_key}\"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '#{node.to_json}' #{instance}/api/v2/nodes"
-    Puppet.info("#{log_prefix} node_create request=#{request}")
+    # Puppet.info("#{log_prefix} node_create request=#{request}")
     response = `#{request}`
-    Puppet.info("#{log_prefix} node_create response=#{response}")
+    # Puppet.info("#{log_prefix} node_create response=#{response}")
     node = JSON.load(response)
 
     if node["id"]

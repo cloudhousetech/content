@@ -102,6 +102,12 @@ Puppet::Reports.register_report(:upguard) do
     # DRIVER METHODS                                                         #
     ##########################################################################
 
+    # Need to know where to store past puppet runs in offline mode
+    if OFFLINE_MODE_FILENAME.nil?
+      Puppet.info("#{log_prefix} returning early, OFFLINE_MODE_FILENAME is nil")
+      return
+    end
+
     # Check to see if we need to operate in offline mode as UpGuard may not always we available.
     if upguard_offline
       Puppet.info("#{log_prefix} ########################################")

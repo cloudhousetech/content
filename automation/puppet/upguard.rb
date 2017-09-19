@@ -90,7 +90,7 @@ Puppet::Reports.register_report(:upguard) do
     # DRIVER METHODS                                                         #
     ##########################################################################
 
-    # Check to see if we need to operate in offline mode as UpGuard may not always we available.
+    # Check to see if we need to operate in offline mode as UpGuard may not always be available.
     if upguard_offline
       Puppet.info("#{log_prefix} ########################################")
       Puppet.info("#{log_prefix} #       OPERATING IN OFFLINE MODE      #")
@@ -116,10 +116,9 @@ Puppet::Reports.register_report(:upguard) do
         end
         # Finally, remove the state file
         FileUtils.rm(OFFLINE_MODE_FILENAME)
-      else
-        # UpGuard not offline, no state file present, just a usual run.
-        provision_node_in_upguard(puppet_run)
       end
+      # Make sure to process the current puppet run
+      provision_node_in_upguard(puppet_run)
     end
   end
 

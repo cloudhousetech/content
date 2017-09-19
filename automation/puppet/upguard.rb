@@ -4,59 +4,43 @@ require 'erb'
 
 Puppet::Reports.register_report(:upguard) do
 
-  VERSION = "v1.4.5"
+  VERSION = "v1.5.0"
   VERSION_TAG = "Added by #{File.basename(__FILE__)} #{VERSION}"
   desc "Create a node (if not present) and kick off a node scan in UpGuard if changes were made."
 
   configfile = File.join([File.dirname(Puppet.settings[:config]), "upguard.yaml"])
   raise(Puppet::ParseError, "upguard.yaml config file #{configfile} not readable") unless File.exist?(configfile)
   begin
-    config = YAML.load_file(configfile)
+    @@config = YAML.load_file(configfile)
   rescue TypeError => e
     raise(Puppet::ParserError, "upguard.yaml file is invalid")
   end
 
-  APPLIANCE_URL            = config[:appliance_url]
-  PUPPETDB_URL             = config[:puppetdb_url]
-  COMPILE_MASTER_PEM       = config[:compile_master_pem]
-  SERVICE_KEY              = config[:service_key]
-  SECRET_KEY               = config[:secret_key]
+  APPLIANCE_URL            = @@config[:appliance_url]
+  PUPPETDB_URL             = @@config[:puppetdb_url]
+  COMPILE_MASTER_PEM       = @@config[:compile_master_pem]
+  SERVICE_KEY              = @@config[:service_key]
+  SECRET_KEY               = @@config[:secret_key]
   API_KEY                  = "#{SERVICE_KEY}#{SECRET_KEY}"
-  CM                       = config[:sites]
-  ENVIRONMENT              = config[:environment]
-  TEST_OS                  = config[:test_os]
-  TEST_NODE_NAME           = config[:test_node_name]
-  TEST_LINUX_HOSTNAME      = config[:test_linux_hostname]
-  TEST_WINDOWS_HOSTNAME    = config[:test_windows_hostname]
-  UNKNOWN_OS_NODE_GROUP_ID = config[:unknown_os_node_group_id]
-  SLEEP_BEFORE_SCAN        = config[:sleep_before_scan]
-  IGNORE_HOSTNAME_INCLUDE  = config[:ignore_hostname_include]
+  CM                       = @@config[:sites]
+  ENVIRONMENT              = @@config[:environment]
+  TEST_OS                  = @@config[:test_os]
+  TEST_NODE_NAME           = @@config[:test_node_name]
+  TEST_LINUX_HOSTNAME      = @@config[:test_linux_hostname]
+  TEST_WINDOWS_HOSTNAME    = @@config[:test_windows_hostname]
+  UNKNOWN_OS_NODE_GROUP_ID = @@config[:unknown_os_node_group_id]
+  SLEEP_BEFORE_SCAN        = @@config[:sleep_before_scan]
+  IGNORE_HOSTNAME_INCLUDE  = @@config[:ignore_hostname_include]
+  OFFLINE_MODE_FILENAME    = @@config[:offline_mode_filename]
 
   def process
     Puppet.info("#{log_prefix} starting report processor #{VERSION}")
 
-    Puppet.info("#{log_prefix} APPLIANCE_URL=#{APPLIANCE_URL}")
-    Puppet.info("#{log_prefix} PUPPETDB_URL=#{PUPPETDB_URL}")
-    Puppet.info("#{log_prefix} COMPILE_MASTER_PEM=#{COMPILE_MASTER_PEM}")
-    Puppet.info("#{log_prefix} SERVICE_KEY=#{SERVICE_KEY}")
-    Puppet.info("#{log_prefix} SECRET_KEY=#{SECRET_KEY}")
-    Puppet.info("#{log_prefix} API_KEY=#{API_KEY}")
-    Puppet.info("#{log_prefix} CM=#{CM}")
-    Puppet.info("#{log_prefix} ENVIRONMENT=#{ENVIRONMENT}")
-    Puppet.info("#{log_prefix} TEST_OS=#{TEST_OS}")
-    Puppet.info("#{log_prefix} TEST_NODE_NAME=#{TEST_NODE_NAME}")
-    Puppet.info("#{log_prefix} TEST_LINUX_HOSTNAME=#{TEST_LINUX_HOSTNAME}")
-    Puppet.info("#{log_prefix} TEST_WINDOWS_HOSTNAME=#{TEST_WINDOWS_HOSTNAME}")
-    Puppet.info("#{log_prefix} UNKNOWN_OS_NODE_GROUP_ID=#{UNKNOWN_OS_NODE_GROUP_ID}")
-    Puppet.info("#{log_prefix} SLEEP_BEFORE_SCAN=#{SLEEP_BEFORE_SCAN}")
-    Puppet.info("#{log_prefix} IGNORE_HOSTNAME_INCLUDE=#{IGNORE_HOSTNAME_INCLUDE}")
-
     self.status != nil ? status = self.status : status = 'undefined'
-
     Puppet.info("#{log_prefix} status=#{status}")
 
     if test_env
-      # Unchanged here so that you can run `puppet agent -t` over and over.
+      # Unchanged here so that you can run `puppet-agent -t` over and over.
       run_states = %w(unchanged)
     else
       run_states = %w(changed failed)
@@ -68,49 +52,113 @@ Puppet::Reports.register_report(:upguard) do
       return
     end
 
+    # Check that all the variables we need supplied from upguard.yaml are present and return if they are not.
+    if config_variables_missing
+      Puppet.info("#{log_prefix} returning early, config variables missing")
+      return
+    end
+
     ##########################################################################
     # PUPPET DB (PDB) METHODS                                                #
     ##########################################################################
 
+    # Create a hash to store the PDB info we need.
+    puppet_run = {}
+
     # Get the node name
-    node_ip_hostname = pdb_get_hostname(self.host)
-    if node_ip_hostname.include?(IGNORE_HOSTNAME_INCLUDE)
-      Puppet.info("#{log_prefix} returning early, '#{node_ip_hostname}' includes '#{IGNORE_HOSTNAME_INCLUDE}'")
+    puppet_run['node_ip_hostname'] = pdb_get_hostname(self.host)
+    if puppet_run['node_ip_hostname'].include?(IGNORE_HOSTNAME_INCLUDE)
+      Puppet.info("#{log_prefix} returning early, '#{puppet_run['node_ip_hostname']}' includes '#{IGNORE_HOSTNAME_INCLUDE}'")
       return
     end
 
     # We use this to tag node scans with the puppet "file(s)" that have caused the change
-    manifest_filename = pdb_manifest_files(self.logs)
+    puppet_run['manifest_filename'] = pdb_manifest_files(self.logs)
     # Used to set the node OS type in UpGuard
-    os = pdb_get_os(node_ip_hostname)
-    Puppet.info("#{log_prefix} status=#{status} os=#{os}")
+    puppet_run['os'] = pdb_get_os(puppet_run['node_ip_hostname'])
+    Puppet.info("#{log_prefix} status=#{status} os=#{puppet_run['os']}")
     # Get trusted facts from Puppet (once)
-    trusted_facts = pdb_get_trusted_facts(node_ip_hostname)
-    # Extract the role
-    node_group_name = pdb_get_role(trusted_facts)
-    # Extract the environment
-    environment_name = pdb_get_environment(trusted_facts)
-    # Extract the datacenter
-    datacenter_name = pdb_get_datacenter(trusted_facts)
+    trusted_facts = pdb_get_trusted_facts(puppet_run['node_ip_hostname'])
+    # Extract the role, environment and datacenter
+    puppet_run['node_group_name'] = pdb_get_role(trusted_facts)
+    puppet_run['environment_name'] = pdb_get_environment(trusted_facts)
+    puppet_run['datacenter_name'] = pdb_get_datacenter(trusted_facts)
     # The format for environment names is datacenter_environment
-    environment_name = generate_environment_name(datacenter_name, environment_name)
+    puppet_run['environment_name'] = generate_environment_name(puppet_run['datacenter_name'], puppet_run['environment_name'])
 
     ##########################################################################
     # DRIVER METHODS                                                         #
     ##########################################################################
 
+    # Check to see if we need to operate in offline mode as UpGuard may not always we available.
+    if upguard_offline
+      Puppet.info("#{log_prefix} ########################################")
+      Puppet.info("#{log_prefix} #       OPERATING IN OFFLINE MODE      #")
+      Puppet.info("#{log_prefix} ########################################")
+      # Let the user know that this scan was done from offline mode.
+      puppet_run['manifest_filename'] += ERB::Util.url_encode(" (upguard.rb offline mode)")
+      store_puppet_run(OFFLINE_MODE_FILENAME, puppet_run)
+      Puppet.info("#{log_prefix} returning early, '#{APPLIANCE_URL}' is offline")
+      return
+    else
+      if File.exists?(OFFLINE_MODE_FILENAME)
+        # We're back online, but have a backlog of nodes to process.
+        Puppet.info("#{log_prefix} #{OFFLINE_MODE_FILENAME} present, working through puppet runs backlog")
+        file_state = File.read(OFFLINE_MODE_FILENAME)
+        puppet_runs = JSON.parse(file_state)
+        if !puppet_runs.nil? && puppet_runs.any?
+          unique_puppet_runs = puppet_runs.uniq {|r| r['node_ip_hostname']}
+          unique_puppet_runs.each do |run|
+            provision_node_in_upguard(run)
+          end
+        else
+          Puppet.info("#{log_prefix} #{OFFLINE_MODE_FILENAME} present, but an array of puppet runs not found, removing")
+        end
+        # Finally, remove the state file
+        FileUtils.rm(OFFLINE_MODE_FILENAME)
+      else
+        # UpGuard not offline, no state file present, just a usual run.
+        provision_node_in_upguard(puppet_run)
+      end
+    end
+  end
+
+  ##############################################################################
+  # DRIVER METHODS                                                             #
+  ##############################################################################
+
+  def config_variables_missing
+    config_vars_missing  = false
+    required_config_vars = [:appliance_url, :puppetdb_url, :compile_master_pem, :service_key, :secret_key, :sites,
+                            :environment, :unknown_os_node_group_id, :sleep_before_scan, :ignore_hostname_include,
+                            :offline_mode_filename]
+    required_config_vars.each do |required_var|
+      if !@@config.key?(required_var)
+        Puppet.info("#{log_prefix} config variable #{required_var} is missing, ensure that it's present in upguard.yaml")
+        config_vars_missing = true
+      else
+        dont_print_vars = [:service_key, :secret_key, :sites]
+        unless dont_print_vars.include?(required_var)
+          Puppet.info("#{log_prefix} #{required_var}=#{@@config[required_var]}")
+        end
+      end
+    end
+    config_vars_missing
+  end
+
+  def provision_node_in_upguard(puppet_run)
     # Get node group id from UpGuard
-    node_group_id = lookup_or_create_node_group(node_group_name, nil)
+    node_group_id = lookup_or_create_node_group(puppet_run['node_group_name'], nil)
     os_node_group_id = -1
-    if os == 'CentOS'
+    if puppet_run['os'] == 'CentOS'
       os_node_group_id = lookup_or_create_node_group('Linux_Static', nil)
-    elsif os == 'windows'
+    elsif puppet_run['os'] == 'windows'
       os_node_group_id = lookup_or_create_node_group('Windows_Static', nil)
     end
     # Get environment id from UpGuard
-    environment_id = lookup_or_create_environment(environment_name)
+    environment_id = lookup_or_create_environment(puppet_run['environment_name'])
     # Determine if we can find the node or if we need to create it
-    node = lookup_or_create_node(node_ip_hostname, os, datacenter_name)
+    node = lookup_or_create_node(puppet_run['node_ip_hostname'], puppet_run['os'], puppet_run['datacenter_name'])
     # Make sure to add the node to the node group
     add_node_to_group(node[:id], node_group_id)
     if os_node_group_id != -1
@@ -123,14 +171,40 @@ Puppet::Reports.register_report(:upguard) do
       Puppet.info("#{log_prefix} new node, sleeping for #{SLEEP_BEFORE_SCAN} seconds...")
       sleep SLEEP_BEFORE_SCAN
       # Kick off a vuln scan only for newly created nodes
-      # vuln_scan(node[:id], node_ip_hostname)
+      #vuln_scan(node[:id], node_ip_hostname)
     end
-    node_scan(node[:id], node_ip_hostname, manifest_filename)
+    node_scan(node[:id], puppet_run['node_ip_hostname'], puppet_run['manifest_filename'])
   end
 
-  ##############################################################################
-  # DRIVER METHODS                                                             #
-  ##############################################################################
+  def store_puppet_run(offline_mode_filename, puppet_run)
+    # Take all the info about the node from PDB and store it to file.
+    Puppet.info("#{log_prefix} puppet_run: #{puppet_run}")
+    if File.exists?(offline_mode_filename)
+      # Read in existing state file.
+      Puppet.info("#{log_prefix} state file already exists, reading in contents")
+      file_state = File.read(offline_mode_filename)
+      puppet_runs = JSON.parse(file_state)
+      puppet_runs << puppet_run
+    else
+      Puppet.info("#{log_prefix} state file not present, creating one now")
+      puppet_runs = []
+    end
+    puppet_runs << puppet_run
+    # Write the array back to the state file
+    Puppet.info("#{log_prefix} added '#{puppet_run['node_ip_hostname']}' to the state file to process when upguard is back online")
+    File.write(offline_mode_filename, JSON.pretty_generate(puppet_runs))
+  end
+
+  def upguard_offline
+    offline_status = true
+    # Perform an authenticated request to UpGuard. This additionally proves that ones auth credentials are correct.
+    response = `curl -X GET -s -m 20 -H 'Authorization: Token token="#{API_KEY}"' -H 'Accept: application/json' -H 'Content-Type: application/json' #{APPLIANCE_URL}/api/v2/users`
+    Puppet.info("#{log_prefix} user_lookup response=#{response}")
+    if !response.nil? && response.include?("email")
+      offline_status = false
+    end
+    offline_status
+  end
 
   def generate_environment_name(datacenter_name, environment_name)
     if (!datacenter_name.nil? && !datacenter_name.empty?) && (!environment_name.nil? && !environment_name.empty?)
@@ -408,9 +482,9 @@ Puppet::Reports.register_report(:upguard) do
 
     if logs && logs.any?
       (logs).each do |log|
-        Puppet.info("#{log_prefix} log: #{log}")
+        # Puppet.info("#{log_prefix} log: #{log}")
         if log.file
-          Puppet.info("#{log_prefix} log.file: #{log.file}")
+          # Puppet.info("#{log_prefix} log.file: #{log.file}")
           segments = log.file.split("/")
           if segments && segments.any?
             manifest_filename.push(segments.last)
@@ -495,7 +569,7 @@ Puppet::Reports.register_report(:upguard) do
     domain_details = determine_domain_details(ip_hostname, os, datacenter_name)
     Puppet.info("#{log_prefix} node_create ip_hostname=#{ip_hostname}")
     Puppet.info("#{log_prefix} node_create os=#{os}")
-    Puppet.info("#{log_prefix} node_create cm group=#{domain_details}")
+    # Puppet.info("#{log_prefix} node_create cm group=#{domain_details}")
 
     node = {}
     node[:node] = {}
@@ -533,9 +607,9 @@ Puppet::Reports.register_report(:upguard) do
     end
 
     request = "curl -X POST -s -k -H 'Authorization: Token token=\"#{api_key}\"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '#{node.to_json}' #{instance}/api/v2/nodes"
-    Puppet.info("#{log_prefix} node_create request=#{request}")
+    # Puppet.info("#{log_prefix} node_create request=#{request}")
     response = `#{request}`
-    Puppet.info("#{log_prefix} node_create response=#{response}")
+    # Puppet.info("#{log_prefix} node_create response=#{response}")
     node = JSON.load(response)
 
     if node["id"]

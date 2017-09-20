@@ -1,18 +1,18 @@
-########################################################################################################
-#                                                                                                      #
-# Author: UpGuard (support@upguard.com)                                                                #
-#                                                                                                      #
-# Description: Synchronize UpGuard policy results with a corresponding JIRA ticket.                    #
-# When an UpGuard policy fails, a failing ticket is create in JIRA if one does not already exist.      #
-# If a ticket does exist, append a comment with the latest policy failure results and a link to the    #
-# node scan. A passing UpGuard policy with a corresponding failing JIRA ticket will update the JIRA    #
-# ticket status to "Passing" and append a comment with the passing UpGuard policy results.             #
-# Finally, a passing UpGuard policy with no corresponding JIRA ticket will not do anything.            #
-#                                                                                                      #
-# Usage: This script is intended to be scheduled and run every minute using a tool such as crontab.    #
-# UpGuard class variables will need to be set as per your UpGuard and JIRA instances.                  #
-#                                                                                                      #
-########################################################################################################
+#############################################################################################################
+#                                                                                                           #
+# Author: UpGuard (support@upguard.com)                                                                     #
+#                                                                                                           #
+# Description: Synchronize UpGuard policy results with a corresponding JIRA ticket (continuous validation). #
+# When an UpGuard policy fails, a failing ticket is create in JIRA if one does not already exist.           #
+# If a ticket does exist, append a comment with the latest policy failure results and a link to the         #
+# node scan. A passing UpGuard policy with a corresponding failing JIRA ticket will update the JIRA         #
+# ticket status to "Passing" and append a comment with the passing UpGuard policy results.                  #
+# Finally, a passing UpGuard policy with no corresponding JIRA ticket will not do anything.                 #
+#                                                                                                           #
+# Usage: This script is intended to be scheduled and run every minute using a tool such as crontab.         #
+# UpGuard class variables will need to be set as per your UpGuard and JIRA instances.                       #
+#                                                                                                           #
+#############################################################################################################
 
 require 'httparty'
 require 'fileutils'

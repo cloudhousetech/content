@@ -3,7 +3,7 @@
 # Author: UpGuard (support@upguard.com)                                                                     #
 #                                                                                                           #
 # Description: Synchronize UpGuard policy results with a corresponding JIRA ticket (continuous validation). #
-# When an UpGuard policy fails, a failing ticket is create in JIRA if one does not already exist.           #
+# When an UpGuard policy fails, a failing ticket is created in JIRA if one does not already exist.          #
 # If a ticket does exist, append a comment with the latest policy failure results and a link to the         #
 # node scan. A passing UpGuard policy with a corresponding failing JIRA ticket will update the JIRA         #
 # ticket status to "Passing" and append a comment with the passing UpGuard policy results.                  #
@@ -39,20 +39,24 @@ class UpGuard
   @file_name_state = "#{@file_name}.json"
   @file_name_lock  = "#{@file_name}.lock"
 
-  @jira_hostname    = 'https://your.jira.instance'
-  @jira_username    = 'username'
-  @jira_password    = 'password'
-  @jira_project_id  = 'project name'
+  @jira_hostname      = 'https://your.jira.instance'
+  @jira_username      = 'username'
+  @jira_password      = 'password'
+  @jira_project_name  = 'project name' # E.g. "Test Project"
+  @jira_project_key   = 'project key'  # E.g. "TP"
+  @jira_issue_type    = 'issue type'   # E.g. "Server Scan"
+
 
   @hostname  = 'https://your.upguard.instance'
-  api_key    = 'api key'
-  secret_key = 'secret key'
+  api_key    = 'upguard api key'
+  secret_key = 'upguard secret key'
   @auth      = "#{api_key}#{secret_key}"
 
   @events_index = "#{@hostname}/api/v2/events"
 
   class << self; attr_accessor :version, :file_name, :file_name_state, :file_name_lock,
-                               :jira_hostname, :jira_username, :jira_password, :jira_project_id,
+                               :jira_hostname, :jira_username, :jira_password, :jira_project_name,
+                               :jira_project_key, :jira_issue_type,
                                :hostname, :auth,
                                :events_index
   end
@@ -184,11 +188,11 @@ class UpGuard
     ticket = {}
     ticket['fields'] = {}
     ticket['fields']['project'] = {}
-    ticket['fields']['project']['key'] = 'COR'
+    ticket['fields']['project']['key'] = UpGuard.jira_project_key
     ticket['fields']['summary'] = "#{node[:node_name]} policies failing"
     ticket['fields']['description'] = draw_policy_table(node)
     ticket['fields']['issuetype'] = {}
-    ticket['fields']['issuetype']['name'] = 'Server Scan'
+    ticket['fields']['issuetype']['name'] = UpGuard.jira_issue_type
     ticket['fields']['labels'] = [node[:node_name], 'upguard']
 
     auth = { :username => "#{UpGuard.jira_username}", :password => "#{UpGuard.jira_password}" }
@@ -270,7 +274,7 @@ class UpGuard
 
   def get_failing_jira_tickets
     begin
-      jql = ERB::Util.url_encode("project = \"#{UpGuard.jira_project_id}\" AND type = \"Server Scan\" AND status = Failed order by created desc")
+      jql = ERB::Util.url_encode("project = \"#{UpGuard.jira_project_name}\" AND type = \"#{UpGuard.jira_issue_type}\" AND status = Failed order by created desc")
       auth = { :username => "#{UpGuard.jira_username}", :password => "#{UpGuard.jira_password}" }
       failing_tickets = HTTParty.get("#{UpGuard.jira_hostname}/rest/api/2/search?jql=#{jql}",
                                      :headers  => { 'Content-Type' => 'application/json',

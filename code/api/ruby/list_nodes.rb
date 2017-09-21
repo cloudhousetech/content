@@ -11,7 +11,7 @@ Optional flags:
   --status: filters results by node status
   --last_scan_status: filter results by nodes' last scan status
 Usage Examples:
-  ./<path-to-script>/list_nodes.rb -disableSSL --status active
+  ./<path-to-script>/list_nodes.rb -disable_ssl --status active
 =end
 
 #Flag Parsing

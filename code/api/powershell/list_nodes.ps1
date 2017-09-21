@@ -38,8 +38,6 @@ Optional Script Flags:
     Inputs: json
   - disableSSLCert: Disables SSL Certificate check for the API call.
   - disableDebugOutput: Disables debugging output.
-  - encryptionProtocol: Updates the encryption protocol to use. Uses TLS 1.2 by default.
-    Inputs: TLS1.1, TLS1.0, SSL3
 
 Example Usage:
   - List all nodes without requiring an SSLCertificate check:

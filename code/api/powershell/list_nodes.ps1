@@ -3,7 +3,6 @@
     [switch]$disableDebugOutput,
     [string]$status,
     [string]$lastScanStatus,
-    [string]$encryptionProtocol,
     [string]$outputFormat
 )
 
@@ -174,24 +173,9 @@ function Start-Main {
     }
 
     #Encryption Protocol Setting
-    if($encryptionProtocol -eq "") {
-        Write-OptionalDebug "Enforcing TLS 1.2"
-        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    } else {
-        switch ($encryptionProtocol) {
-            "TLS1.1"{
-                Write-OptionalDebug "Enforcing TLS 1.1"
-                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls11}
-            "TLS1.0"{
-                Write-OptionalDebug "Enforcing TLS 1.0"
-                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls}
-            "SSL3"{
-                Write-OptionalDebug "Enforcing SSL 3"
-                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Ssl3}
-            default{
-                throw [System.Exception] "Permitted values for encryptionProtocol are: TLS1.1, TSL1.0, and SSL3"}
-        }
-    }
+    Write-OptionalDebug "Enforcing TLS 1.2"
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
     
     $page = 1
     $perPage = 500

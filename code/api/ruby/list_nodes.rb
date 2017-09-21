@@ -37,9 +37,9 @@ end
 opt_parser.parse!
 
 #Authorization
-url        = '' #Example: https://123.0.0.1 or https://<my-server>.com - the scheme may be http or https
-api_key    = '' #secret key shown when API enabled in Manage Accounts | Account | enable api access
-secret_key = '' #service Api key under Manage Accounts | Account
+url        = '' #Example: https://123.0.0.1 or http://<my-server>.com
+api_key    = '' #service API key under Manage Accounts | Account
+secret_key = '' #secret key shown when API enabled in Manage Accounts | Account | enable api access
 
 header     = {"Authorization" => "Token token=\"#{api_key}#{secret_key}\""}
 page       = 1

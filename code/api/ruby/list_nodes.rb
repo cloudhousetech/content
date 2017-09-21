@@ -2,22 +2,20 @@ require 'httparty'
 require 'json'
 require 'optparse'
 
-=begin
-UpGuard Support Site Documentation: https://support.upguard.com/upguard/nodes-api-v2.html#index
-To use, please input the Authorization parameters below for scheme, api_key, secret_key, and URL
-Minimum requirements: Ruby 2.0.0, httparty gem
-Optional flags:
-  --disable_ssl: Disable SSL certificate verification
-  --status: filters results by node status
-  --last_scan_status: filter results by nodes' last scan status
-Usage Examples:
-  ./<path-to-script>/list_nodes.rb --disable_ssl --status active
-=end
+# UpGuard Support Site Documentation: https://support.upguard.com/upguard/nodes-api-v2.html#index
+# To use, please input the Authorization parameters below for scheme, api_key, secret_key, and URL
+# Minimum requirements: Ruby 2.0.0, httparty gem
+# Optional flags:
+#   --disable_ssl: Disable SSL certificate verification
+#   --status: filters results by node status
+#   --last_scan_status: filter results by nodes' last scan status
+# Usage Examples:
+#   ./<path-to-script>/list_nodes.rb --disable_ssl --status active
 
-#Flag Parsing
-options = {}
-options[:SSL_cert] = true
-options[:status] = nil
+# Flag Parsing
+options                    = {}
+options[:SSL_cert]         = true
+options[:status]           = nil
 options[:last_scan_status] = nil
 
 opt_parser = OptionParser.new do |opt|
@@ -36,30 +34,26 @@ end
 
 opt_parser.parse!
 
-#Authorization
-url        = '' #Example: https://123.0.0.1 or http://<my-server>.com
-api_key    = '' #service API key under Manage Accounts | Account
-secret_key = '' #secret key shown when API enabled in Manage Accounts | Account | enable API access
+# Authorization
+url        = '' # Example: https://123.0.0.1 or http://<my-server>.com
+api_key    = '' # Service API key under Manage Accounts | Account
+secret_key = '' # Secret key shown when API enabled in Manage Accounts | Account | enable API access
 
-header     = {"Authorization" => "Token token=\"#{api_key}#{secret_key}\""}
+header     = { "Authorization" => "Token token=\"#{api_key}#{secret_key}\"" }
 page       = 1
 per_page   = 100
-response = Array.new(per_page)
-nodes = Array.new
+response   = Array.new(per_page)
+nodes      = Array.new
 
-#Query Parameters
+# Query Parameters
 query = ''
-if (options[:status] != nil) 
-  query += "status=#{options[:status]}&"
-end
-if (options[:last_scan_status] != nil)
-  query += "last_scan_status=#{options[:last_scan_status]}&"
-end
+query += "status=#{options[:status]}&"                     if (options[:status] != nil) 
+query += "last_scan_status=#{options[:last_scan_status]}&" if (options[:last_scan_status] != nil)
 
-#TLS 1.2
+# TLS 1.2
 OpenSSL::SSL::SSLContext::DEFAULT_PARAMS[:ssl_version] = :TLSv1_2
 
-#Paginate API requests
+# Paginate API requests
 while !response.nil? and response.count == per_page
   link = "#{url}/api/v2/nodes.json?#{query}page=#{page.to_s}&per_page=#{per_page.to_s}"
   puts "Attempting to invoke #{link}"
@@ -74,6 +68,6 @@ while !response.nil? and response.count == per_page
   page += 1
 end
 
-#Print Results
+# Print Results
 puts "Retreived #{nodes.count} nodes"
 puts JSON.pretty_generate(nodes)

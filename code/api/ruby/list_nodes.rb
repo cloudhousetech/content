@@ -7,11 +7,11 @@ UpGuard Support Site Documentation: https://support.upguard.com/upguard/nodes-ap
 To use, please input the Authorization parameters below for scheme, api_key, secret_key, and URL
 Minimum requirements: Ruby 2.0.0, httparty gem
 Optional flags:
-  -disable_ssl: Disable SSL certificate verification
+  --disable_ssl: Disable SSL certificate verification
   --status: filters results by node status
   --last_scan_status: filter results by nodes' last scan status
 Usage Examples:
-  ./<path-to-script>/list_nodes.rb -disable_ssl --status active
+  ./<path-to-script>/list_nodes.rb --disable_ssl --status active
 =end
 
 #Flag Parsing
@@ -21,7 +21,7 @@ options[:status] = nil
 options[:last_scan_status] = nil
 
 opt_parser = OptionParser.new do |opt|
-  opt.on('-disable_ssl') do
+  opt.on('--disable_ssl') do
     options[:SSL_cert] = false
   end
   
@@ -37,10 +37,9 @@ end
 opt_parser.parse!
 
 #Authorization
-scheme     = 'https' #scheme can be https or http
+url        = '' #Example: https://123.0.0.1 or https://<my-server>.com - the scheme may be http or https
 api_key    = '' #secret key shown when API enabled in Manage Accounts | Account | enable api access
-secret_key = '' #service Api key under Manage Accounts | Account 
-url        = '' #Example: 123.0.0.1
+secret_key = '' #service Api key under Manage Accounts | Account
 
 header     = {"Authorization" => "Token token=\"#{api_key}#{secret_key}\""}
 page       = 1
@@ -62,7 +61,7 @@ OpenSSL::SSL::SSLContext::DEFAULT_PARAMS[:ssl_version] = :TLSv1_2
 
 #Paginate API requests
 while !response.nil? and response.count == per_page
-  link = "#{scheme}://#{url}/api/v2/nodes.json?#{query}page=#{page.to_s}&per_page=#{per_page.to_s}"
+  link = "#{url}/api/v2/nodes.json?#{query}page=#{page.to_s}&per_page=#{per_page.to_s}"
   puts "Attempting to invoke #{link}"
   response = HTTParty.get(link, headers: header, :verify => options[:SSL_cert])
   

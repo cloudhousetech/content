@@ -35,6 +35,9 @@ opt_parser.parse!
 url        = '' #Example: https://123.0.0.1 or http://<my-server>.com
 api_key    = '' #service API key under Manage Accounts | Account 
 secret_key = '' #secret key shown when API enabled in Manage Accounts | Account | enable API access
+secret_key = '104e4bb644d0bf68f12aa3bc457d8fdca1d43ce02693444caa8f8a0e3ca029e7' #secret key shown when API enabled in Manage Accounts | Account | enable api access
+api_key = 'afbecf7c48e146181e923a53bd3b80ca600ec9bf956a1e7f3b9097d82fcf7be6' #service Api key under Manage Accounts | Account 
+url = 'http://192.168.88.1:3000' #Example: 123.0.0.1:3000
 
 header     = {"Authorization" => "Token token=\"#{api_key}#{secret_key}\""}
 page       = 1

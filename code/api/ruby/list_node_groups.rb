@@ -39,6 +39,7 @@ page         = 1
 per_page     = 100
 node_groups   = Array.new
 response     = nil
+
 api_endpoint = 'node_groups.json'
 if options[:node_group_id] != nil
   api_endpoint = "node_groups/#{options[:node_group_id]}/nodes.json"

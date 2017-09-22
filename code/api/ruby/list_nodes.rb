@@ -4,8 +4,8 @@ require 'optparse'
 
 # UpGuard Support Site Documentation: https://support.upguard.com/upguard/nodes-api-v2.html#index
 # Usage Instructions:
-#   To use, please input the Authorization parameters below for scheme, api_key, secret_key, and URL
-#   Minimum requirements: Ruby 2.0.0, httparty gem
+#   - To use, please input the Authorization parameters below for scheme, api_key, secret_key, and URL
+#   - Minimum requirements: Ruby 2.0.0, httparty gem
 # 
 # Optional flags:
 #   --disable_ssl: Disable SSL certificate verification

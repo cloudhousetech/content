@@ -3,13 +3,16 @@ require 'json'
 require 'optparse'
 
 # UpGuard Support Site Documentation: https://support.upguard.com/upguard/nodes-api-v2.html#index
-# To use, please input the Authorization parameters below for scheme, api_key, secret_key, and URL
-# Minimum requirements: Ruby 2.0.0, httparty gem
+# Usage Instructions:
+#   To use, please input the Authorization parameters below for scheme, api_key, secret_key, and URL
+#   Minimum requirements: Ruby 2.0.0, httparty gem
+# 
 # Optional flags:
 #   --disable_ssl: Disable SSL certificate verification
 #   --status: filters results by node status
 #   --last_scan_status: filter results by nodes' last scan status
-# Usage Examples:
+# 
+# Usage Example:
 #   ./<path-to-script>/list_nodes.rb --disable_ssl --status active
 
 # Flag Parsing
@@ -37,7 +40,7 @@ opt_parser.parse!
 # Authorization
 url        = '' # Example: https://123.0.0.1 or http://<my-server>.com
 api_key    = '' # Service API key under Manage Accounts | Account
-secret_key = '' # Secret key shown when API enabled in Manage Accounts | Account | enable API access
+secret_key = '' # Secret key shown when API enabled in Manage Accounts | Account | Enable API access
 
 header     = { "Authorization" => "Token token=\"#{api_key}#{secret_key}\"" }
 page       = 1

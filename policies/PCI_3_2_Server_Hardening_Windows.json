@@ -265,7 +265,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "function New-TemporaryDirectory {  $parent = [System.IO.Path]::GetTempPath();  [string] $name = [System.Guid]::NewGuid(); New-Item -ItemType Directory -Path (Join-Path $parent $name); }  $u=\"anonymous\"; $p=\"g@gmail.com\"; $obj = New-Object psobject;  If (gwmi win32_ServerFeature | where {$_.Name -match \"FTP\"}){    $ftp=$True;    $obj | add-member -Type Noteproperty \"FTP Installed\" -Value \"YES\";  } else {    $ftp=$False;    $obj | add-member -Type Noteproperty \"FTP Installed\" -Value \"NO\";    $obj | add-member -Type Noteproperty \"FTPSystemAccess\" -Value \"Not Installed\";    $obj | add-member -Type Noteproperty \"PolicyPass\" -Value \"YES\";  }  IF ($ftp){   $Cmddir = New-TemporaryDirectory   $Cmdtext = \"Open 127.0.0.1`n$u`n$p`ndir`nbye\";    $Cmdtext | Set-Content $Cmddir\\ftpcmd.txt;    $ftpoutput= Invoke-Expression \"ftp -i -s:$Cmddir\\ftpcmd.txt\";    If ($ftpoutput| Select-String -pattern \"Not connected|User cannot log in\") {      $obj | add-member -Type Noteproperty \"FTPSystemAccess\" -Value \"Login Failed\";      $obj | add-member -Type Noteproperty \"PolicyPass\" -Value \"NO\";    } else {      If ($ftpoutput | Select-String -pattern \"Windows|Program Files\") {       $obj | add-member -Type Noteproperty \"FTPSystemAccess\" -Value \"YES\";        $obj | add-member -Type Noteproperty \"PolicyPass\" -Value \"NO\";      } else {        $obj | add-member -Type Noteproperty \"FTPSystemAccess\" -Value \"NO\";        $obj | add-member -Type Noteproperty \"PolicyPass\" -Value \"YES\";      }        Remove-Item $Cmddir\\ftpcmd.txt;    } }  $obj;",
+                        "query": "$u=\"anonymous\"; $p=\"g@gmail.com\"; function New-TemporaryDirectory { $parent = [System.IO.Path]::GetTempPath(); [string] $name = [System.Guid]::NewGuid(); New-Item -ItemType Directory -Path (Join-Path $parent $name); } $obj = New-Object psobject; If (gwmi win32_ServerFeature | where {$_.Name -match \"FTP\"}){ $ftp=$True; $obj | add-member -Type Noteproperty \"FTP Installed\" -Value \"YES\"; } else { $ftp=$False; $obj | add-member -Type Noteproperty \"FTP Installed\" -Value \"NO\"; $obj | add-member -Type Noteproperty \"FTPSystemAccess\" -Value \"Not Installed\"; $obj | add-member -Type Noteproperty \"PolicyPass\" -Value \"YES\"; } IF ($ftp){ $Cmddir = New-TemporaryDirectory $Cmdtext = \"Open 127.0.0.1`n$u`n$p`ndir`nbye\"; $Cmdtext | Set-Content $Cmddir\\ftpcmd.txt; $ftpoutput= Invoke-Expression \"ftp -i -s:$Cmddir\\ftpcmd.txt\"; If ($ftpoutput| Select-String -pattern \"Not connected|User cannot log in\") { $obj | add-member -Type Noteproperty \"FTPSystemAccess\" -Value \"Login Failed\"; $obj | add-member -Type Noteproperty \"PolicyPass\" -Value \"NO\"; } else { If ($ftpoutput | Select-String -pattern \"Windows|Program Files\") { $obj | add-member -Type Noteproperty \"FTPSystemAccess\" -Value \"YES\"; $obj | add-member -Type Noteproperty \"PolicyPass\" -Value \"NO\"; } else { $obj | add-member -Type Noteproperty \"FTPSystemAccess\" -Value \"NO\"; $obj | add-member -Type Noteproperty \"PolicyPass\" -Value \"YES\"; } Remove-Item $Cmddir\\ftpcmd.txt; } } $obj;",
                         "description": "[PCI: Server-Hardening] FTP servers must be configured to prevent access to the system drive. WN12-GE-000027"
                     },
                     "description": "[PCI: Server-Hardening] FTP servers must be configured to prevent access to the system drive. WN12-GE-000027",
@@ -291,9 +291,9 @@
                         ],
                         "ClearTextPassword": [
                             {
-                                "exp": "1",
+                                "exp": "0",
                                 "check": "equals",
-                                "expected": "1"
+                                "expected": "0"
                             }
                         ]
                     },
@@ -304,7 +304,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "Invoke-Expression \"C:\\windows\\system32\\secedit.exe /export /cfg c:\\2.txt /quiet\"; $arr=@((cat C:\\2.txt | Select-string \"ClearTextPassword\" ) -split \"=\").trim(); $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"ClearTextPassword\" -Value $arr[1]; $obj; Remove-Item C:\\2.txt;",
+                        "query": "function New-TemporaryDirectory { $parent = [System.IO.Path]::GetTempPath(); [string] $name = [System.Guid]::NewGuid(); New-Item -ItemType Directory -Path (Join-Path $parent $name); } $TmpDir = New-TemporaryDirectory; Invoke-Expression \"C:\\windows\\system32\\secedit.exe /export /cfg $TmpDir\\secedit_out.txt /quiet\"; $arr=@((cat $TmpDir\\secedit_out.txt | Select-string \"ClearTextPassword\" ) -split \"=\").trim(); $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"ClearTextPassword\" -Value $arr[1]; $obj; Remove-Item $TmpDir\\secedit_out.txt;",
                         "description": "[PCI: Server-Hardening] Reversible password encryption must be disabled"
                     },
                     "description": "[PCI: Server-Hardening] Reversible password encryption must be disabled",
@@ -440,7 +440,7 @@
                     "ci_path": null,
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "echo \"20170913-0\"",
+                        "query": "echo \"20170922-0\"",
                         "description": "[PCI: Server-Hardening] Policy Version"
                     },
                     "description": "[PCI: Server-Hardening] Policy Version",
@@ -477,11 +477,11 @@
             },
             {
                 "description": "[PCI: Server-Hardening] FTP servers must be configured to prevent access to the system drive. WN12-GE-000027",
-                "query": "function New-TemporaryDirectory {  $parent = [System.IO.Path]::GetTempPath();  [string] $name = [System.Guid]::NewGuid(); New-Item -ItemType Directory -Path (Join-Path $parent $name); }  $u=\"anonymous\"; $p=\"g@gmail.com\"; $obj = New-Object psobject;  If (gwmi win32_ServerFeature | where {$_.Name -match \"FTP\"}){    $ftp=$True;    $obj | add-member -Type Noteproperty \"FTP Installed\" -Value \"YES\";  } else {    $ftp=$False;    $obj | add-member -Type Noteproperty \"FTP Installed\" -Value \"NO\";    $obj | add-member -Type Noteproperty \"FTPSystemAccess\" -Value \"Not Installed\";    $obj | add-member -Type Noteproperty \"PolicyPass\" -Value \"YES\";  }  IF ($ftp){   $Cmddir = New-TemporaryDirectory   $Cmdtext = \"Open 127.0.0.1`n$u`n$p`ndir`nbye\";    $Cmdtext | Set-Content $Cmddir\\ftpcmd.txt;    $ftpoutput= Invoke-Expression \"ftp -i -s:$Cmddir\\ftpcmd.txt\";    If ($ftpoutput| Select-String -pattern \"Not connected|User cannot log in\") {      $obj | add-member -Type Noteproperty \"FTPSystemAccess\" -Value \"Login Failed\";      $obj | add-member -Type Noteproperty \"PolicyPass\" -Value \"NO\";    } else {      If ($ftpoutput | Select-String -pattern \"Windows|Program Files\") {       $obj | add-member -Type Noteproperty \"FTPSystemAccess\" -Value \"YES\";        $obj | add-member -Type Noteproperty \"PolicyPass\" -Value \"NO\";      } else {        $obj | add-member -Type Noteproperty \"FTPSystemAccess\" -Value \"NO\";        $obj | add-member -Type Noteproperty \"PolicyPass\" -Value \"YES\";      }        Remove-Item $Cmddir\\ftpcmd.txt;    } }  $obj;"
+                "query": "$u=\"anonymous\"; $p=\"g@gmail.com\"; function New-TemporaryDirectory { $parent = [System.IO.Path]::GetTempPath(); [string] $name = [System.Guid]::NewGuid(); New-Item -ItemType Directory -Path (Join-Path $parent $name); } $obj = New-Object psobject; If (gwmi win32_ServerFeature | where {$_.Name -match \"FTP\"}){ $ftp=$True; $obj | add-member -Type Noteproperty \"FTP Installed\" -Value \"YES\"; } else { $ftp=$False; $obj | add-member -Type Noteproperty \"FTP Installed\" -Value \"NO\"; $obj | add-member -Type Noteproperty \"FTPSystemAccess\" -Value \"Not Installed\"; $obj | add-member -Type Noteproperty \"PolicyPass\" -Value \"YES\"; } IF ($ftp){ $Cmddir = New-TemporaryDirectory $Cmdtext = \"Open 127.0.0.1`n$u`n$p`ndir`nbye\"; $Cmdtext | Set-Content $Cmddir\\ftpcmd.txt; $ftpoutput= Invoke-Expression \"ftp -i -s:$Cmddir\\ftpcmd.txt\"; If ($ftpoutput| Select-String -pattern \"Not connected|User cannot log in\") { $obj | add-member -Type Noteproperty \"FTPSystemAccess\" -Value \"Login Failed\"; $obj | add-member -Type Noteproperty \"PolicyPass\" -Value \"NO\"; } else { If ($ftpoutput | Select-String -pattern \"Windows|Program Files\") { $obj | add-member -Type Noteproperty \"FTPSystemAccess\" -Value \"YES\"; $obj | add-member -Type Noteproperty \"PolicyPass\" -Value \"NO\"; } else { $obj | add-member -Type Noteproperty \"FTPSystemAccess\" -Value \"NO\"; $obj | add-member -Type Noteproperty \"PolicyPass\" -Value \"YES\"; } Remove-Item $Cmddir\\ftpcmd.txt; } } $obj;"
             },
             {
                 "description": "[PCI: Server-Hardening] Reversible password encryption must be disabled",
-                "query": "Invoke-Expression \"C:\\windows\\system32\\secedit.exe /export /cfg c:\\2.txt /quiet\"; $arr=@((cat C:\\2.txt | Select-string \"ClearTextPassword\" ) -split \"=\").trim(); $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"ClearTextPassword\" -Value $arr[1]; $obj; Remove-Item C:\\2.txt;"
+                "query": "function New-TemporaryDirectory { $parent = [System.IO.Path]::GetTempPath(); [string] $name = [System.Guid]::NewGuid(); New-Item -ItemType Directory -Path (Join-Path $parent $name); } $TmpDir = New-TemporaryDirectory; Invoke-Expression \"C:\\windows\\system32\\secedit.exe /export /cfg $TmpDir\\secedit_out.txt /quiet\"; $arr=@((cat $TmpDir\\secedit_out.txt | Select-string \"ClearTextPassword\" ) -split \"=\").trim(); $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"ClearTextPassword\" -Value $arr[1]; $obj; Remove-Item $TmpDir\\secedit_out.txt;"
             },
             {
                 "description": "[PCI: Server-Hardening] Optional Subsystems must not be permitted to operate on the system. WN12-SO-000088",
@@ -497,7 +497,7 @@
             },
             {
                 "description": "[PCI: Server-Hardening] Policy Version",
-                "query": "echo \"20170913-0\""
+                "query": "echo \"20170922-0\""
             }
         ]
     }

@@ -12,7 +12,7 @@ require 'optparse'
 #   --status: filters results by node status
 #   --last_scan_status: filter results by nodes' last scan status
 # 
-# Usage Example:
+# Usage Example(s):
 #   ./<path-to-script>/list_nodes.rb --disable_ssl --status active
 
 # Flag Parsing

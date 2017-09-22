@@ -2,7 +2,6 @@ require 'httparty'
 require 'json'
 require 'optparse'
 
-
 # UpGuard Support Site Documentation: https://support.upguard.com/upguard/node-groups-api-v2.html
 # To use, please input the Authorization parameters below for scheme, api_key, secret_key, and URL
 # Minimum requirements: Ruby 2.0.0, httparty gem

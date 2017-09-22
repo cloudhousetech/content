@@ -11,7 +11,7 @@ require 'optparse'
 #   --disable_ssl: Disable SSL certificate verification
 #   --node_group_id: lists nodes categorized under a node group ID number
 #
-# Usage Examples:
+# Usage Example(s):
 #   ./<path-to-script>/list_node_groups.rb --disable_ssl
 #   ./<path-to-script>/list_node_groups.rb --node_group_id 32
 

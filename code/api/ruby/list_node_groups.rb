@@ -3,12 +3,15 @@ require 'json'
 require 'optparse'
 
 # UpGuard Support Site Documentation: https://support.upguard.com/upguard/node-groups-api-v2.html
-# To use, please input the Authorization parameters below for scheme, api_key, secret_key, and URL
-# Minimum requirements: Ruby 2.0.0, httparty gem
-# Optional flags:
+# Usage Instructions:
+#   - To use, please input the Authorization parameters below for URL, api_key, and secret_key
+#   - Minimum requirements: httparty gem, Ruby 2.0.0
+#
+# Optional Flags:
 #   --disable_ssl: Disable SSL certificate verification
 #   --node_group_id: lists nodes categorized under a node group ID number
-# Usage Example:
+#
+# Usage Examples:
 #   ./<path-to-script>/list_node_groups.rb --disable_ssl
 #   ./<path-to-script>/list_node_groups.rb --node_group_id 32
 

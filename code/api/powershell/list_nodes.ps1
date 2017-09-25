@@ -9,7 +9,7 @@
 # Authorization
 $url =        '' # Example: https://123.0.0.1 or http://<my-server>.com
 $api_key =    '' # Service API key under Manage Accounts | Account
-$secret_key = '' # Secret key shown when API enabled in Manage Accounts | Account | Enable API access
+$secret_key = '' # Secret key shown when API enabled in Manage Accounts | Account | Enable API Access
 
 # Added serializer for parsing large JSON responses
 Add-Type -AssemblyName System.Web.Extensions

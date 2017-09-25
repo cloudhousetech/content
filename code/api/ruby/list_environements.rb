@@ -10,7 +10,7 @@ require 'optparse'
 # Optional Flags:
 #   --disable-ssl: Disable SSL certificate verification
 #   --environment_id: Lists an environment's nodes given it's numeric environment ID
-#   --get_id_by_name: Lists an environment's environment ID given it's name
+#   --environments_name: Lists an environment's environment ID given it's name
 #
 # Usage Example(s):
 #   ./<path-to-script>/list_environments.rb --disable_ssl --environment_id 4

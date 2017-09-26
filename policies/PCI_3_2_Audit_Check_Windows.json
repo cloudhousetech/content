@@ -26,13 +26,15 @@
                                 "expected": "true"
                             }
                         ],
-                        "Plug and Play Events": [
+                        "Plug And Play": [
                             {
-                                "exp": "Success",
                                 "check": "equals",
                                 "expected": "Success",
                                 "background": "This policy setting allows you to audit when plug and play detects an external device. The recommended state for this setting is: Success .",
-                                "remediation": "To establish the recommended configuration via GP, set the following UI path to Success :\nComputer Configuration\\Policies\\Windows Settings\\Security Settings\\Advanced Audit Policy Configuration\\Audit Policies\\Detailed Tracking\\Audit PNP Activity"
+                                "remediation": "To establish the recommended configuration via GP, set the following UI path to Success : Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Advanced Audit Policy Configuration\\Audit Policies\\Detailed Tracking\\Audit PNP Activity",
+                                "valueSelectList": null,
+                                "attributeSelectList": null,
+                                "availableAttributes": null
                             }
                         ]
                     },
@@ -271,11 +273,13 @@
                     "checks": {
                         "Logoff": [
                             {
-                                "exp": "Success",
                                 "check": "equals",
                                 "expected": "Success",
-                                "background": "This subcategory reports when a user logs off from the system. These events occur on the accessed computer. For interactive logons, the generation of these events occurs on the computer that is logged on to. If a network logon takes place to access a share, these events generate on the computer that hosts the accessed resource. If you configure this setting to No auditing, it is difficult or impossible to determine which user has accessed or attempted to access organization computers. Events for this subcategory include:\n4634: An account was logged off.\n4647: User initiated logoff.\nThe recommended state for this setting is: Success .",
-                                "remediation": "To establish the recommended configuration via GP, set the following UI path to Success :\nComputer Configuration\\Policies\\Windows Settings\\Security Settings\\Advanced Audit Policy Configuration\\Audit Policies\\Logon/Logoff\\Audit Logoff"
+                                "background": "This subcategory reports when a user logs off from the system. These events occur on the accessed computer. For interactive logons, the generation of these events occurs on the computer that is logged on to. If a network logon takes place to access a share, these events generate on the computer that hosts the accessed resource. If you configure this setting to No auditing, it is difficult or impossible to determine which user has accessed or attempted to access organization computers. Events for this subcategory include: 4634: An account was logged off. 4647: User initiated logoff. The recommended state for this setting is: Success .",
+                                "remediation": "To establish the recommended configuration via GP, set the following UI path to Success : Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Advanced Audit Policy Configuration\\Audit Policies\\Logon/Logoff\\Audit Logoff",
+                                "valueSelectList": null,
+                                "attributeSelectList": null,
+                                "availableAttributes": null
                             }
                         ],
                         "present": [
@@ -292,7 +296,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$APolicySetting=\"Logoff \";  $APolicyOutput= (Invoke-Expression \"auditpol /get /subcategory:$APolicySetting\") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;",
+                        "query": "$APolicySetting=\"Logoff \";  $APolicyOutput= (Invoke-Expression \"auditpol /get /subcategory:$APolicySetting\") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name \"Logoff\" -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name \"Logoff\"  -Value \"Setting does not exists\";}      $obj;",
                         "description": "17.5.3 (L1) Ensure 'Audit Logoff' is set to 'Success'"
                     },
                     "description": "17.5.3 (L1) Ensure 'Audit Logoff' is set to 'Success'",
@@ -326,7 +330,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$APolicySetting=\"Logon \";  $APolicyOutput= (Invoke-Expression \"auditpol /get /subcategory:$APolicySetting\") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;",
+                        "query": "$APolicySetting=\"Logon \";  $APolicyOutput= (Invoke-Expression \"auditpol /get /subcategory:$APolicySetting\") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name \"Logon\" -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name \"Logon\"  -Value \"Setting does not exists\";}      $obj;",
                         "description": "17.5.4 (L1) Ensure 'Audit Logon' is set to 'Success and Failure'"
                     },
                     "description": "17.5.4 (L1) Ensure 'Audit Logon' is set to 'Success and Failure'",
@@ -451,17 +455,11 @@
                         ],
                         "Policy Change": [
                             {
+                                "exp": "Success and Failure",
                                 "check": "equals",
                                 "expected": "Success and Failure",
-                                "valueSelectList": null,
-                                "attributeSelectList": [
-                                    "User Account Management"
-                                ],
-                                "availableAttributes": [
-                                    {
-                                        "User Account Management": "Success"
-                                    }
-                                ]
+                                "background": "This subcategory reports changes in audit policy including SACL changes. Events for this\nsubcategory include:\n4715: The audit policy (SACL) on an object was changed.\n4719: System audit policy was changed.\n4902: The Per-user audit policy table was created.\n4904: An attempt was made to register a security event source.\n4905: An attempt was made to unregister a security event source.\n4906: The CrashOnAuditFail value has changed.\n4907: Auditing settings on object were changed.\n4908: Special Groups Logon table modified.\n4912: Per User Audit Policy was changed.",
+                                "remediation": "To establish the recommended configuration via GP, set the following UI path to Success\nand Failure : Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Advanced Audit Policy Configuration\\Audit Policies\\Policy Change\\Audit Audit Policy Change"
                             }
                         ]
                     },
@@ -491,19 +489,11 @@
                         ],
                         "Authentication Policy Change": [
                             {
+                                "exp": "Success",
                                 "check": "equals",
                                 "expected": "Success",
-                                "valueSelectList": [
-                                    "Success"
-                                ],
-                                "attributeSelectList": [
-                                    "Authentication Policy Change"
-                                ],
-                                "availableAttributes": [
-                                    {
-                                        "Authentication Policy Change": "Success"
-                                    }
-                                ]
+                                "background": "This subcategory reports changes in authentication policy. Events for this subcategory include: 4706: A new trust was created to a domain. 4707: A trust to a domain was removed. 4713: Kerberos policy was changed. 4716: Trusted domain information was modified. 4717: System security access was granted to an account. 4718: System security access was removed from an account. 4739: Domain Policy was changed. 4864: A namespace collision was detected. 4865: A trusted forest information entry was added. 4866: A trusted forest information entry was removed. 4867: A trusted forest information entry was modified.",
+                                "remediation": "To establish the recommended configuration via GP, set the following UI path to Success : Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Advanced Audit Policy Configuration\\Audit Policies\\Policy Change\\Audit Authentication Policy Change"
                             }
                         ]
                     },
@@ -611,7 +601,7 @@
                     "ci_path": null,
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "echo \"20170926-0\";",
+                        "query": "echo \"20170926-1\";",
                         "description": "[PCI: Server-Hardening] Policy Version"
                     },
                     "description": "[PCI: Server-Hardening] Policy Version",
@@ -652,11 +642,11 @@
             },
             {
                 "description": "17.5.3 (L1) Ensure 'Audit Logoff' is set to 'Success'",
-                "query": "$APolicySetting=\"Logoff \";  $APolicyOutput= (Invoke-Expression \"auditpol /get /subcategory:$APolicySetting\") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;"
+                "query": "$APolicySetting=\"Logoff \";  $APolicyOutput= (Invoke-Expression \"auditpol /get /subcategory:$APolicySetting\") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name \"Logoff\" -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name \"Logoff\"  -Value \"Setting does not exists\";}      $obj;"
             },
             {
                 "description": "17.5.4 (L1) Ensure 'Audit Logon' is set to 'Success and Failure'",
-                "query": "$APolicySetting=\"Logon \";  $APolicyOutput= (Invoke-Expression \"auditpol /get /subcategory:$APolicySetting\") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;"
+                "query": "$APolicySetting=\"Logon \";  $APolicyOutput= (Invoke-Expression \"auditpol /get /subcategory:$APolicySetting\") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name \"Logon\" -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name \"Logon\"  -Value \"Setting does not exists\";}      $obj;"
             },
             {
                 "description": "17.2.3 Ensure 'Audit Distribution Group Management' is set to 'Success and Failure'",
@@ -688,7 +678,7 @@
             },
             {
                 "description": "[PCI: Server-Hardening] Policy Version",
-                "query": "echo \"20170926-0\";"
+                "query": "echo \"20170926-1\";"
             }
         ]
     }

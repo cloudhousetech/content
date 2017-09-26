@@ -258,7 +258,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$APolicySetting=\"Group Membership\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;",
+                        "query": "$APolicySetting=\"Group Membership\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;",
                         "description": "17.5.2 (L1) Ensure 'Audit Group Membership' is set to 'Success'"
                     },
                     "description": "17.5.2 (L1) Ensure 'Audit Group Membership' is set to 'Success'",
@@ -305,21 +305,11 @@
                     "checks": {
                         "Logon": [
                             {
+                                "exp": "Success and Failure",
                                 "check": "equals",
                                 "expected": "Success and Failure",
-                                "valueSelectList": null,
-                                "attributeSelectList": null,
-                                "availableAttributes": null
-                            },
-                            {
-                                "name": "Logon",
-                                "path": [
-                                    "10.2.5 Use of and changes to identification and authentication mechanisms—including but not limited to creation of new accounts and elevation of privileges—and all changes, additions, or deletions to accounts with root or administrative privileges",
-                                    "17.5.4 (L1) Ensure 'Audit Logon' is set to 'Success and Failure'"
-                                ],
-                                "check": "equals",
-                                "background": "This subcategory reports when a user attempts to log on to the system. These events occur on the accessed computer. For interactive logons, the generation of these events occurs on the computer that is logged on to. If a network logon takes place to access a share, these events generate on the computer that hosts the accessed resource. If you configure this setting to No auditing, it is difficult or impossible to determine which user has accessed or attempted to access organization computers. Events for this subcategory include:\n4624: An account was successfully logged on.\n4625: An account failed to log on.\n4648: A logon was attempted using explicit credentials.\n4675: SIDs were filtered.\nThe recommended state for this setting is: Success and Failure .",
-                                "remediation": "To establish the recommended configuration via GP, set the following UI path to Success and Failure :\nComputer Configuration\\Policies\\Windows Settings\\Security Settings\\Advanced Audit Policy Configuration\\Audit Policies\\Logon/Logoff\\Audit Logon"
+                                "background": "This subcategory reports when a user attempts to log on to the system. These events occur on the accessed computer. For interactive logons, the generation of these events occurs on the computer that is logged on to. If a network logon takes place to access a share, these events generate on the computer that hosts the accessed resource. If you configure this setting to No auditing, it is difficult or impossible to determine which user has accessed or attempted to access organization computers. Events for this subcategory include:",
+                                "remediation": "To establish the recommended configuration via GP, set the following UI path to Success and Failure : Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Advanced Audit Policy Configuration\\Audit Policies\\Logon/Logoff\\Audit Logon"
                             }
                         ],
                         "present": [
@@ -459,19 +449,21 @@
                                 "expected": "true"
                             }
                         ],
-                        "Policy Change": {
-                            "check": "equals",
-                            "expected": "Success and Failure",
-                            "valueSelectList": null,
-                            "attributeSelectList": [
-                                "User Account Management"
-                            ],
-                            "availableAttributes": [
-                                {
-                                    "User Account Management": "Success"
-                                }
-                            ]
-                        }
+                        "Policy Change": [
+                            {
+                                "check": "equals",
+                                "expected": "Success and Failure",
+                                "valueSelectList": null,
+                                "attributeSelectList": [
+                                    "User Account Management"
+                                ],
+                                "availableAttributes": [
+                                    {
+                                        "User Account Management": "Success"
+                                    }
+                                ]
+                            }
+                        ]
                     },
                     "ci_path": [
                         "PowerShell",
@@ -605,6 +597,7 @@
         {
             "Policy Version": [
                 {
+                    "id": "Policy-Version-PCI-Server-Hardening-Policy-Version",
                     "name": "[PCI: Server-Hardening] Policy Version",
                     "error": false,
                     "checks": {
@@ -618,10 +611,11 @@
                     "ci_path": null,
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "echo \"20170925-1\";",
+                        "query": "echo \"20170926-0\";",
                         "description": "[PCI: Server-Hardening] Policy Version"
                     },
-                    "description": "[PCI: Server-Hardening] Policy Version"
+                    "description": "[PCI: Server-Hardening] Policy Version",
+                    "nodeGroupsOpen": true
                 }
             ]
         }
@@ -654,7 +648,7 @@
             },
             {
                 "description": "17.5.2 (L1) Ensure 'Audit Group Membership' is set to 'Success'",
-                "query": "$APolicySetting=\"Group Membership\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;"
+                "query": "$APolicySetting=\"Group Membership\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;"
             },
             {
                 "description": "17.5.3 (L1) Ensure 'Audit Logoff' is set to 'Success'",
@@ -694,7 +688,7 @@
             },
             {
                 "description": "[PCI: Server-Hardening] Policy Version",
-                "query": "echo \"20170925-1\";"
+                "query": "echo \"20170926-0\";"
             }
         ]
     }

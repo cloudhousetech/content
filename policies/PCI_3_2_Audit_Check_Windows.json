@@ -41,11 +41,11 @@
                     "ci_path": [
                         "PowerShell",
                         "Queries",
-                        "17.3.2 (L1) Ensure 'Audit Process Creation' is set to 'Success'"
+                        "17.3.1 Ensure 'Audit PNP Actiity' is set to 'Success'"
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$APolicySetting=\"Plug and Play\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;",
+                        "query": "$APolicySetting=\"Plug and Play\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;",
                         "description": "17.3.1 Ensure 'Audit PNP Activity' is set to 'Success'"
                     },
                     "selectList": [
@@ -78,11 +78,11 @@
                     "ci_path": [
                         "PowerShell",
                         "Queries",
-                        "The output of the PowerShell query {{ query }} should contain the specified value17.3.2 (L1) Ensure 'Audit Process Creation' is set to 'Success'"
+                        "17.3.2 Ensure 'Audit Process Creation' is set to 'Success'"
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$APolicySetting=\"Process Creation\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;",
+                        "query": "$APolicySetting=\"Process Creation\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;",
                         "description": "17.3.2 Ensure 'Audit Process Creation' is set to 'Success'"
                     },
                     "description": "17.3.2 Ensure 'Audit Process Creation' is set to 'Success'",
@@ -120,7 +120,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$APolicySetting=\"Other Account Management Events\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;",
+                        "query": "$APolicySetting=\"Other Account Management Events\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;",
                         "description": "17.2.4 Ensure 'Audit Other Account Management Events' is set to 'Success and Failure'"
                     },
                     "description": "17.2.4 Ensure 'Audit Other Account Management Events' is set to 'Success and Failure'",
@@ -155,7 +155,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$APolicySetting=\"Account Lockout\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;",
+                        "query": "$APolicySetting=\"Account Lockout\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;",
                         "description": "17.5.1 Ensure 'Audit Account Lockout' is set to 'Success and Failure'"
                     },
                     "description": "17.5.1 Ensure 'Audit Account Lockout' is set to 'Success and Failure'",
@@ -193,7 +193,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$APolicySetting=\"Computer Account Management\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;",
+                        "query": "$APolicySetting=\"Computer Account Management\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;",
                         "description": "17.2.2 Ensure 'Audit Computer Account Management' is set to 'Success and Failure'"
                     },
                     "description": "17.2.2 Ensure 'Audit Computer Account Management' is set to 'Success and Failure'",
@@ -226,7 +226,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$APolicySetting=\"User Account Management\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;",
+                        "query": "$APolicySetting=\"User Account Management\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;",
                         "description": "17.2.6 Ensure 'Audit User Account Management' is set to 'Success and Failure'"
                     },
                     "description": "17.2.6 Ensure 'Audit User Account Management' is set to 'Success and Failure'",
@@ -234,7 +234,7 @@
                 },
                 {
                     "id": "10-2-5-Use-of-and-changes-to-identification-and-authentication-mechanisms-including-but-not-limited-to-creation-of-new-accounts-and-elevation-of-privileges-and-all-changes-additions-or-deletions-to-accounts-with-root-or-administrative-privileges17-5-2-L1-Ensure-Audit-Group-Membership-is-set-to-Success-",
-                    "name": "17.5.2 (L1) Ensure 'Audit Group Membership' is set to 'Success'",
+                    "name": "17.5.2 Ensure 'Audit Group Membership' is set to 'Success'",
                     "error": false,
                     "checks": {
                         "present": [
@@ -260,15 +260,15 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$APolicySetting=\"Group Membership\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;",
-                        "description": "17.5.2 (L1) Ensure 'Audit Group Membership' is set to 'Success'"
+                        "query": "$APolicySetting=\"Group Membership\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;",
+                        "description": "17.5.2 Ensure 'Audit Group Membership' is set to 'Success'"
                     },
-                    "description": "17.5.2 (L1) Ensure 'Audit Group Membership' is set to 'Success'",
+                    "description": "17.5.2 Ensure 'Audit Group Membership' is set to 'Success'",
                     "nodeGroupsOpen": true
                 },
                 {
                     "id": "10-2-5-Use-of-and-changes-to-identification-and-authentication-mechanisms-including-but-not-limited-to-creation-of-new-accounts-and-elevation-of-privileges-and-all-changes-additions-or-deletions-to-accounts-with-root-or-administrative-privileges17-5-3-L1-Ensure-Audit-Logoff-is-set-to-Success-",
-                    "name": "17.5.3 (L1) Ensure 'Audit Logoff' is set to 'Success'",
+                    "name": "17.5.3 Ensure 'Audit Logoff' is set to 'Success'",
                     "error": false,
                     "checks": {
                         "Logoff": [
@@ -292,19 +292,19 @@
                     "ci_path": [
                         "PowerShell",
                         "Queries",
-                        "17.5.3"
+                        "17.5.3 Ensure 'Audit Logoff' is set to 'Success'"
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$APolicySetting=\"Logoff \";  $APolicyOutput= (Invoke-Expression \"auditpol /get /subcategory:$APolicySetting\") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name \"Logoff\" -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name \"Logoff\"  -Value \"Setting does not exists\";}      $obj;",
-                        "description": "17.5.3 (L1) Ensure 'Audit Logoff' is set to 'Success'"
+                        "query": "$APolicySetting=\"Logoff \";  $APolicyOutput= (Invoke-Expression \"auditpol /get /subcategory:$APolicySetting\") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name \"Logoff\" -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name \"Logoff\"  -Value \"Setting does not exist\";}      $obj;",
+                        "description": "17.5.3 Ensure 'Audit Logoff' is set to 'Success'"
                     },
-                    "description": "17.5.3 (L1) Ensure 'Audit Logoff' is set to 'Success'",
+                    "description": "17.5.3 Ensure 'Audit Logoff' is set to 'Success'",
                     "nodeGroupsOpen": true
                 },
                 {
                     "id": "10-2-5-Use-of-and-changes-to-identification-and-authentication-mechanisms-including-but-not-limited-to-creation-of-new-accounts-and-elevation-of-privileges-and-all-changes-additions-or-deletions-to-accounts-with-root-or-administrative-privileges17-5-4-L1-Ensure-Audit-Logon-is-set-to-Success-and-Failure-",
-                    "name": "17.5.4 (L1) Ensure 'Audit Logon' is set to 'Success and Failure'",
+                    "name": "17.5.4 Ensure 'Audit Logon' is set to 'Success and Failure'",
                     "error": false,
                     "checks": {
                         "Logon": [
@@ -330,10 +330,10 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$APolicySetting=\"Logon \";  $APolicyOutput= (Invoke-Expression \"auditpol /get /subcategory:$APolicySetting\") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name \"Logon\" -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name \"Logon\"  -Value \"Setting does not exists\";}      $obj;",
-                        "description": "17.5.4 (L1) Ensure 'Audit Logon' is set to 'Success and Failure'"
+                        "query": "$APolicySetting=\"Logon \";  $APolicyOutput= (Invoke-Expression \"auditpol /get /subcategory:$APolicySetting\") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name \"Logon\" -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name \"Logon\"  -Value \"Setting does not exist\";}      $obj;",
+                        "description": "17.5.4 Ensure 'Audit Logon' is set to 'Success and Failure'"
                     },
-                    "description": "17.5.4 (L1) Ensure 'Audit Logon' is set to 'Success and Failure'",
+                    "description": "17.5.4 Ensure 'Audit Logon' is set to 'Success and Failure'",
                     "nodeGroupsOpen": true
                 },
                 {
@@ -364,7 +364,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$APolicySetting=\"Distribution Group Management\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;",
+                        "query": "$APolicySetting=\"Distribution Group Management\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;",
                         "description": "17.2.3 Ensure 'Audit Distribution Group Management' is set to 'Success and Failure'"
                     },
                     "description": "17.2.3 Ensure 'Audit Distribution Group Management' is set to 'Success and Failure'",
@@ -398,7 +398,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$APolicySetting=\"Security Group Management\"; $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting; $obj = New-Object psobject; if ($APolicyOutput){ $APolicyOutput -match ' ([a-z, /-]+) ([a-z, ]+)' | Out-Null; $APolicyStatus= $Matches[2]; $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus; } else { $obj | add-member -Type Noteproperty -Name $APolicySetting -Value \"Setting does not exists\";} $obj;",
+                        "query": "$APolicySetting=\"Security Group Management\"; $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting; $obj = New-Object psobject; if ($APolicyOutput){ $APolicyOutput -match ' ([a-z, /-]+) ([a-z, ]+)' | Out-Null; $APolicyStatus= $Matches[2]; $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus; } else { $obj | add-member -Type Noteproperty -Name $APolicySetting -Value \"Setting does not exist\";} $obj;",
                         "description": "17.2.5 Ensure 'Audit Security Group Management' is set to 'Success and Failure'"
                     },
                     "description": "17.2.5 Ensure 'Audit Security Group Management' is set to 'Success and Failure'",
@@ -406,7 +406,7 @@
                 },
                 {
                     "id": "10-2-5-Use-of-and-changes-to-identification-and-authentication-mechanisms-including-but-not-limited-to-creation-of-new-accounts-and-elevation-of-privileges-and-all-changes-additions-or-deletions-to-accounts-with-root-or-administrative-privileges17-5-5-L1-Ensure-Audit-Other-Logon-Logoff-Events-is-set-to-Success-and-Failure-",
-                    "name": "17.5.5 (L1) Ensure 'Audit Other Logon/Logoff Events' is set to 'Success and Failure'",
+                    "name": "17.5.5 Ensure 'Audit Other Logon/Logoff Events' is set to 'Success and Failure'",
                     "error": false,
                     "checks": {
                         "present": [
@@ -428,14 +428,14 @@
                     "ci_path": [
                         "PowerShell",
                         "Queries",
-                        "17.5.5 (L1) Ensure 'Audit Other Logon/Logoff Events' is set to 'Success and Failure'"
+                        "17.5.5 Ensure 'Audit Other Logon/Logoff Events' is set to 'Success and Failure'"
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$APolicySetting=\"Other Logon/Logoff Events\"; $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting; $obj = New-Object psobject; if ($APolicyOutput){ $APolicyOutput -match ' ([a-z, /-]+) ([a-z, ]+)' | Out-Null; $APolicyStatus= $Matches[2]; $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus; } else { $obj | add-member -Type Noteproperty -Name $APolicySetting -Value \"Setting does not exists\";} $obj;",
-                        "description": "17.5.5 (L1) Ensure 'Audit Other Logon/Logoff Events' is set to 'Success and Failure'"
+                        "query": "$APolicySetting=\"Other Logon/Logoff Events\"; $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting; $obj = New-Object psobject; if ($APolicyOutput){ $APolicyOutput -match ' ([a-z, /-]+) ([a-z, ]+)' | Out-Null; $APolicyStatus= $Matches[2]; $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus; } else { $obj | add-member -Type Noteproperty -Name $APolicySetting -Value \"Setting does not exist\";} $obj;",
+                        "description": "17.5.5 Ensure 'Audit Other Logon/Logoff Events' is set to 'Success and Failure'"
                     },
-                    "description": "17.5.5 (L1) Ensure 'Audit Other Logon/Logoff Events' is set to 'Success and Failure'",
+                    "description": "17.5.5 Ensure 'Audit Other Logon/Logoff Events' is set to 'Success and Failure'",
                     "nodeGroupsOpen": true
                 }
             ]
@@ -470,7 +470,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$APolicySetting=\"Policy Change\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;",
+                        "query": "$APolicySetting=\"Policy Change\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;",
                         "description": "17.7.1 Ensure 'Audit Audit Policy Change' is set to 'Success and Failure'"
                     },
                     "description": "17.7.1 Ensure 'Audit Audit Policy Change' is set to 'Success and Failure'",
@@ -504,7 +504,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$APolicySetting=\"Authentication Policy Change\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;",
+                        "query": "$APolicySetting=\"Authentication Policy Change\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;",
                         "description": "17.7.2 Ensure 'Audit Authentication Policy Change' is set to 'Success'"
                     },
                     "description": "17.7.2 Ensure 'Audit Authentication Policy Change' is set to 'Success'",
@@ -542,7 +542,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$APolicySetting=\"Directory Service Access\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;",
+                        "query": "$APolicySetting=\"Directory Service Access\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;",
                         "description": "17.4.1 Ensure 'Audit Directory Service Access' is set to 'Success and Failure'"
                     },
                     "description": "17.4.1 Ensure 'Audit Directory Service Access' is set to 'Success and Failure'",
@@ -576,7 +576,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$APolicySetting=\"Removable Storage\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;",
+                        "query": "$APolicySetting=\"Removable Storage\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;",
                         "description": "17.6.1 Ensure 'Audit Removable Storage' is set to 'Success and Failure'"
                     },
                     "description": "17.6.1 Ensure 'Audit Removable Storage' is set to 'Success and Failure'",
@@ -601,7 +601,7 @@
                     "ci_path": null,
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "echo \"20170926-1\";",
+                        "query": "echo \"20170926-2\";",
                         "description": "[PCI: Server-Hardening] Policy Version"
                     },
                     "description": "[PCI: Server-Hardening] Policy Version",
@@ -614,71 +614,71 @@
         "powershell_queries": [
             {
                 "description": "17.3.1 Ensure 'Audit PNP Activity' is set to 'Success'",
-                "query": "$APolicySetting=\"Plug and Play\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;"
+                "query": "$APolicySetting=\"Plug and Play\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;"
             },
             {
                 "description": "17.3.2 Ensure 'Audit Process Creation' is set to 'Success'",
-                "query": "$APolicySetting=\"Process Creation\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;"
+                "query": "$APolicySetting=\"Process Creation\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;"
             },
             {
                 "description": "17.2.4 Ensure 'Audit Other Account Management Events' is set to 'Success and Failure'",
-                "query": "$APolicySetting=\"Other Account Management Events\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;"
+                "query": "$APolicySetting=\"Other Account Management Events\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;"
             },
             {
                 "description": "17.5.1 Ensure 'Audit Account Lockout' is set to 'Success and Failure'",
-                "query": "$APolicySetting=\"Account Lockout\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;"
+                "query": "$APolicySetting=\"Account Lockout\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;"
             },
             {
                 "description": "17.2.2 Ensure 'Audit Computer Account Management' is set to 'Success and Failure'",
-                "query": "$APolicySetting=\"Computer Account Management\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;"
+                "query": "$APolicySetting=\"Computer Account Management\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;"
             },
             {
                 "description": "17.2.6 Ensure 'Audit User Account Management' is set to 'Success and Failure'",
-                "query": "$APolicySetting=\"User Account Management\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;"
+                "query": "$APolicySetting=\"User Account Management\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;"
             },
             {
-                "description": "17.5.2 (L1) Ensure 'Audit Group Membership' is set to 'Success'",
-                "query": "$APolicySetting=\"Group Membership\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;"
+                "description": "17.5.2 Ensure 'Audit Group Membership' is set to 'Success'",
+                "query": "$APolicySetting=\"Group Membership\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;"
             },
             {
-                "description": "17.5.3 (L1) Ensure 'Audit Logoff' is set to 'Success'",
-                "query": "$APolicySetting=\"Logoff \";  $APolicyOutput= (Invoke-Expression \"auditpol /get /subcategory:$APolicySetting\") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name \"Logoff\" -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name \"Logoff\"  -Value \"Setting does not exists\";}      $obj;"
+                "description": "17.5.3 Ensure 'Audit Logoff' is set to 'Success'",
+                "query": "$APolicySetting=\"Logoff \";  $APolicyOutput= (Invoke-Expression \"auditpol /get /subcategory:$APolicySetting\") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name \"Logoff\" -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name \"Logoff\"  -Value \"Setting does not exist\";}      $obj;"
             },
             {
-                "description": "17.5.4 (L1) Ensure 'Audit Logon' is set to 'Success and Failure'",
-                "query": "$APolicySetting=\"Logon \";  $APolicyOutput= (Invoke-Expression \"auditpol /get /subcategory:$APolicySetting\") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name \"Logon\" -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name \"Logon\"  -Value \"Setting does not exists\";}      $obj;"
+                "description": "17.5.4 Ensure 'Audit Logon' is set to 'Success and Failure'",
+                "query": "$APolicySetting=\"Logon \";  $APolicyOutput= (Invoke-Expression \"auditpol /get /subcategory:$APolicySetting\") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name \"Logon\" -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name \"Logon\"  -Value \"Setting does not exist\";}      $obj;"
             },
             {
                 "description": "17.2.3 Ensure 'Audit Distribution Group Management' is set to 'Success and Failure'",
-                "query": "$APolicySetting=\"Distribution Group Management\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;"
+                "query": "$APolicySetting=\"Distribution Group Management\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;"
             },
             {
                 "description": "17.2.5 Ensure 'Audit Security Group Management' is set to 'Success and Failure'",
-                "query": "$APolicySetting=\"Security Group Management\"; $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting; $obj = New-Object psobject; if ($APolicyOutput){ $APolicyOutput -match ' ([a-z, /-]+) ([a-z, ]+)' | Out-Null; $APolicyStatus= $Matches[2]; $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus; } else { $obj | add-member -Type Noteproperty -Name $APolicySetting -Value \"Setting does not exists\";} $obj;"
+                "query": "$APolicySetting=\"Security Group Management\"; $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting; $obj = New-Object psobject; if ($APolicyOutput){ $APolicyOutput -match ' ([a-z, /-]+) ([a-z, ]+)' | Out-Null; $APolicyStatus= $Matches[2]; $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus; } else { $obj | add-member -Type Noteproperty -Name $APolicySetting -Value \"Setting does not exist\";} $obj;"
             },
             {
-                "description": "17.5.5 (L1) Ensure 'Audit Other Logon/Logoff Events' is set to 'Success and Failure'",
-                "query": "$APolicySetting=\"Other Logon/Logoff Events\"; $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting; $obj = New-Object psobject; if ($APolicyOutput){ $APolicyOutput -match ' ([a-z, /-]+) ([a-z, ]+)' | Out-Null; $APolicyStatus= $Matches[2]; $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus; } else { $obj | add-member -Type Noteproperty -Name $APolicySetting -Value \"Setting does not exists\";} $obj;"
+                "description": "17.5.5 Ensure 'Audit Other Logon/Logoff Events' is set to 'Success and Failure'",
+                "query": "$APolicySetting=\"Other Logon/Logoff Events\"; $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting; $obj = New-Object psobject; if ($APolicyOutput){ $APolicyOutput -match ' ([a-z, /-]+) ([a-z, ]+)' | Out-Null; $APolicyStatus= $Matches[2]; $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus; } else { $obj | add-member -Type Noteproperty -Name $APolicySetting -Value \"Setting does not exist\";} $obj;"
             },
             {
                 "description": "17.7.1 Ensure 'Audit Audit Policy Change' is set to 'Success and Failure'",
-                "query": "$APolicySetting=\"Policy Change\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;"
+                "query": "$APolicySetting=\"Policy Change\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;"
             },
             {
                 "description": "17.7.2 Ensure 'Audit Authentication Policy Change' is set to 'Success'",
-                "query": "$APolicySetting=\"Authentication Policy Change\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;"
+                "query": "$APolicySetting=\"Authentication Policy Change\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;"
             },
             {
                 "description": "17.4.1 Ensure 'Audit Directory Service Access' is set to 'Success and Failure'",
-                "query": "$APolicySetting=\"Directory Service Access\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;"
+                "query": "$APolicySetting=\"Directory Service Access\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;"
             },
             {
                 "description": "17.6.1 Ensure 'Audit Removable Storage' is set to 'Success and Failure'",
-                "query": "$APolicySetting=\"Removable Storage\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exists\";}      $obj;"
+                "query": "$APolicySetting=\"Removable Storage\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;"
             },
             {
                 "description": "[PCI: Server-Hardening] Policy Version",
-                "query": "echo \"20170926-1\";"
+                "query": "echo \"20170926-2\";"
             }
         ]
     }

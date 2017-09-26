@@ -7,12 +7,14 @@ require 'optparse'
 #   - To use, please input the Authorization parameters below for URL, api_key, and secret_key
 #   - Minimum requirements: httparty gem, Ruby 2.0.0
 #
-# Optional Flags:
-#   --disable_ssl: Disable SSL certificate verification
+# API Flag(s):
 #   --node_group_id: lists nodes categorized under a node group ID number
 #
+# Optional Flag(s):
+#   --disable_ssl: Disable SSL certificate verification
+#
 # Usage Example(s):
-#   ./<path-to-script>/list_node_groups.rb --disable_ssl
+#   ./<path-to-script>/list_node_groups.rb
 #   ./<path-to-script>/list_node_groups.rb --node_group_id 32
 
 # Flag Parsing

@@ -4,17 +4,20 @@ require 'optparse'
 
 # UpGuard Support Site Documentation: https://support.upguard.com/upguard/environments-api-v2.html
 # Usage Instructions:
-#   - To use, please input the Authorization parameters below for URL, api_key, and secret_key
+#   - Input the Authorization parameters below for URL, api_key, and secret_key
+#   - Provide an API flag at execution time
 #   - Minimum requirements: httparty gem, Ruby 2.0.0
 # 
+# API Flags:
+#   --env_id: Lists an environment's nodes given it's numeric environment ID
+#   --env_name: Lists an environment's environment ID given it's name
+#
 # Optional Flags:
-#   --disable-ssl: Disable SSL certificate verification
-#   --environment_id: Lists an environment's nodes given it's numeric environment ID
-#   --environments_name: Lists an environment's environment ID given it's name
+#   --disable-ssl: Disables SSL certificate verification
 #
 # Usage Example(s):
-#   ./<path-to-script>/list_environments.rb --disable_ssl --environment_id 4
-#   ./<path-to-script>/list_environments.rb --environment_name 'Duplicate Nodes'
+#   ./<path-to-script>/list_environments.rb --disable_ssl --env_id 4
+#   ./<path-to-script>/list_environments.rb --env_name 'Duplicate Nodes'
 
 # Flag Parsing
 options            = {}
@@ -27,11 +30,11 @@ opt_parser = OptionParser.new do |opt|
     options[:SSL_cert] = false
   end
 
-  opt.on('--environment_id=ENVIRONMENTID') do |e|
+  opt.on('--env_id=ENVIRONMENTID') do |e|
     options[:env_id] = e
   end
 
-  opt.on('--environment_name=ENVIRONMENTNAME') do |name|
+  opt.on('--env_name=ENVIRONMENTNAME') do |name|
     options[:env_name] = name
   end 
 end

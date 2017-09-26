@@ -4,34 +4,36 @@ require 'erb'
 
 Puppet::Reports.register_report(:upguard) do
 
-  VERSION = "v1.5.0"
+  VERSION = "v1.5.1"
+  CONFIG_FILE_NAME = "upguard.yaml"
   VERSION_TAG = "Added by #{File.basename(__FILE__)} #{VERSION}"
   desc "Create a node (if not present) and kick off a node scan in UpGuard if changes were made."
 
-  configfile = File.join([File.dirname(Puppet.settings[:config]), "upguard.yaml"])
-  raise(Puppet::ParseError, "upguard.yaml config file #{configfile} not readable") unless File.exist?(configfile)
+  configfile = File.join([File.dirname(Puppet.settings[:config]), CONFIG_FILE_NAME])
+  raise(Puppet::ParseError, "#{CONFIG_FILE_NAME} config file #{configfile} not readable") unless File.exist?(configfile)
   begin
-    @@config = YAML.load_file(configfile)
+    config = YAML.load_file(configfile)
   rescue TypeError => e
-    raise(Puppet::ParserError, "upguard.yaml file is invalid")
+    raise(Puppet::ParserError, "#{CONFIG_FILE_NAME} file is invalid")
   end
 
-  APPLIANCE_URL            = @@config[:appliance_url]
-  PUPPETDB_URL             = @@config[:puppetdb_url]
-  COMPILE_MASTER_PEM       = @@config[:compile_master_pem]
-  SERVICE_KEY              = @@config[:service_key]
-  SECRET_KEY               = @@config[:secret_key]
+  CONFIG                   = config
+  APPLIANCE_URL            = config[:appliance_url]
+  PUPPETDB_URL             = config[:puppetdb_url]
+  COMPILE_MASTER_PEM       = config[:compile_master_pem]
+  SERVICE_KEY              = config[:service_key]
+  SECRET_KEY               = config[:secret_key]
   API_KEY                  = "#{SERVICE_KEY}#{SECRET_KEY}"
-  CM                       = @@config[:sites]
-  ENVIRONMENT              = @@config[:environment]
-  TEST_OS                  = @@config[:test_os]
-  TEST_NODE_NAME           = @@config[:test_node_name]
-  TEST_LINUX_HOSTNAME      = @@config[:test_linux_hostname]
-  TEST_WINDOWS_HOSTNAME    = @@config[:test_windows_hostname]
-  UNKNOWN_OS_NODE_GROUP_ID = @@config[:unknown_os_node_group_id]
-  SLEEP_BEFORE_SCAN        = @@config[:sleep_before_scan]
-  IGNORE_HOSTNAME_INCLUDE  = @@config[:ignore_hostname_include]
-  OFFLINE_MODE_FILENAME    = @@config[:offline_mode_filename]
+  CM                       = config[:sites]
+  ENVIRONMENT              = config[:environment]
+  TEST_OS                  = config[:test_os]
+  TEST_NODE_NAME           = config[:test_node_name]
+  TEST_LINUX_HOSTNAME      = config[:test_linux_hostname]
+  TEST_WINDOWS_HOSTNAME    = config[:test_windows_hostname]
+  UNKNOWN_OS_NODE_GROUP_ID = config[:unknown_os_node_group_id]
+  SLEEP_BEFORE_SCAN        = config[:sleep_before_scan]
+  IGNORE_HOSTNAME_INCLUDE  = config[:ignore_hostname_include]
+  OFFLINE_MODE_FILENAME    = config[:offline_mode_filename]
 
   def process
     Puppet.info("#{log_prefix} starting report processor #{VERSION}")
@@ -54,7 +56,7 @@ Puppet::Reports.register_report(:upguard) do
 
     # Check that all the variables we need supplied from upguard.yaml are present and return if they are not.
     if config_variables_missing
-      Puppet.info("#{log_prefix} returning early, config variables missing")
+      Puppet.info("#{log_prefix} returning early, ensure that missing config variables are present in #{CONFIG_FILE_NAME}")
       return
     end
 
@@ -132,13 +134,13 @@ Puppet::Reports.register_report(:upguard) do
                             :environment, :unknown_os_node_group_id, :sleep_before_scan, :ignore_hostname_include,
                             :offline_mode_filename]
     required_config_vars.each do |required_var|
-      if !@@config.key?(required_var)
-        Puppet.info("#{log_prefix} config variable #{required_var} is missing, ensure that it's present in upguard.yaml")
+      if !CONFIG.key?(required_var)
+        Puppet.info("#{log_prefix} config variable '#{required_var}' is missing")
         config_vars_missing = true
       else
         dont_print_vars = [:service_key, :secret_key, :sites]
         unless dont_print_vars.include?(required_var)
-          Puppet.info("#{log_prefix} #{required_var}=#{@@config[required_var]}")
+          Puppet.info("#{log_prefix} #{required_var}=#{CONFIG[required_var]}")
         end
       end
     end
@@ -197,7 +199,7 @@ Puppet::Reports.register_report(:upguard) do
   def upguard_offline
     offline_status = true
     # Perform an authenticated request to UpGuard. This additionally proves that ones auth credentials are correct.
-    response = `curl -X GET -s -m 20 -H 'Authorization: Token token="#{API_KEY}"' -H 'Accept: application/json' -H 'Content-Type: application/json' #{APPLIANCE_URL}/api/v2/users`
+    response = `curl -X GET -s -k -m 20 -H 'Authorization: Token token="#{API_KEY}"' -H 'Accept: application/json' -H 'Content-Type: application/json' #{APPLIANCE_URL}/api/v2/users`
     Puppet.info("#{log_prefix} user_lookup response=#{response}")
     if !response.nil? && response.include?("email")
       offline_status = false

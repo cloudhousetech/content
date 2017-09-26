@@ -4,8 +4,8 @@ require 'optparse'
 
 # UpGuard Support Site Documentation: https://support.upguard.com/upguard/environments-api-v2.html
 # Usage Instructions:
-#   - Input the Authorization parameters below for URL, api_key, and secret_key
-#   - Provide an API flag at execution time
+#   - To use, please input the Authorization parameters below for URL, api_key, secret_key,
+#     and provide an API flag at execution time
 #   - Minimum requirements: httparty gem, Ruby 2.0.0
 # 
 # API Flags:

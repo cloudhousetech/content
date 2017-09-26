@@ -17,6 +17,7 @@ $backup_filepath = $backup_location + $backup_file + ".tar.gz"
 # referenced by name and will not return an array of jobs if we have run the
 # script multiple times simultaneously.
 $display_name = "MyBitsTransfer " + (Get-Date)
+
 Start-BitsTransfer `
     -Source $backup_endpoint `
     -Destination $backup_filepath `
@@ -24,10 +25,11 @@ Start-BitsTransfer `
     -Authentication Basic `
     -Credential $credentials `
     -Asynchronous
-$job = Get-BitsTransfer $display_name
 
-# Ignore invalid common name in server certificate, ignore invalid date in server certificate.
-& "bitsadmin" /SetSecurityFlags $display_name 7
+# Enable CRL Check, Ignore invalid common name in server certificate, Ignore invalid date in  server certificate
+# & "bitsadmin" /SetSecurityFlags $display_name 7
+
+$job = Get-BitsTransfer $display_name
 
 # Create a holding pattern while we wait for the connection to be established
 # and the transfer to actually begin.  Otherwise the next Do...While loop may

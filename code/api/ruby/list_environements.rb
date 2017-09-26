@@ -4,8 +4,7 @@ require 'optparse'
 
 # UpGuard Support Site Documentation: https://support.upguard.com/upguard/environments-api-v2.html
 # Usage Instructions:
-#   - To use, please input the Authorization parameters below for URL, api_key, secret_key,
-#     and provide an API flag at execution time
+#   - To use, please input the Authorization parameters below for URL, api_key, and secret_key
 #   - Minimum requirements: httparty gem, Ruby 2.0.0
 # 
 # API Flags:
@@ -16,7 +15,8 @@ require 'optparse'
 #   --disable-ssl: Disables SSL certificate verification
 #
 # Usage Example(s):
-#   ./<path-to-script>/list_environments.rb --disable_ssl --env_id 4
+#   ./<path-to-script>/list_environments.rb
+#   ./<path-to-script>/list_environments.rb --env_id 4
 #   ./<path-to-script>/list_environments.rb --env_name 'Duplicate Nodes'
 
 # Flag Parsing

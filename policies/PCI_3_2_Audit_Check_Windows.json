@@ -16,7 +16,7 @@
         {
             "10.1 Implement audit trails to link all access to system components to each individual user.": [
                 {
-                    "id": "10-1-Implement-audit-trails-to-link-all-access-to-system-components-to-each-individual-user-17-3-1-Ensure-Audit-PNP-Activity-is-set-to-Success-",
+                    "id": "10-1-Implement-audit-trails-to-link-all-access-to-system-components-to-each-individual-user-PCI-Audit-Check-Ensure-Audit-PNP-Activity-is-set-to-Success-",
                     "name": "[PCI: Audit-Check] Ensure 'Audit PNP Activity' is set to 'Success'",
                     "error": false,
                     "checks": {
@@ -55,7 +55,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "10-1-Implement-audit-trails-to-link-all-access-to-system-components-to-each-individual-user-17-3-2-Ensure-Audit-Process-Creation-is-set-to-Success-",
+                    "id": "10-1-Implement-audit-trails-to-link-all-access-to-system-components-to-each-individual-user-PCI-Audit-Check-Ensure-Audit-Process-Creation-is-set-to-Success-",
                     "name": "[PCI: Audit-Check] Ensure 'Audit Process Creation' is set to 'Success'",
                     "error": false,
                     "checks": {
@@ -93,7 +93,7 @@
         {
             "10.2.4 Verify invalid logical access attempts are logged.": [
                 {
-                    "id": "10-2-4-Verify-invalid-logical-access-attempts-are-logged-17-2-4-Ensure-Audit-Other-Account-Management-Events-is-set-to-Success-and-Failure-",
+                    "id": "10-2-4-Verify-invalid-logical-access-attempts-are-logged-PCI-Audit-Check-Ensure-Audit-Other-Account-Management-Events-is-set-to-Success-and-Failure-",
                     "name": "[PCI: Audit-Check] Ensure 'Audit Other Account Management Events' is set to 'Success and Failure'",
                     "error": false,
                     "checks": {
@@ -127,7 +127,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "10-2-4-Verify-invalid-logical-access-attempts-are-logged-17-5-1-Ensure-Audit-Account-Lockout-is-set-to-Success-and-Failure-",
+                    "id": "10-2-4-Verify-invalid-logical-access-attempts-are-logged-PCI-Audit-Check-Ensure-Audit-Account-Lockout-is-set-to-Success-and-Failure-",
                     "name": "[PCI: Audit-Check] Ensure 'Audit Account Lockout' is set to 'Success and Failure'",
                     "error": false,
                     "checks": {
@@ -166,7 +166,7 @@
         {
             "10.2.5 Use of and changes to identification and authentication mechanisms—including but not limited to creation of new accounts and elevation of privileges—and all changes, additions, or deletions to accounts with root or administrative privileges": [
                 {
-                    "id": "10-2-5-Use-of-and-changes-to-identification-and-authentication-mechanisms-including-but-not-limited-to-creation-of-new-accounts-and-elevation-of-privileges-and-all-changes-additions-or-deletions-to-accounts-with-root-or-administrative-privileges17-2-2-Ensure-Audit-Computer-Account-Management-is-set-to-Success-and-Failure-",
+                    "id": "10-2-5-Use-of-and-changes-to-identification-and-authentication-mechanisms-including-but-not-limited-to-creation-of-new-accounts-and-elevation-of-privileges-and-all-changes-additions-or-deletions-to-accounts-with-root-or-administrative-privileges-PCI-Audit-Check-Ensure-Audit-Computer-Account-Management-is-set-to-Success-and-Failure-",
                     "name": "[PCI: Audit-Check] Ensure 'Audit Computer Account Management' is set to 'Success and Failure'",
                     "error": false,
                     "checks": {
@@ -200,7 +200,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "10-2-5-Use-of-and-changes-to-identification-and-authentication-mechanisms-including-but-not-limited-to-creation-of-new-accounts-and-elevation-of-privileges-and-all-changes-additions-or-deletions-to-accounts-with-root-or-administrative-privileges17-2-6-Ensure-Audit-User-Account-Management-is-set-to-Success-and-Failure-",
+                    "id": "10-2-5-Use-of-and-changes-to-identification-and-authentication-mechanisms-including-but-not-limited-to-creation-of-new-accounts-and-elevation-of-privileges-and-all-changes-additions-or-deletions-to-accounts-with-root-or-administrative-privileges-PCI-Audit-Check-Ensure-Audit-User-Account-Management-is-set-to-Success-and-Failure-",
                     "name": "[PCI: Audit-Check] Ensure 'Audit User Account Management' is set to 'Success and Failure'",
                     "error": false,
                     "checks": {
@@ -233,7 +233,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "10-2-5-Use-of-and-changes-to-identification-and-authentication-mechanisms-including-but-not-limited-to-creation-of-new-accounts-and-elevation-of-privileges-and-all-changes-additions-or-deletions-to-accounts-with-root-or-administrative-privileges17-5-2-L1-Ensure-Audit-Group-Membership-is-set-to-Success-",
+                    "id": "10-2-5-Use-of-and-changes-to-identification-and-authentication-mechanisms-including-but-not-limited-to-creation-of-new-accounts-and-elevation-of-privileges-and-all-changes-additions-or-deletions-to-accounts-with-root-or-administrative-privileges-PCI-Audit-Check-Ensure-Audit-Group-Membership-is-set-to-Success-",
                     "name": "[PCI: Audit-Check] Ensure 'Audit Group Membership' is set to 'Success'",
                     "error": false,
                     "checks": {
@@ -267,7 +267,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "10-2-5-Use-of-and-changes-to-identification-and-authentication-mechanisms-including-but-not-limited-to-creation-of-new-accounts-and-elevation-of-privileges-and-all-changes-additions-or-deletions-to-accounts-with-root-or-administrative-privileges17-5-3-L1-Ensure-Audit-Logoff-is-set-to-Success-",
+                    "id": "10-2-5-Use-of-and-changes-to-identification-and-authentication-mechanisms-including-but-not-limited-to-creation-of-new-accounts-and-elevation-of-privileges-and-all-changes-additions-or-deletions-to-accounts-with-root-or-administrative-privileges-PCI-Audit-Check-Ensure-Audit-Logoff-is-set-to-Success-",
                     "name": "[PCI: Audit-Check] Ensure 'Audit Logoff' is set to 'Success'",
                     "error": false,
                     "checks": {
@@ -303,7 +303,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "10-2-5-Use-of-and-changes-to-identification-and-authentication-mechanisms-including-but-not-limited-to-creation-of-new-accounts-and-elevation-of-privileges-and-all-changes-additions-or-deletions-to-accounts-with-root-or-administrative-privileges17-5-4-L1-Ensure-Audit-Logon-is-set-to-Success-and-Failure-",
+                    "id": "10-2-5-Use-of-and-changes-to-identification-and-authentication-mechanisms-including-but-not-limited-to-creation-of-new-accounts-and-elevation-of-privileges-and-all-changes-additions-or-deletions-to-accounts-with-root-or-administrative-privileges-PCI-Audit-Check-Ensure-Audit-Logon-is-set-to-Success-and-Failure-",
                     "name": "[PCI: Audit-Check] Ensure 'Audit Logon' is set to 'Success and Failure'",
                     "error": false,
                     "checks": {
@@ -337,7 +337,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "10-2-5-Use-of-and-changes-to-identification-and-authentication-mechanisms-including-but-not-limited-to-creation-of-new-accounts-and-elevation-of-privileges-and-all-changes-additions-or-deletions-to-accounts-with-root-or-administrative-privileges17-2-3-Ensure-Audit-Distribution-Group-Management-is-set-to-Success-and-Failure-",
+                    "id": "10-2-5-Use-of-and-changes-to-identification-and-authentication-mechanisms-including-but-not-limited-to-creation-of-new-accounts-and-elevation-of-privileges-and-all-changes-additions-or-deletions-to-accounts-with-root-or-administrative-privileges-PCI-Audit-Check-Ensure-Audit-Distribution-Group-Management-is-set-to-Success-and-Failure-",
                     "name": "[PCI: Audit-Check] Ensure 'Audit Distribution Group Management' is set to 'Success and Failure'",
                     "error": false,
                     "checks": {
@@ -371,7 +371,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "10-2-5-Use-of-and-changes-to-identification-and-authentication-mechanisms-including-but-not-limited-to-creation-of-new-accounts-and-elevation-of-privileges-and-all-changes-additions-or-deletions-to-accounts-with-root-or-administrative-privileges17-2-5-Ensure-Audit-Security-Group-Management-is-set-to-Success-and-Failure-",
+                    "id": "10-2-5-Use-of-and-changes-to-identification-and-authentication-mechanisms-including-but-not-limited-to-creation-of-new-accounts-and-elevation-of-privileges-and-all-changes-additions-or-deletions-to-accounts-with-root-or-administrative-privileges-PCI-Audit-Check-Ensure-Audit-Security-Group-Management-is-set-to-Success-and-Failure-",
                     "name": "[PCI: Audit-Check] Ensure 'Audit Security Group Management' is set to 'Success and Failure'",
                     "error": false,
                     "checks": {
@@ -405,7 +405,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "10-2-5-Use-of-and-changes-to-identification-and-authentication-mechanisms-including-but-not-limited-to-creation-of-new-accounts-and-elevation-of-privileges-and-all-changes-additions-or-deletions-to-accounts-with-root-or-administrative-privileges17-5-5-L1-Ensure-Audit-Other-Logon-Logoff-Events-is-set-to-Success-and-Failure-",
+                    "id": "10-2-5-Use-of-and-changes-to-identification-and-authentication-mechanisms-including-but-not-limited-to-creation-of-new-accounts-and-elevation-of-privileges-and-all-changes-additions-or-deletions-to-accounts-with-root-or-administrative-privileges-PCI-Audit-Check-Ensure-Audit-Other-Logon-Logoff-Events-is-set-to-Success-and-Failure-",
                     "name": "[PCI: Audit-Check] Ensure 'Audit Other Logon/Logoff Events' is set to 'Success and Failure'",
                     "error": false,
                     "checks": {
@@ -443,7 +443,7 @@
         {
             "10.2.6 Initialization, stopping, or pausing of the audit logs": [
                 {
-                    "id": "10-2-6-Initialization-stopping-or-pausing-of-the-audit-logs17-7-1-Ensure-Audit-Audit-Policy-Change-is-set-to-Success-and-Failure-",
+                    "id": "10-2-6-Initialization-stopping-or-pausing-of-the-audit-logs-PCI-Audit-Check-Ensure-Audit-Audit-Policy-Change-is-set-to-Success-and-Failure-",
                     "name": "[PCI: Audit-Check] Ensure 'Audit Audit Policy Change' is set to 'Success and Failure'",
                     "error": false,
                     "checks": {
@@ -477,7 +477,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "10-2-6-Initialization-stopping-or-pausing-of-the-audit-logs17-7-2-Ensure-Audit-Authentication-Policy-Change-is-set-to-Success-",
+                    "id": "10-2-6-Initialization-stopping-or-pausing-of-the-audit-logs-PCI-Audit-Check-Ensure-Audit-Authentication-Policy-Change-is-set-to-Success-",
                     "name": "[PCI: Audit-Check] Ensure 'Audit Authentication Policy Change' is set to 'Success'",
                     "error": false,
                     "checks": {
@@ -515,7 +515,7 @@
         {
             "10.2.7 Creation and deletion of system-level objects": [
                 {
-                    "id": "10-2-7-Creation-and-deletion-of-system-level-objects17-4-1-Ensure-Audit-Directory-Service-Access-is-set-to-Success-and-Failure-",
+                    "id": "10-2-7-Creation-and-deletion-of-system-level-objects-PCI-Audit-Check-Ensure-Audit-Directory-Service-Access-is-set-to-Success-and-Failure-",
                     "name": "[PCI: Audit-Check] Ensure 'Audit Directory Service Access' is set to 'Success and Failure'",
                     "error": false,
                     "checks": {
@@ -527,9 +527,9 @@
                         ],
                         "Directory Service Access": [
                             {
-                                "exp": "Success",
+                                "exp": "Success and Failure",
                                 "check": "equals",
-                                "expected": "Success",
+                                "expected": "Success and Failure",
                                 "background": "This subcategory reports when an AD DS object is accessed. Only objects with SACLs cause audit events to be generated, and only when they are accessed in a manner that matches their SACL. These events are similar to the directory service access events in previous versions of Windows Server. This subcategory applies only to domain controllers. Events for this subcategory include:\n4662 : An operation was performed on an object.\nThe recommended state for this setting is: Success and Failure .",
                                 "remediation": "To establish the recommended configuration via GP, set the following UI path to Success and Failure :\nComputer Configuration\\Policies\\Windows Settings\\Security Settings\\Advanced Audit Policy Configuration\\Audit Policies\\DS Access\\Audit Directory Service Access"
                             }
@@ -549,7 +549,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "10-2-7-Creation-and-deletion-of-system-level-objects17-6-1-Ensure-Audit-Removable-Storage-is-set-to-Success-and-Failure-",
+                    "id": "10-2-7-Creation-and-deletion-of-system-level-objects-PCI-Audit-Check-Ensure-Audit-Removable-Storage-is-set-to-Success-and-Failure-",
                     "name": "[PCI: Audit-Check] Ensure 'Audit Removable Storage' is set to 'Success and Failure'",
                     "error": false,
                     "checks": {
@@ -561,9 +561,9 @@
                         ],
                         "Removable Storage": [
                             {
-                                "exp": "Success And Failure",
+                                "exp": "Success and Failure",
                                 "check": "equals",
-                                "expected": "Success And Failure",
+                                "expected": "Success and Failure",
                                 "background": "This policy setting allows you to audit user attempts to access file system objects on a removable storage device. A security audit event is generated only for all objects for all types of access requested. If you configure this policy setting, an audit event is generated each time an account accesses a file system object on a removable storage. Success audits record successful attempts and Failure audits record unsuccessful attempts. If you do not configure this policy setting, no audit event is generated when an account accesses a file system object on a removable storage. The recommended state for this setting is: Success and Failure .",
                                 "remediation": "To establish the recommended configuration via GP, set the following UI path to Success and Failure :\nComputer Configuration\\Policies\\Windows Settings\\Security Settings\\Advanced Audit Policy Configuration\\Audit Policies\\Object Access\\Audit Removable Storage"
                             }
@@ -587,7 +587,7 @@
         {
             "Policy Version": [
                 {
-                    "id": "Policy-Version-PCI-Server-Hardening-Policy-Version",
+                    "id": "Policy-Version-PCI-Audit-Check-Policy-Version",
                     "name": "[PCI: Audit-Check] Policy Version",
                     "error": false,
                     "checks": {
@@ -601,7 +601,7 @@
                     "ci_path": null,
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "echo \"20170926-3\";",
+                        "query": "echo \"20170928-2\";",
                         "description": "[PCI: Audit-Check] Policy Version"
                     },
                     "description": "[PCI: Audit-Check] Policy Version",
@@ -678,7 +678,7 @@
             },
             {
                 "description": "[PCI: Audit-Check] Policy Version",
-                "query": "echo \"20170926-3\";"
+                "query": "echo \"20170928-2\";"
             }
         ]
     }

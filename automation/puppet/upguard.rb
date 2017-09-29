@@ -4,7 +4,7 @@ require 'erb'
 
 Puppet::Reports.register_report(:upguard) do
 
-  VERSION = "v1.5.1"
+  VERSION = "v1.5.2"
   CONFIG_FILE_NAME = "upguard.yaml"
   VERSION_TAG = "Added by #{File.basename(__FILE__)} #{VERSION}"
   desc "Create a node (if not present) and kick off a node scan in UpGuard if changes were made."
@@ -27,6 +27,8 @@ Puppet::Reports.register_report(:upguard) do
   CM                       = config[:sites]
   ENVIRONMENT              = config[:environment]
   TEST_OS                  = config[:test_os]
+  TEST_OS_MAJOR_RELEASE    = config[:test_os_major_release]
+  TEST_OS_VIRT_PLATFORM    = config[:test_os_virt_platform]
   TEST_NODE_NAME           = config[:test_node_name]
   TEST_LINUX_HOSTNAME      = config[:test_linux_hostname]
   TEST_WINDOWS_HOSTNAME    = config[:test_windows_hostname]
@@ -76,17 +78,19 @@ Puppet::Reports.register_report(:upguard) do
 
     # We use this to tag node scans with the puppet "file(s)" that have caused the change
     puppet_run['manifest_filename'] = pdb_manifest_files(self.logs)
-    # Used to set the node OS type in UpGuard
-    puppet_run['os'] = pdb_get_os(puppet_run['node_ip_hostname'])
-    Puppet.info("#{log_prefix} status=#{status} os=#{puppet_run['os']}")
-    # Get trusted facts from Puppet (once)
-    trusted_facts = pdb_get_trusted_facts(puppet_run['node_ip_hostname'])
+    # Get trusted facts from the Puppet DB once
+    facts = pdb_get_facts(puppet_run['node_ip_hostname'])
+    # Get the operating system
+    puppet_run['os'] = pdb_get_os(facts)
+    puppet_run['os_version'] = pdb_get_os_major_release(facts)
     # Extract the role, environment and datacenter
-    puppet_run['node_group_name'] = pdb_get_role(trusted_facts)
-    puppet_run['environment_name'] = pdb_get_environment(trusted_facts)
-    puppet_run['datacenter_name'] = pdb_get_datacenter(trusted_facts)
+    puppet_run['node_group_name'] = pdb_get_role(facts)
+    puppet_run['environment_name'] = pdb_get_environment(facts)
+    puppet_run['datacenter_name'] = pdb_get_datacenter(facts)
     # The format for environment names is datacenter_environment
     puppet_run['environment_name'] = generate_environment_name(puppet_run['datacenter_name'], puppet_run['environment_name'])
+    # Is the node on baremetal, AWS or VMware?
+    puppet_run['virt_platform'] = pdb_get_virt_platform(facts)
 
     ##########################################################################
     # DRIVER METHODS                                                         #
@@ -149,24 +153,21 @@ Puppet::Reports.register_report(:upguard) do
 
   def provision_node_in_upguard(puppet_run)
     # Get node group id from UpGuard
-    node_group_id = lookup_or_create_node_group(puppet_run['node_group_name'], nil)
-    os_node_group_id = -1
-    if puppet_run['os'] == 'CentOS'
-      os_node_group_id = lookup_or_create_node_group('Linux_Static', nil)
-    elsif puppet_run['os'] == 'windows'
-      os_node_group_id = lookup_or_create_node_group('Windows_Static', nil)
-    end
+    role_node_group_id = lookup_or_create_node_group(puppet_run['node_group_name'], nil)
+    # E.g. AWS CentOS 7, Baremetal Windows 2012
+    platform_os_version = "#{puppet_run['virt_platform']} #{puppet_run['os']} #{puppet_run['os_version']}".strip
+    Puppet.info("#{log_prefix} platform_os_version=#{platform_os_version}")
+    os_node_group_id = lookup_or_create_node_group(platform_os_version, nil)
     # Get environment id from UpGuard
     environment_id = lookup_or_create_environment(puppet_run['environment_name'])
     # Determine if we can find the node or if we need to create it
     node = lookup_or_create_node(puppet_run['node_ip_hostname'], puppet_run['os'], puppet_run['datacenter_name'])
     # Make sure to add the node to the node group
-    add_node_to_group(node[:id], node_group_id)
-    if os_node_group_id != -1
-      add_node_to_group(node[:id], os_node_group_id)
-    end
+    add_node_to_group(node[:id], role_node_group_id)
+    add_node_to_group(node[:id], os_node_group_id)
     # Make sure to add the node to the environment
     add_node_to_environment(node[:id], environment_id)
+
     # For new nodes, sleep to let Puppet catch up
     if node[:created]
       Puppet.info("#{log_prefix} new node, sleeping for #{SLEEP_BEFORE_SCAN} seconds...")
@@ -403,69 +404,108 @@ Puppet::Reports.register_report(:upguard) do
   end
 
   # Get trusted facts from Puppet.
-  def pdb_get_trusted_facts(node_ip_hostname)
+  def pdb_get_facts(node_ip_hostname)
+    keyed_facts = {}
+
     if test_env
-      trusted_facts = '[{"certname":"host-name-01.domain.com","name":"trusted","value":{"authenticated":"remote","certname":"host-name-01.domain.com","domain":"domain.com","extensions":{"company_trusted_swimlane":"n/a","pp_datacenter":"mtv","pp_environment":"qa","pp_product":"test","pp_role":"rabbit_mq"},"hostname":"host-name-01"},"environment":"tier2"}]'
-      trusted_facts = JSON.load(trusted_facts)
-      return trusted_facts
+      response = "[{\"certname\":\"host-name-01.domain.com\",\"name\":\"trusted\",\"value\":{\"authenticated\":\"remote\",\"certname\":\"host-name-01.domain.com\",\"domain\":\"domain.com\",\"extensions\":{\"company_trusted_swimlane\":\"n/a\",\"pp_datacenter\":\"mtv\",\"pp_environment\":\"q a\",\"pp_product\":\"test\",\"pp_role\":\"rabbit_mq\"},\"hostname\":\"host-name-01\"},\"environment\":\"tier2\"},{\"certname\":\"puppet.upguard.org\",\"environment\":\"production\",\"name\":\"virtual\",\"value\":\"#{TEST_OS_VIRT_PLATFORM}\"},{\"certname\":\"puppet.upguard.org\",\"environment\":\"production\",\"name\":\"operatingsystemmajrelease\",\"value\":\"#{TEST_OS_MAJOR_RELEASE}\"},{\"certname\":\"puppet.upguard.org\",\"environment\":\"production\",\"name\":\"operatingsystem\",\"value\":\"#{TEST_OS}\"}]"
+    else
+      response = `curl -X GET #{PUPPETDB_URL}/pdb/query/v4/nodes/#{node_ip_hostname}/facts -d 'query=["or", ["=","name","trusted"], ["=","name","virtual"], ["=","name","operatingsystem"], ["=","name","operatingsystemmajrelease"]]' --tlsv1 --cacert /etc/puppetlabs/puppet/ssl/certs/ca.pem --cert /etc/puppetlabs/puppet/ssl/certs/#{COMPILE_MASTER_PEM} --key /etc/puppetlabs/puppet/ssl/private_keys/#{COMPILE_MASTER_PEM}`
+      Puppet.info("#{log_prefix} trusted facts for #{node_ip_hostname} is: response=#{response}")
     end
 
-    response = `curl -X GET #{PUPPETDB_URL}/pdb/query/v4/nodes/#{node_ip_hostname}/facts -d 'query=["in", ["name","certname"], ["extract", ["name","certname"], ["select_fact_contents", ["and", ["=", "path", ["trusted", "authenticated"]], ["=","value","remote"]]]]]' --tlsv1 --cacert /etc/puppetlabs/puppet/ssl/certs/ca.pem --cert /etc/puppetlabs/puppet/ssl/certs/#{COMPILE_MASTER_PEM} --key /etc/puppetlabs/puppet/ssl/private_keys/#{COMPILE_MASTER_PEM}`
-    Puppet.info("#{log_prefix} trusted facts for #{node_ip_hostname} is: response=#{response}")
-    trusted_facts = JSON.load(response)
-    trusted_facts
+    if response.nil?
+      return nil
+    end
+    facts = JSON.load(response)
+    if !facts.is_a?(Array) && !facts.any?
+      return nil
+    end
+    facts.each do |fact|
+      keyed_facts[fact['name']] = fact
+    end
+    keyed_facts
   end
 
   # Extract out the role (which we eventually map to an UpGuard node group).
-  def pdb_get_role(trusted_facts)
-    if trusted_facts && trusted_facts[0] && trusted_facts[0]['value'] && trusted_facts[0]['value']['extensions'] && trusted_facts[0]['value']['extensions']['pp_role']
-      role = trusted_facts[0]['value']['extensions']['pp_role']
+  def pdb_get_role(facts)
+    if facts.is_a?(Hash) && !facts['trusted'].nil? && !facts['trusted']['value'].nil? && !facts['trusted']['value']['extensions'].nil? && !facts['trusted']['value']['extensions']['pp_role'].nil?
+      role = facts['trusted']['value']['extensions']['pp_role']
       Puppet.info("#{log_prefix} puppet role for node is: role=#{role}")
       role
     else
-      nil
+      "Unknown"
     end
   end
 
   # Extract out the environment (which we eventually map to an UpGuard environment).
-  def pdb_get_environment(trusted_facts)
-    if trusted_facts && trusted_facts[0] && trusted_facts[0]['value'] && trusted_facts[0]['value']['extensions'] && trusted_facts[0]['value']['extensions']['pp_environment']
-      environment = trusted_facts[0]['value']['extensions']['pp_environment']
+  def pdb_get_environment(facts)
+    if facts.is_a?(Hash) && !facts['trusted'].nil? && !facts['trusted']['value'].nil? && !facts['trusted']['value']['extensions'].nil? && !facts['trusted']['value']['extensions']['pp_environment'].nil?
+      environment = facts['trusted']['value']['extensions']['pp_environment']
       Puppet.info("#{log_prefix} puppet environment for node is: environment=#{environment}")
       environment
     else
-      nil
+      "Unknown"
     end
   end
 
   # Extract out the datacenter (which we eventually map to an UpGuard node group).
-  def pdb_get_datacenter(trusted_facts)
-    if trusted_facts && trusted_facts[0] && trusted_facts[0]['value'] && trusted_facts[0]['value']['extensions'] && trusted_facts[0]['value']['extensions']['pp_datacenter']
-      datacenter = trusted_facts[0]['value']['extensions']['pp_datacenter']
+  def pdb_get_datacenter(facts)
+    if facts.is_a?(Hash) && !facts['trusted'].nil? && !facts['trusted']['value'].nil? && !facts['trusted']['value']['extensions'].nil? && !facts['trusted']['value']['extensions']['pp_datacenter'].nil?
+      datacenter = facts['trusted']['value']['extensions']['pp_datacenter']
       Puppet.info("#{log_prefix} puppet datacenter for node is: datacenter=#{datacenter}")
       datacenter
     else
-      nil
+      "Unknown"
     end
   end
 
-  # Get the node OS. This isn't something that trusted facts can tell us.
-  def pdb_get_os(hostname)
-    if test_env
-      os = TEST_OS
-      Puppet.info("#{log_prefix} os: #{os}")
-      return os
-    end
+  # Get the node OS.
+  def pdb_get_os(facts)
+    if facts.is_a?(Hash) && !facts['operatingsystem'].nil? && !facts['operatingsystem']['value'].nil?
+      os = facts['operatingsystem']['value']
+      Puppet.info("#{log_prefix} puppet os for node is: os=#{os}")
+      if os.downcase == 'windows'
+        os = 'Windows'
+      elsif os.downcase == 'centos'
+        os = 'CentOS'
+      end
 
-    response = `curl -X GET #{PUPPETDB_URL}/pdb/query/v4/facts/operatingsystem --data-urlencode 'query=["=", "certname", "#{hostname}"]' --tlsv1 --cacert /etc/puppetlabs/puppet/ssl/certs/ca.pem --cert /etc/puppetlabs/puppet/ssl/certs/#{COMPILE_MASTER_PEM} --key /etc/puppetlabs/puppet/ssl/private_keys/#{COMPILE_MASTER_PEM}`
-    Puppet.info("#{log_prefix} get_os: response=#{response}")
-    os_details = JSON.load(response)
-    if os_details && os_details[0]
-      os = os_details[0]['value']
-      Puppet.info("#{log_prefix} os: #{os}")
+      Puppet.info("#{log_prefix} fiendly puppet os for node is: os=#{os}")
       os
     else
-      "unknown"
+      "Unknown"
+    end
+  end
+
+  # Get the node OS major release version.
+  def pdb_get_os_major_release(facts)
+    if facts.is_a?(Hash) && !facts['operatingsystemmajrelease'].nil? && !facts['operatingsystemmajrelease']['value'].nil?
+      os_major_release = facts['operatingsystemmajrelease']['value']
+      Puppet.info("#{log_prefix} puppet os major release for node is: os major release=#{os_major_release}")
+      os_major_release
+    else
+      "Unknown"
+    end
+  end
+
+  def pdb_get_virt_platform(facts)
+    if facts.is_a?(Hash) && !facts['virtual'].nil? && !facts['virtual']['value'].nil?
+      virtual = facts['virtual']['value']
+      Puppet.info("#{log_prefix} puppet virtualization platform for node is: virtual=#{virtual}")
+      if virtual == 'physical'
+        virtual = 'Baremetal'
+      elsif virtual == 'zen'
+        virtual = 'AWS'
+      elsif virtual == 'vmware'
+        # VMware the the "default", don't display anything for it.
+        virtual = ''
+      end
+
+      Puppet.info("#{log_prefix} friendly virtualization platform for node is: virtual=#{virtual}")
+      virtual
+    else
+      "Unknown"
     end
   end
 
@@ -576,9 +616,9 @@ Puppet::Reports.register_report(:upguard) do
     node[:node] = {}
     node[:node][:name] = "#{ip_hostname}"
     node[:node][:external_id] = "#{ip_hostname}"
-    if test_env && TEST_OS == 'windows'
+    if test_env && TEST_OS.downcase == 'windows'
       ip_hostname = TEST_WINDOWS_HOSTNAME
-    elsif test_env && TEST_OS == 'centos'
+    elsif test_env && TEST_OS.downcase == 'centos'
       ip_hostname = TEST_LINUX_HOSTNAME
     end
     node[:node][:medium_hostname] = "#{ip_hostname}"

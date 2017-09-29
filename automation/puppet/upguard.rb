@@ -98,11 +98,12 @@ Puppet::Reports.register_report(:upguard) do
 
     # Check to see if we need to operate in offline mode as UpGuard may not always be available.
     if upguard_offline
-      Puppet.info("#{log_prefix} ########################################")
-      Puppet.info("#{log_prefix} #       OPERATING IN OFFLINE MODE      #")
-      Puppet.info("#{log_prefix} ########################################")
+      Puppet.info("#{log_prefix} #########################################")
+      Puppet.info("#{log_prefix} #       OPERATING IN OFFLINE MODE       #")
+      Puppet.info("#{log_prefix} #########################################")
       # Let the user know that this scan was done from offline mode.
-      puppet_run['manifest_filename'] += ERB::Util.url_encode(" (upguard.rb offline mode)")
+      hostname = "#{`hostname`}".strip
+      puppet_run['manifest_filename'] += ERB::Util.url_encode(" (offline mode, processed by #{hostname})")
       store_puppet_run(OFFLINE_MODE_FILENAME, puppet_run)
       Puppet.info("#{log_prefix} returning early, '#{APPLIANCE_URL}' is offline")
       return
@@ -408,7 +409,7 @@ Puppet::Reports.register_report(:upguard) do
     keyed_facts = {}
 
     if test_env
-      response = "[{\"certname\":\"host-name-01.domain.com\",\"name\":\"trusted\",\"value\":{\"authenticated\":\"remote\",\"certname\":\"host-name-01.domain.com\",\"domain\":\"domain.com\",\"extensions\":{\"company_trusted_swimlane\":\"n/a\",\"pp_datacenter\":\"mtv\",\"pp_environment\":\"q a\",\"pp_product\":\"test\",\"pp_role\":\"rabbit_mq\"},\"hostname\":\"host-name-01\"},\"environment\":\"tier2\"},{\"certname\":\"puppet.upguard.org\",\"environment\":\"production\",\"name\":\"virtual\",\"value\":\"#{TEST_OS_VIRT_PLATFORM}\"},{\"certname\":\"puppet.upguard.org\",\"environment\":\"production\",\"name\":\"operatingsystemmajrelease\",\"value\":\"#{TEST_OS_MAJOR_RELEASE}\"},{\"certname\":\"puppet.upguard.org\",\"environment\":\"production\",\"name\":\"operatingsystem\",\"value\":\"#{TEST_OS}\"}]"
+      response = "[{\"certname\":\"host-name-01.domain.com\",\"name\":\"trusted\",\"value\":{\"authenticated\":\"remote\",\"certname\":\"host-name-01.domain.com\",\"domain\":\"domain.com\",\"extensions\":{\"company_trusted_swimlane\":\"n/a\",\"pp_datacenter\":\"mtv\",\"pp_environment\":\"qa\",\"pp_product\":\"test\",\"pp_role\":\"rabbit_mq\"},\"hostname\":\"host-name-01\"},\"environment\":\"tier2\"},{\"certname\":\"puppet.upguard.org\",\"environment\":\"production\",\"name\":\"virtual\",\"value\":\"#{TEST_OS_VIRT_PLATFORM}\"},{\"certname\":\"puppet.upguard.org\",\"environment\":\"production\",\"name\":\"operatingsystemmajrelease\",\"value\":\"#{TEST_OS_MAJOR_RELEASE}\"},{\"certname\":\"puppet.upguard.org\",\"environment\":\"production\",\"name\":\"operatingsystem\",\"value\":\"#{TEST_OS}\"}]"
     else
       response = `curl -X GET #{PUPPETDB_URL}/pdb/query/v4/nodes/#{node_ip_hostname}/facts -d 'query=["or", ["=","name","trusted"], ["=","name","virtual"], ["=","name","operatingsystem"], ["=","name","operatingsystemmajrelease"]]' --tlsv1 --cacert /etc/puppetlabs/puppet/ssl/certs/ca.pem --cert /etc/puppetlabs/puppet/ssl/certs/#{COMPILE_MASTER_PEM} --key /etc/puppetlabs/puppet/ssl/private_keys/#{COMPILE_MASTER_PEM}`
       Puppet.info("#{log_prefix} trusted facts for #{node_ip_hostname} is: response=#{response}")

@@ -539,7 +539,7 @@ Puppet::Reports.register_report(:upguard) do
   def upguard_node_group_create(api_key, instance, node_group_name, node_group_rule)
     create_response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{ "node_group": { "name": "#{node_group_name}", "description": "#{VERSION_TAG}", "node_rules": "#{node_group_rule}" }}' #{instance}/api/v2/node_groups`
     Puppet.info("#{log_prefix} node_group_create response=#{create_response}")
-    lookup_response = `curl -X GET -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' #{instance}/api/v2/node_groups/lookup.json?name=#{node_group_name}`
+    lookup_response = `curl -X GET -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' #{instance}/api/v2/node_groups/lookup.json?name=#{ERB::Util.url_encode(node_group_name)}`
     Puppet.info("#{log_prefix} node_group_lookup response=#{lookup_response}")
     lookup_json = JSON.load(lookup_response)
     if lookup_json && lookup_json['node_group_id']
@@ -554,7 +554,7 @@ Puppet::Reports.register_report(:upguard) do
   def upguard_environment_create(api_key, instance, environment_name)
     create_response = `curl -X POST -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{ "environment": { "name": "#{environment_name}", "short_description": "#{VERSION_TAG}" }}' #{instance}/api/v2/environments`
     Puppet.info("#{log_prefix} environment_create response=#{create_response}")
-    lookup_response = `curl -X GET -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' #{instance}/api/v2/environments/lookup.json?name=#{environment_name}`
+    lookup_response = `curl -X GET -s -k -H 'Authorization: Token token="#{api_key}"' -H 'Accept: application/json' -H 'Content-Type: application/json' #{instance}/api/v2/environments/lookup.json?name=#{ERB::Util.url_encode(environment_name)}`
     Puppet.info("#{log_prefix} environment_lookup response=#{lookup_response}")
     lookup_json = JSON.load(lookup_response)
     if lookup_json && lookup_json['environment_id']

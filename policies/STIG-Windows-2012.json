@@ -3693,34 +3693,9 @@
             ]
         },
         {
-            "Foo": [
-                {
-                    "id": "Fooindiv-task",
-                    "name": "indiv_task",
-                    "error": false,
-                    "checks": {
-                        "present": [
-                            {
-                                "check": "equals",
-                                "expected": "true"
-                            }
-                        ]
-                    },
-                    "ci_path": null,
-                    "check_type": "powershell",
-                    "powershell": {
-                        "query": "Get-Process | Select-Object ProcessName, MainModule, Modules, NonpagedSystemMemorySize, PagedMemorySize,PeakPagedMemorySize,PeakVirtualMemorySize, PriorityClass, Id",
-                        "key_name": "Id",
-                        "description": "individual tasks"
-                    },
-                    "description": "indiv_task",
-                    "nodeGroupsOpen": true
-                }
-            ]
-        },
-        {
             "Policy Version": [
                 {
+                    "id": "Policy-VersionPolicy-Version",
                     "name": "Policy Version",
                     "error": false,
                     "checks": {
@@ -3734,10 +3709,11 @@
                     "ci_path": null,
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "echo \"20171006-0\"",
+                        "query": "echo \"20171006-1\"",
                         "description": "Policy Version"
                     },
-                    "description": "Policy Version"
+                    "description": "Policy Version",
+                    "nodeGroupsOpen": true
                 }
             ]
         }
@@ -4206,13 +4182,8 @@
                 "key_name": "Id"
             },
             {
-                "description": "individual tasks",
-                "query": "Get-Process | Select-Object ProcessName, MainModule, Modules, NonpagedSystemMemorySize, PagedMemorySize,PeakPagedMemorySize,PeakVirtualMemorySize, PriorityClass, Id",
-                "key_name": "Id"
-            },
-            {
                 "description": "Policy Version",
-                "query": "echo \"20171006-0\""
+                "query": "echo \"20171006-1\""
             }
         ]
     }

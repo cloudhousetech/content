@@ -414,7 +414,7 @@
                             "ci_path": null,
                             "check_type": "powershell",
                             "powershell": {
-                                "query": "$key= 'HKLM:\\\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon' ; $value = 'AllocateDASD';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $KeyValue=\"n/a\"; $ValuePresent=\"NO\";  $KeyValue=\"n/a\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;",
+                                "query": "$key= 'HKLM:\\\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon' ; $value = 'AllocateDASD';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $KeyValue=\"n/a\"; $ValuePresent=\"NO\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;",
                                 "description": "[STIG:Registry Test] WN12-SO-000011- Devices: Allowed to format and eject removable media must be set to Administrators"
                             },
                             "description": "[STIG:Registry Test] WN12-SO-000011- Devices: Allowed to format and eject removable media must be set to Administrators",
@@ -1694,11 +1694,11 @@
                             "checks": {
                                 "VALUE": [
                                     {
+                                        "exp": "0",
                                         "check": "equals",
-                                        "expected": "1",
+                                        "expected": "0",
                                         "background": "Enabling the redirection of smart card devices allows their use within Remote Desktop sessions.",
-                                        "remediation": "Configure the policy value for Computer Configuration -> Administrative Templates -> Windows Components -> Remote Desktop Services -> Remote Desktop Session Host -> Device and Resource Redirection \"Do not allow smart card device redirection\" to \"Disabled\".",
-                                        "valueSelectList": null
+                                        "remediation": "Configure the policy value for Computer Configuration -> Administrative Templates -> Windows Components -> Remote Desktop Services -> Remote Desktop Session Host -> Device and Resource Redirection \"Do not allow smart card device redirection\" to \"Disabled\"."
                                     }
                                 ],
                                 "present": [
@@ -3452,7 +3452,7 @@
                     "ci_path": null,
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "echo \"20171006-3\"",
+                        "query": "echo \"20171006-5\"",
                         "description": "Policy Version"
                     },
                     "description": "Policy Version",
@@ -3513,7 +3513,7 @@
             },
             {
                 "description": "[STIG:Registry Test] WN12-SO-000011- Devices: Allowed to format and eject removable media must be set to Administrators",
-                "query": "$key= 'HKLM:\\\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon' ; $value = 'AllocateDASD';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $ValuePresent=\"NO\";  $KeyValue=\"n/a\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;"
+                "query": "$key= 'HKLM:\\\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon' ; $value = 'AllocateDASD';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $KeyValue=\"n/a\"; $ValuePresent=\"NO\";  $KeyValue=\"n/a\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;"
             },
             {
                 "description": "[STIG:Registry Test] WN12-SO-000053 - Network access: Do not allow storage of passwords and credentials for network authentication must be enabled",
@@ -3701,7 +3701,7 @@
             },
             {
                 "description": "[STIG: Registry Test] WN12-FW-000006-  The Windows Firewall log file name and location must be configured for the Domain Profile.",
-                "query": "$key= 'HKLM:\\\\Software\\Policies\\Microsoft\\WindowsFirewall\\DomainProfile\\Logging' ; $value = 'LogFilePath';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $KeyValue=\"n/a\"; $ValuePresent=\"NO\";$KeyValue=\"n/a\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;"
+                "query": "$key= 'HKLM:\\\\Software\\Policies\\Microsoft\\WindowsFirewall\\DomainProfile\\Logging' ; $value = 'LogFilePath';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $ValuePresent=\"NO\";$KeyValue=\"n/a\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;"
             },
             {
                 "description": "[STIG: Registry Test] WN12-FW-000014-  The Windows Firewall must block unicast responses to multicast or broadcast messages for the Private Profile",
@@ -3841,7 +3841,7 @@
             },
             {
                 "description": "[STIG: Registry Test] WN12-CC-000119-  Report when logon server was not available during user logon must be enabled",
-                "query": "$key= 'HKLM:\\\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System' ; $value ='ReportControllerMissing';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $KeyValue=\"n/a\"; $ValuePresent=\"NO\"; $KeyValue=\"n/a\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;"
+                "query": "$key= 'HKLM:\\\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System' ; $value ='ReportControllerMissing';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $ValuePresent=\"NO\"; $KeyValue=\"n/a\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;"
             },
             {
                 "description": "[STIG: Registry Test] WN12-CC-000086- Specify the maximum log size (KB) to at minimum  must be enabled",
@@ -3890,7 +3890,7 @@
             },
             {
                 "description": "Policy Version",
-                "query": "echo \"20171006-3\""
+                "query": "echo \"20171006-5\""
             }
         ]
     }

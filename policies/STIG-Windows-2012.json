@@ -839,27 +839,6 @@
                             },
                             "description": "[STIG: Registry Test] WN12-CC-000049 - Always use classic logon must be enabled",
                             "nodeGroupsOpen": true
-                        },
-                        {
-                            "id": "STIG-Specific-TestsRegistry-Tests-Computer-Configuration-Administrative-Templates-System-Logon-STIG-Registry-Test-WN12-RG-000001-Standard-user-accounts-must-only-have-Read-permissions-to-the-Winlogon-registry-key",
-                            "name": "[STIG: Registry Test] WN12-RG-000001-Standard user accounts must only have Read permissions to the Winlogon registry key",
-                            "error": false,
-                            "checks": {
-                                "present": [
-                                    {
-                                        "check": "equals",
-                                        "expected": "true"
-                                    }
-                                ]
-                            },
-                            "ci_path": null,
-                            "check_type": "powershell",
-                            "powershell": {
-                                "query": "$key= 'HKLM:\\\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon' ;(get-acl -path $key).AccessToString",
-                                "description": "[STIG: Registry Test] WN12-RG-000001-Standard user accounts must only have Read permissions to the Winlogon registry key"
-                            },
-                            "description": "[STIG: Registry Test] WN12-RG-000001-Standard user accounts must only have Read permissions to the Winlogon registry key",
-                            "nodeGroupsOpen": true
                         }
                     ]
                 },
@@ -1043,36 +1022,6 @@
                                 "description": "[STIG: Registry Test] WN12-CC-000038 -Turn off Internet File Association service must be enabled"
                             },
                             "description": "[STIG: Registry Test] WN12-CC-000038 -Turn off Internet File Association service must be enabled",
-                            "nodeGroupsOpen": true
-                        },
-                        {
-                            "id": "STIG-Specific-TestsRegistry-Tests-Computer-Configuration-Administrative-Templates-System-Internet-Communication-Management-Internet-Communication-settings-STIG-Registry-Test-WN12-UC-000008-Turn-off-Help-Ratings-must-be-enabled",
-                            "name": "[STIG: Registry Test] WN12-UC-000008 -Turn off Help Ratings must be enabled",
-                            "error": false,
-                            "checks": {
-                                "VALUE": [
-                                    {
-                                        "check": "equals",
-                                        "expected": "1",
-                                        "background": "Some features may communicate with the vendor, sending system information or downloading data or components for the feature. Turning off this capability will prevent potentially sensitive information from being sent outside the enterprise and uncontrolled updates to the system. This setting ensures users cannot provide ratings feedback to Microsoft for Help content.",
-                                        "remediation": "Configure the policy value for User Configuration -> Administrative Templates -> System -> Internet Communication Management -> Internet Communication Settings -> \"Turn off Help Ratings\" to \"Enabled\".",
-                                        "valueSelectList": null
-                                    }
-                                ],
-                                "present": [
-                                    {
-                                        "check": "equals",
-                                        "expected": "true"
-                                    }
-                                ]
-                            },
-                            "ci_path": null,
-                            "check_type": "powershell",
-                            "powershell": {
-                                "query": "$key= 'HKCU:\\\\Software\\Policies\\Microsoft\\Assistance\\Client\\1.0' ; $value ='NoExplicitFeedback';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $ValuePresent=\"NO\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;",
-                                "description": "[STIG: Registry Test] WN12-UC-000008 -Turn off Help Ratings must be enabled"
-                            },
-                            "description": "[STIG: Registry Test] WN12-UC-000008 -Turn off Help Ratings must be enabled",
                             "nodeGroupsOpen": true
                         }
                     ]
@@ -2110,68 +2059,6 @@
                                 "description": "[STIG: Registry Test] WN12-FW-000023 -The Windows Firewall must block unicast responses to multicast or broadcast messages for the Public Profile."
                             },
                             "description": "[STIG: Registry Test] WN12-FW-000023 -The Windows Firewall must block unicast responses to multicast or broadcast messages for the Public Profile.",
-                            "nodeGroupsOpen": true
-                        }
-                    ]
-                },
-                {
-                    "Registry Tests::User Configuration -> Administrative Templates -> Windows Components -> Attachment Manager": [
-                        {
-                            "id": "STIG-Specific-TestsRegistry-Tests-User-Configuration-Administrative-Templates-Windows-Components-Attachment-Manager-STIG-Registry-Test-WN12-UC-000011-The-system-must-notify-antivirus-when-file-attachments-are-opened-",
-                            "name": "[STIG: Registry Test] WN12-UC-000011 -  The system must notify antivirus when file attachments are opened.",
-                            "error": false,
-                            "checks": {
-                                "VALUE": [
-                                    {
-                                        "check": "equals",
-                                        "expected": "3",
-                                        "background": "Attaching malicious files is a known avenue of attack. This setting configures the system to notify antivirus programs when a user opens a file attachment.",
-                                        "remediation": "Configure the policy value for User Configuration -> Administrative Templates -> Windows Components -> Attachment Manager -> \"Notify antivirus programs when opening attachments\" to \"Enabled\".",
-                                        "valueSelectList": null
-                                    }
-                                ],
-                                "present": [
-                                    {
-                                        "check": "equals",
-                                        "expected": "true"
-                                    }
-                                ]
-                            },
-                            "ci_path": null,
-                            "check_type": "powershell",
-                            "powershell": {
-                                "query": "$key= 'HKCU:\\\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Attachments' ; $value = 'ScanWithAntiVirus';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $ValuePresent=\"NO\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;",
-                                "description": "[STIG: Registry Test] WN12-UC-000011 -  The system must notify antivirus when file attachments are opened."
-                            },
-                            "description": "[STIG: Registry Test] WN12-UC-000011 -  The system must notify antivirus when file attachments are opened.",
-                            "nodeGroupsOpen": true
-                        },
-                        {
-                            "id": "STIG-Specific-TestsRegistry-Tests-User-Configuration-Administrative-Templates-Windows-Components-Attachment-Manager-STIG-Registry-Test-WN12-UC-000010-Mechanisms-for-removing-zone-information-from-file-attachments-must-be-hidden",
-                            "name": "[STIG: Registry Test]  WN12-UC-000010 -  Mechanisms for removing zone information from file attachments must be hidden",
-                            "error": false,
-                            "checks": {
-                                "present": [
-                                    {
-                                        "check": "equals",
-                                        "expected": "true"
-                                    }
-                                ],
-                                "HideZoneInfoOnProperties": {
-                                    "check": "equals",
-                                    "expected": "1",
-                                    "background": "Preserving zone of origin (Internet, intranet, local, restricted) information on file attachments allows Windows to determine risk. This setting prevents users from manually removing zone information from saved file attachments.",
-                                    "remediation": "Configure the policy value for User Configuration -> Administrative Templates -> Windows Components -> Attachment Manager -> \"Hide mechanisms to remove zone information\" to \"Enabled\".",
-                                    "valueSelectList": null
-                                }
-                            },
-                            "ci_path": null,
-                            "check_type": "powershell",
-                            "powershell": {
-                                "query": "$key= 'HKCU:\\\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Attachments' ; $value = 'HideZoneInfoOnProperties';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $ValuePresent=\"NO\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;",
-                                "description": "[STIG: Registry Test]  WN12-UC-000010 -  Mechanisms for removing zone information from file attachments must be hidden"
-                            },
-                            "description": "[STIG: Registry Test]  WN12-UC-000010 -  Mechanisms for removing zone information from file attachments must be hidden",
                             "nodeGroupsOpen": true
                         }
                     ]
@@ -3508,150 +3395,6 @@
                             },
                             "description": "[STIG: Registry Test] WN12-RG-000003-Local administrator accounts must have their privileged token filtered to prevent elevated privileges from being used over the network on domain systems.",
                             "nodeGroupsOpen": true
-                        },
-                        {
-                            "id": "STIG-Specific-TestsRegistry-Tests-Registry-Entry-Permisison-CheckWhoami-check",
-                            "name": "Whoami check",
-                            "error": false,
-                            "checks": {
-                                "present": [
-                                    {
-                                        "check": "equals",
-                                        "expected": "true"
-                                    }
-                                ]
-                            },
-                            "ci_path": null,
-                            "check_type": "powershell",
-                            "powershell": {
-                                "query": "$x = whoami; $x;",
-                                "description": "whoami"
-                            },
-                            "description": "Whoami check"
-                        },
-                        {
-                            "id": "STIG-Specific-TestsRegistry-Tests-Registry-Entry-Permisison-Check-STIG-Registry-Test-WN12-RG-000002-chk1-Standard-user-accounts-must-only-have-Read-permissions-to-the-Active-Setup-Installed-Components-registry-key-",
-                            "name": "[STIG: Registry Test] WN12-RG-000002-chk1 Standard user accounts must only have Read permissions to the Active Setup\\Installed Components registry key.",
-                            "error": false,
-                            "checks": {
-                                "Value": [
-                                    {
-                                        "check": "equals",
-                                        "expected": "s",
-                                        "background": "Permissions on the Active Setup\\Installed Components registry key must only allow privileged accounts to add or change registry values. If standard user accounts have this capability, there is a potential for programs to run with elevated privileges when a privileged user logs on to the system.",
-                                        "remediation": "Navigate to the following registry key and review the assigned permissions:\nHKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Active Setup\\Installed Components\nVerify standard user accounts and groups only have Read permissions to this registry key. If any standard user accounts or groups have greater permissions, this is a finding. The default permissions satisfy this requirement.",
-                                        "valueSelectList": null
-                                    }
-                                ],
-                                "present": [
-                                    {
-                                        "check": "equals",
-                                        "expected": "true"
-                                    }
-                                ]
-                            },
-                            "ci_path": null,
-                            "check_type": "powershell",
-                            "powershell": {
-                                "query": "$key= 'HKLM:\\\\SOFTWARE\\Microsoft\\Active Setup\\Installed Components';(get-acl -path $key).AccessToString",
-                                "description": "[STIG: Registry Test] WN12-RG-000002-chk1 Standard user accounts must only have Read permissions to the Active Setup\\Installed Components registry key."
-                            },
-                            "description": "[STIG: Registry Test] WN12-RG-000002-chk1 Standard user accounts must only have Read permissions to the Active Setup\\Installed Components registry key.",
-                            "nodeGroupsOpen": true
-                        },
-                        {
-                            "id": "STIG-Specific-TestsRegistry-Tests-Registry-Entry-Permisison-Check-STIG-Registry-Test-WN12-RG-000002-chk2-Standard-user-accounts-must-only-have-Read-permissions-to-the-Active-Setup-Installed-Components-registry-key-",
-                            "name": "[STIG: Registry Test] WN12-RG-000002-chk2 Standard user accounts must only have Read permissions to the Active Setup\\Installed Components registry key.",
-                            "error": false,
-                            "checks": {
-                                "Value": [
-                                    {
-                                        "exp": "s",
-                                        "check": "equals",
-                                        "expected": "s",
-                                        "background": "Permissions on the Active Setup\\Installed Components registry key must only allow privileged accounts to add or change registry values. If standard user accounts have this capability, there is a potential for programs to run with elevated privileges when a privileged user logs on to the system.",
-                                        "remediation": "Ensure only Read permissions are assigned to standard user accounts and groups for the following registry keys. The default configuration satisfies this requirement.\n64-bit systems:\nHKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Active Setup\\Installed Components"
-                                    }
-                                ],
-                                "present": [
-                                    {
-                                        "check": "equals",
-                                        "expected": "true"
-                                    }
-                                ]
-                            },
-                            "ci_path": null,
-                            "check_type": "powershell",
-                            "powershell": {
-                                "query": "$key= 'HKLM:\\\\SOFTWARE\\Wow6432Node\\Microsoft\\Active Setup\\Installed Components';(get-acl -path $key).AccessToString",
-                                "description": "[STIG: Registry Test] WN12-RG-000002-chk2 Standard user accounts must only have Read permissions to the Active Setup\\Installed Components registry key."
-                            },
-                            "description": "[STIG: Registry Test] WN12-RG-000002-chk2 Standard user accounts must only have Read permissions to the Active Setup\\Installed Components registry key.",
-                            "nodeGroupsOpen": true
-                        },
-                        {
-                            "id": "STIG-Specific-TestsRegistry-Tests-Registry-Entry-Permisison-Check-STIG-Registry-Test-WN12-RG-000004-Anonymous-access-to-the-registry-must-be-restricted-",
-                            "name": "[STIG: Registry Test] WN12-RG-000004 - Anonymous access to the registry must be restricted.",
-                            "error": false,
-                            "checks": {
-                                "Value": [
-                                    {
-                                        "exp": "BUILTIN\\Administrators Allow  FullControl,BUILTIN\\Backup Operators Allow  ReadKey,NT AUTHORITY\\LOCAL SERVICE Allow  ReadKey",
-                                        "check": "equals",
-                                        "expected": "BUILTIN\\Administrators Allow  FullControl,BUILTIN\\Backup Operators Allow  ReadKey,NT AUTHORITY\\LOCAL SERVICE Allow  ReadKey",
-                                        "background": "The registry is integral to the function, security, and stability of the Windows system. Some processes may require anonymous access to the registry. This must be limited to properly protect the system.",
-                                        "remediation": "Ensure the system is configured to prevent anonymous users from gaining access to the registry. Maintain the default permissions of the following registry key:\n\nHKEY_LOCAL_MACHINE\\System\\CurrentControlSet\\Control\\SecurePipeServers\\Winreg\\\n\nAdministrators - Full\nBackup Operators - Read(QENR)\nLocal Service - Rea"
-                                    }
-                                ],
-                                "present": [
-                                    {
-                                        "check": "equals",
-                                        "expected": "true"
-                                    }
-                                ]
-                            },
-                            "ci_path": null,
-                            "check_type": "powershell",
-                            "powershell": {
-                                "query": "$key= 'HKLM:\\\\System\\CurrentControlSet\\Control\\SecurePipeServers\\Winreg' ;(get-acl -path $key).AccessToString",
-                                "description": "[STIG: Registry Test] WN12-RG-000004 - Anonymous access to the registry must be restricted."
-                            },
-                            "description": "[STIG: Registry Test] WN12-RG-000004 - Anonymous access to the registry must be restricted.",
-                            "nodeGroupsOpen": true
-                        }
-                    ]
-                },
-                {
-                    "Registry Tests::User Configuration -> Administrative Templates -> Control Panel -> Personalization": [
-                        {
-                            "id": "STIG-Specific-TestsRegistry-Tests-User-Configuration-Administrative-Templates-Control-Panel-Personalization-STIG-Registry-Test-WN12-UC-000004-Prevent-changing-screen-saver-must-be-enabled",
-                            "name": "[STIG: Registry Test] WN12-UC-000004 -Prevent changing screen saver must be enabled",
-                            "error": false,
-                            "checks": {
-                                "VALUE": [
-                                    {
-                                        "check": "equals",
-                                        "expected": "1",
-                                        "background": "Unattended systems are susceptible to unauthorized use and must be locked. Preventing users from changing the screen saver ensures an approved screen saver is used. This protects critical and sensitive data from exposure to unauthorized personnel with physical access to the computer.",
-                                        "remediation": "Configure the policy value for User Configuration -> Administrative Templates -> Control Panel -> Personalization -> \"Prevent changing screen saver\" to \"Enabled\".",
-                                        "valueSelectList": null
-                                    }
-                                ],
-                                "present": [
-                                    {
-                                        "check": "equals",
-                                        "expected": "true"
-                                    }
-                                ]
-                            },
-                            "ci_path": null,
-                            "check_type": "powershell",
-                            "powershell": {
-                                "query": "$key= 'HKCU:\\\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System' ; $value ='NoDispScrSavPage';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $ValuePresent=\"NO\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;",
-                                "description": "[STIG: Registry Test] WN12-UC-000004 -Prevent changing screen saver must be enabled"
-                            },
-                            "description": "[STIG: Registry Test] WN12-UC-000004 -Prevent changing screen saver must be enabled",
-                            "nodeGroupsOpen": true
                         }
                     ]
                 },
@@ -3709,7 +3452,7 @@
                     "ci_path": null,
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "echo \"20171006-1\"",
+                        "query": "echo \"20171006-2\"",
                         "description": "Policy Version"
                     },
                     "description": "Policy Version",
@@ -3829,10 +3572,6 @@
                 "query": "$key= 'HKLM:\\\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System' ; $value = 'LogonType';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path 'HKLM:\\\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System' -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $ValuePresent=\"NO\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;"
             },
             {
-                "description": "[STIG: Registry Test] WN12-RG-000001-Standard user accounts must only have Read permissions to the Winlogon registry key",
-                "query": "$key= 'HKLM:\\\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon' ;(get-acl -path $key).AccessToString"
-            },
-            {
                 "description": "[STIG: Registry Test] WN12-CC-000044 - Turn off the Windows Messenger Customer Experience Improvement Program must be enabled",
                 "query": "$key= 'HKLM:\\\\Software\\Policies\\Microsoft\\Messenger\\Client' ; $value = 'CEIP';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $ValuePresent=\"NO\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;"
             },
@@ -3855,10 +3594,6 @@
             {
                 "description": "[STIG: Registry Test] WN12-CC-000038 -Turn off Internet File Association service must be enabled",
                 "query": "$key= 'HKLM:\\\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer' ; $value ='NoInternetOpenWith';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $ValuePresent=\"NO\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;"
-            },
-            {
-                "description": "[STIG: Registry Test] WN12-UC-000008 -Turn off Help Ratings must be enabled",
-                "query": "$key= 'HKCU:\\\\Software\\Policies\\Microsoft\\Assistance\\Client\\1.0' ; $value ='NoExplicitFeedback';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $ValuePresent=\"NO\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;"
             },
             {
                 "description": "[STIG: Registry Test] WN12-AD-000008-DC - The time synchronization tool must be configured to enable logging of time source switching",
@@ -3983,14 +3718,6 @@
             {
                 "description": "[STIG: Registry Test] WN12-FW-000023 -The Windows Firewall must block unicast responses to multicast or broadcast messages for the Public Profile.",
                 "query": "$key= 'HKLM:\\\\Software\\Policies\\Microsoft\\WindowsFirewall\\PublicProfile' ; $value ='DisableUnicastResponsesToMulticastBroadcast';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $ValuePresent=\"NO\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;"
-            },
-            {
-                "description": "[STIG: Registry Test] WN12-UC-000011 -  The system must notify antivirus when file attachments are opened.",
-                "query": "$key= 'HKCU:\\\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Attachments' ; $value = 'ScanWithAntiVirus';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $ValuePresent=\"NO\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;"
-            },
-            {
-                "description": "[STIG: Registry Test]  WN12-UC-000010 -  Mechanisms for removing zone information from file attachments must be hidden",
-                "query": "$key= 'HKCU:\\\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Attachments' ; $value = 'HideZoneInfoOnProperties';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $ValuePresent=\"NO\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;"
             },
             {
                 "description": "[STIG: Registry Test] WN12-CC-000057-Turn off the display (plugged in) must be enabled with 1200",
@@ -4157,33 +3884,13 @@
                 "query": "$key= 'HKLM:\\\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System' ; $value ='LocalAccountTokenFilterPolicy';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $ValuePresent=\"NO\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;"
             },
             {
-                "description": "whoami",
-                "query": "$x = whoami; $x;"
-            },
-            {
-                "description": "[STIG: Registry Test] WN12-RG-000002-chk1 Standard user accounts must only have Read permissions to the Active Setup\\Installed Components registry key.",
-                "query": "$key= 'HKLM:\\\\SOFTWARE\\Microsoft\\Active Setup\\Installed Components';(get-acl -path $key).AccessToString"
-            },
-            {
-                "description": "[STIG: Registry Test] WN12-RG-000002-chk2 Standard user accounts must only have Read permissions to the Active Setup\\Installed Components registry key.",
-                "query": "$key= 'HKLM:\\\\SOFTWARE\\Wow6432Node\\Microsoft\\Active Setup\\Installed Components';(get-acl -path $key).AccessToString"
-            },
-            {
-                "description": "[STIG: Registry Test] WN12-RG-000004 - Anonymous access to the registry must be restricted.",
-                "query": "$key= 'HKLM:\\\\System\\CurrentControlSet\\Control\\SecurePipeServers\\Winreg' ;(get-acl -path $key).AccessToString"
-            },
-            {
-                "description": "[STIG: Registry Test] WN12-UC-000004 -Prevent changing screen saver must be enabled",
-                "query": "$key= 'HKCU:\\\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System' ; $value ='NoDispScrSavPage';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $ValuePresent=\"NO\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;"
-            },
-            {
                 "description": "[STIG: Registry Test] WN12-UC-000005 -Turn off notifications network usage must be enabled",
                 "query": "$objArray = @(); $RegistryPath = 'SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\PushNotifications'; $RegistryValues = @{ 'NoCloudApplicationNotification' = '1'    } ;    if (!(Get-PSDrive HKU -ErrorAction SilentlyContinue))   {      New-PSDrive -Name HKU -PSProvider Registry -Root Registry::HKEY_USERS | Out-Null  } ;      $sids = get-childItem HKU: | ? {$_.Name -match 'S-\\d-\\d+-(\\d+-){1,14}\\d+$' } | % { $_.Name.Replace('HKEY_USERS\\','') };          $sids | foreach {           $sid = $_;        $objSID = New-Object System.Security.Principal.SecurityIdentifier (\"$sid\");         $objUser = $objSID.Translate( [System.Security.Principal.NTAccount]);             if (($RegistryValues.GetEnumerator() |        where { ((Get-ItemProperty \"HKU:$sid\\$RegistryPath\" -Name $_.Key -ErrorAction SilentlyContinue).($_.Key) -eq $_.Value) }).Count -eq $RegistryValues.Count)             {  $obj=new-object psobject;            $obj | Add-Member -type NoteProperty -name \"UserName\" -Value $objUser.Value;            $obj | Add-Member -type NoteProperty -name \"RegistryConfigured\" -Value $True;             $objArray += $obj;  }                                        else {              $obj=new-object psobject;                                    $obj | Add-Member -type NoteProperty -name \"UserName\" -Value $objUser.Value;             $obj | Add-Member -type NoteProperty -name \"RegistryConfigured\" -Value $false; $objArray += $obj; }; } ; $objArray | Select UserName,RegistryConfigured",
                 "key_name": "Id"
             },
             {
                 "description": "Policy Version",
-                "query": "echo \"20171006-1\""
+                "query": "echo \"20171006-2\""
             }
         ]
     }

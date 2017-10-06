@@ -21,7 +21,7 @@ end
 
 class UpGuard
 
-  $version     = '0.0.2'
+  $version     = '0.0.3'
   $test_mode   = true
   $script_name = 'upguard'
   $api_key     = 'YOUR API KEY'
@@ -108,7 +108,8 @@ class UpGuard
           payload = {
               :node => {
                   :medium_username => "#{username}",
-                  :medium_password => "#{password}"
+                  :medium_password => "#{password}",
+                  :connection_manager_group_id => cmg_id
               }
           }
 

@@ -3717,6 +3717,29 @@
                     "nodeGroupsOpen": true
                 }
             ]
+        },
+        {
+            "Policy Version": [
+                {
+                    "name": "Policy Version",
+                    "error": false,
+                    "checks": {
+                        "present": [
+                            {
+                                "check": "equals",
+                                "expected": "true"
+                            }
+                        ]
+                    },
+                    "ci_path": null,
+                    "check_type": "powershell",
+                    "powershell": {
+                        "query": "echo \"20171006-0\"",
+                        "description": "Policy Version"
+                    },
+                    "description": "Policy Version"
+                }
+            ]
         }
     ],
     "scan_options": {
@@ -4186,6 +4209,10 @@
                 "description": "individual tasks",
                 "query": "Get-Process | Select-Object ProcessName, MainModule, Modules, NonpagedSystemMemorySize, PagedMemorySize,PeakPagedMemorySize,PeakVirtualMemorySize, PriorityClass, Id",
                 "key_name": "Id"
+            },
+            {
+                "description": "Policy Version",
+                "query": "echo \"20171006-0\""
             }
         ]
     }

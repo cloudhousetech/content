@@ -3425,7 +3425,7 @@
                             "check_type": "powershell",
                             "powershell": {
                                 "query": "$objArray = @(); $RegistryPath = 'SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\PushNotifications'; $RegistryValues = @{ 'NoCloudApplicationNotification' = '1'    } ;    if (!(Get-PSDrive HKU -ErrorAction SilentlyContinue))   {      New-PSDrive -Name HKU -PSProvider Registry -Root Registry::HKEY_USERS | Out-Null  } ;      $sids = get-childItem HKU: | ? {$_.Name -match 'S-\\d-\\d+-(\\d+-){1,14}\\d+$' } | % { $_.Name.Replace('HKEY_USERS\\','') };          $sids | foreach {           $sid = $_;        $objSID = New-Object System.Security.Principal.SecurityIdentifier (\"$sid\");         $objUser = $objSID.Translate( [System.Security.Principal.NTAccount]);             if (($RegistryValues.GetEnumerator() |        where { ((Get-ItemProperty \"HKU:$sid\\$RegistryPath\" -Name $_.Key -ErrorAction SilentlyContinue).($_.Key) -eq $_.Value) }).Count -eq $RegistryValues.Count)             {  $obj=new-object psobject;            $obj | Add-Member -type NoteProperty -name \"UserName\" -Value $objUser.Value;            $obj | Add-Member -type NoteProperty -name \"RegistryConfigured\" -Value $True;             $objArray += $obj;  }                                        else {              $obj=new-object psobject;                                    $obj | Add-Member -type NoteProperty -name \"UserName\" -Value $objUser.Value;             $obj | Add-Member -type NoteProperty -name \"RegistryConfigured\" -Value $false; $objArray += $obj; }; } ; $objArray | Select UserName,RegistryConfigured",
-                                "key_name": "Id",
+                                "key_name": "UserName",
                                 "description": "[STIG: Registry Test] WN12-UC-000005 - Turn off notifications network usage must be enabled"
                             },
                             "description": "[STIG: Registry Test] WN12-UC-000005 - Turn off notifications network usage must be enabled",
@@ -3452,7 +3452,7 @@
                     "ci_path": null,
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "echo \"20171006-6\"",
+                        "query": "echo \"20171009-1\"",
                         "description": "Policy Version"
                     },
                     "description": "Policy Version",
@@ -3886,11 +3886,11 @@
             {
                 "description": "[STIG: Registry Test] WN12-UC-000005 - Turn off notifications network usage must be enabled",
                 "query": "$objArray = @(); $RegistryPath = 'SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\PushNotifications'; $RegistryValues = @{ 'NoCloudApplicationNotification' = '1'    } ;    if (!(Get-PSDrive HKU -ErrorAction SilentlyContinue))   {      New-PSDrive -Name HKU -PSProvider Registry -Root Registry::HKEY_USERS | Out-Null  } ;      $sids = get-childItem HKU: | ? {$_.Name -match 'S-\\d-\\d+-(\\d+-){1,14}\\d+$' } | % { $_.Name.Replace('HKEY_USERS\\','') };          $sids | foreach {           $sid = $_;        $objSID = New-Object System.Security.Principal.SecurityIdentifier (\"$sid\");         $objUser = $objSID.Translate( [System.Security.Principal.NTAccount]);             if (($RegistryValues.GetEnumerator() |        where { ((Get-ItemProperty \"HKU:$sid\\$RegistryPath\" -Name $_.Key -ErrorAction SilentlyContinue).($_.Key) -eq $_.Value) }).Count -eq $RegistryValues.Count)             {  $obj=new-object psobject;            $obj | Add-Member -type NoteProperty -name \"UserName\" -Value $objUser.Value;            $obj | Add-Member -type NoteProperty -name \"RegistryConfigured\" -Value $True;             $objArray += $obj;  }                                        else {              $obj=new-object psobject;                                    $obj | Add-Member -type NoteProperty -name \"UserName\" -Value $objUser.Value;             $obj | Add-Member -type NoteProperty -name \"RegistryConfigured\" -Value $false; $objArray += $obj; }; } ; $objArray | Select UserName,RegistryConfigured",
-                "key_name": "Id"
+                "key_name": "UserName"
             },
             {
                 "description": "Policy Version",
-                "query": "echo \"20171006-6\""
+                "query": "echo \"20171009-1\""
             }
         ]
     }

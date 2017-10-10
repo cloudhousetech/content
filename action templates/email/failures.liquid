@@ -12,7 +12,7 @@
   {% if node_name == null %}
     {% assign node_name = f[0] %}
   {% endif %}
-  <p><h2>Node: {{ node_name }}</h2></p>
+  <p><h2>Node: <a href="{{ instance_hostname }}/node_lookup?name={{ node_name }}">{{ node_name }}</a></h2></p>
   {% for c in f[1] %}
     <h3>{{ c['name'] | replace: ",", " &gt;" }}</h3>
     {% assign not_present = false %}

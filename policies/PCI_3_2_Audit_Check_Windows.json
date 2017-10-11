@@ -1,7 +1,7 @@
 {
     "policy": {
-        "name": "pci_32_audit_checks_--_windows",
-        "short_description": "PCI 3.2 Audit Checks -- Windows",
+        "name": "pci_32_audit_check_--_windows",
+        "short_description": "PCI 3.2 Audit Check -- Windows",
         "description": null,
         "settings": {
             "tests": {
@@ -398,7 +398,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$APolicySetting=\"Security Group Management\"; $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting; $obj = New-Object psobject; if ($APolicyOutput){ $APolicyOutput -match ' ([a-z, /-]+) ([a-z, ]+)' | Out-Null; $APolicyStatus= $Matches[2]; $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus; } else { $obj | add-member -Type Noteproperty -Name $APolicySetting -Value \"Setting does not exist\";} $obj;",
+                        "query": "$APolicySetting=\"Security Group Management\"; $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting; $obj = New-Object psobject; if ($APolicyOutput) { $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)'  | Out-Null; $APolicyStatus= $Matches[2]; $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus; } else { $obj | add-member -Type Noteproperty -Name $APolicySetting -Value \"Setting does not exist\";} $obj;",
                         "description": "[PCI: Audit-Check] Ensure 'Audit Security Group Management' is set to 'Success and Failure'"
                     },
                     "description": "[PCI: Audit-Check] Ensure 'Audit Security Group Management' is set to 'Success and Failure'",
@@ -432,7 +432,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$APolicySetting=\"Other Logon/Logoff Events\"; $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting; $obj = New-Object psobject; if ($APolicyOutput){ $APolicyOutput -match ' ([a-z, /-]+) ([a-z, ]+)' | Out-Null; $APolicyStatus= $Matches[2]; $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus; } else { $obj | add-member -Type Noteproperty -Name $APolicySetting -Value \"Setting does not exist\";} $obj;",
+                        "query": "$APolicySetting=\"Other Logon/Logoff Events\"; $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting; $obj = New-Object psobject; if ($APolicyOutput) { $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)'  | Out-Null; $APolicyStatus= $Matches[2]; $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus; } else { $obj | add-member -Type Noteproperty -Name $APolicySetting -Value \"Setting does not exist\";} $obj;",
                         "description": "[PCI: Audit-Check] Ensure 'Audit Other Logon/Logoff Events' is set to 'Success and Failure'"
                     },
                     "description": "[PCI: Audit-Check] Ensure 'Audit Other Logon/Logoff Events' is set to 'Success and Failure'",
@@ -453,13 +453,36 @@
                                 "expected": "true"
                             }
                         ],
-                        "Policy Change": [
+                        "Audit Policy Change": [
                             {
-                                "exp": "Success and Failure",
                                 "check": "equals",
                                 "expected": "Success and Failure",
-                                "background": "This subcategory reports changes in audit policy including SACL changes. Events for this\nsubcategory include:\n4715: The audit policy (SACL) on an object was changed.\n4719: System audit policy was changed.\n4902: The Per-user audit policy table was created.\n4904: An attempt was made to register a security event source.\n4905: An attempt was made to unregister a security event source.\n4906: The CrashOnAuditFail value has changed.\n4907: Auditing settings on object were changed.\n4908: Special Groups Logon table modified.\n4912: Per User Audit Policy was changed.",
-                                "remediation": "To establish the recommended configuration via GP, set the following UI path to Success\nand Failure : Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Advanced Audit Policy Configuration\\Audit Policies\\Policy Change\\Audit Audit Policy Change"
+                                "background": "This subcategory reports changes in audit policy including SACL changes. Events for this subcategory include: 4715: The audit policy (SACL) on an object was changed. 4719: System audit policy was changed. 4902: The Per-user audit policy table was created. 4904: An attempt was made to register a security event source. 4905: An attempt was made to unregister a security event source. 4906: The CrashOnAuditFail value has changed. 4907: Auditing settings on object were changed. 4908: Special Groups Logon table modified. 4912: Per User Audit Policy was changed.",
+                                "remediation": "To establish the recommended configuration via GP, set the following UI path to Success and Failure : Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Advanced Audit Policy Configuration\\Audit Policies\\Policy Change\\Audit Audit Policy Change",
+                                "valueSelectList": [
+                                    "Success and Failure"
+                                ],
+                                "attributeSelectList": [
+                                    "Audit Policy Change",
+                                    "Policy Change"
+                                ],
+                                "availableAttributes": [
+                                    {
+                                        "Audit Policy Change": "Success and Failure"
+                                    },
+                                    {
+                                        "Policy Change": "Auditing"
+                                    },
+                                    {
+                                        "Policy Change": "Failure"
+                                    },
+                                    {
+                                        "Policy Change": "Failure"
+                                    },
+                                    {
+                                        "Policy Change": "Auditing"
+                                    }
+                                ]
                             }
                         ]
                     },
@@ -470,7 +493,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$APolicySetting=\"Policy Change\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;",
+                        "query": "$APolicySetting=\"Audit Policy Change\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;",
                         "description": "[PCI: Audit-Check] Ensure 'Audit Audit Policy Change' is set to 'Success and Failure'"
                     },
                     "description": "[PCI: Audit-Check] Ensure 'Audit Audit Policy Change' is set to 'Success and Failure'",
@@ -601,7 +624,7 @@
                     "ci_path": null,
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "echo \"20170928-2\";",
+                        "query": "echo \"20171011-0\";",
                         "description": "[PCI: Audit-Check] Policy Version"
                     },
                     "description": "[PCI: Audit-Check] Policy Version",
@@ -654,15 +677,15 @@
             },
             {
                 "description": "[PCI: Audit-Check] Ensure 'Audit Security Group Management' is set to 'Success and Failure'",
-                "query": "$APolicySetting=\"Security Group Management\"; $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting; $obj = New-Object psobject; if ($APolicyOutput){ $APolicyOutput -match ' ([a-z, /-]+) ([a-z, ]+)' | Out-Null; $APolicyStatus= $Matches[2]; $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus; } else { $obj | add-member -Type Noteproperty -Name $APolicySetting -Value \"Setting does not exist\";} $obj;"
+                "query": "$APolicySetting=\"Security Group Management\"; $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting; $obj = New-Object psobject; if ($APolicyOutput) { $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)'  | Out-Null; $APolicyStatus= $Matches[2]; $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus; } else { $obj | add-member -Type Noteproperty -Name $APolicySetting -Value \"Setting does not exist\";} $obj;"
             },
             {
                 "description": "[PCI: Audit-Check] Ensure 'Audit Other Logon/Logoff Events' is set to 'Success and Failure'",
-                "query": "$APolicySetting=\"Other Logon/Logoff Events\"; $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting; $obj = New-Object psobject; if ($APolicyOutput){ $APolicyOutput -match ' ([a-z, /-]+) ([a-z, ]+)' | Out-Null; $APolicyStatus= $Matches[2]; $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus; } else { $obj | add-member -Type Noteproperty -Name $APolicySetting -Value \"Setting does not exist\";} $obj;"
+                "query": "$APolicySetting=\"Other Logon/Logoff Events\"; $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting; $obj = New-Object psobject; if ($APolicyOutput) { $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)'  | Out-Null; $APolicyStatus= $Matches[2]; $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus; } else { $obj | add-member -Type Noteproperty -Name $APolicySetting -Value \"Setting does not exist\";} $obj;"
             },
             {
                 "description": "[PCI: Audit-Check] Ensure 'Audit Audit Policy Change' is set to 'Success and Failure'",
-                "query": "$APolicySetting=\"Policy Change\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;"
+                "query": "$APolicySetting=\"Audit Policy Change\";  $APolicyOutput= (Invoke-Expression \"auditpol /get /category:* \") | Select-String $APolicySetting;  $obj = New-Object psobject;   if ($APolicyOutput){      $APolicyOutput -match '  ([a-z, /-]+)  ([a-z, ]+)' | Out-Null;     $APolicyStatus= $Matches[2];     $obj | add-member -Type NoteProperty -Name $APolicySetting -Value $APolicyStatus;      }          else { $obj | add-member -Type Noteproperty -Name $APolicySetting  -Value \"Setting does not exist\";}      $obj;"
             },
             {
                 "description": "[PCI: Audit-Check] Ensure 'Audit Authentication Policy Change' is set to 'Success'",
@@ -678,7 +701,7 @@
             },
             {
                 "description": "[PCI: Audit-Check] Policy Version",
-                "query": "echo \"20170928-2\";"
+                "query": "echo \"20171011-0\";"
             }
         ]
     }

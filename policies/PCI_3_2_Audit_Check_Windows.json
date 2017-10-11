@@ -1,8 +1,8 @@
 {
     "policy": {
-        "name": "pci_32_audit_check_--_windows",
-        "short_description": "PCI 3.2 Audit Check -- Windows",
-        "description": null,
+        "name": "pci_32_audit_checks_--_windows",
+        "short_description": "PCI 3.2 Audit Checks -- Windows",
+        "description": "",
         "settings": {
             "tests": {
                 "output_format": null
@@ -624,7 +624,7 @@
                     "ci_path": null,
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "echo \"20171011-0\";",
+                        "query": "echo \"20171011-1\";",
                         "description": "[PCI: Audit-Check] Policy Version"
                     },
                     "description": "[PCI: Audit-Check] Policy Version",
@@ -701,7 +701,7 @@
             },
             {
                 "description": "[PCI: Audit-Check] Policy Version",
-                "query": "echo \"20171011-0\";"
+                "query": "echo \"20171011-1\";"
             }
         ]
     }

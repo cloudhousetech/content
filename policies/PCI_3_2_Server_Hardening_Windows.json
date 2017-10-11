@@ -204,6 +204,15 @@
                     "name": "[PCI: Server-Hardening] Named pipes that can be accessed anonymously must be configured with limited values on domain controllers. WN12-SO-000055-DC",
                     "error": false,
                     "checks": {
+                        "VALUE": [
+                            {
+                                "exp": "netlogon|samr|lsarpc",
+                                "check": "regex",
+                                "expected": "netlogon|samr|lsarpc",
+                                "background": "Named pipes that can be accessed anonymously must be configured with limited values on domain controllers. Pipes are internal system communications processes. They are identified internally by ID numbers that vary between systems. To make access to these processes easier, these pipes are given names that do not vary between systems. This setting controls which of these pipes anonymous users may access.",
+                                "remediation": "Configure the policy value for Computer Configuration -> Windows Settings -> Security Settings -> Local Policies -> Security Options -> \"Network access: Named pipes that can be accessed anonymously\" to only include \"netlogon, samr, lsarpc\"."
+                            }
+                        ],
                         "present": [
                             {
                                 "exp": "true",
@@ -211,13 +220,6 @@
                                 "expected": "true",
                                 "background": "Named pipes that can be accessed anonymously must be configured with limited values on domain controllers.\nPipes are internal system communications processes. They are identified internally by ID numbers that vary between systems. To make access to these processes easier, these pipes are given names that do not vary between systems. This setting controls which of these pipes anonymous users may access.",
                                 "remediation": "Configure the policy value for Computer Configuration -> Windows Settings -> Security Settings -> Local Policies -> Security Options -> \"Network access: Named pipes that can be accessed anonymously\" to only include \"netlogon, samr, lsarpc\"."
-                            }
-                        ],
-                        "NullSessionPipes": [
-                            {
-                                "exp": "1",
-                                "check": "equals",
-                                "expected": "1"
                             }
                         ]
                     },
@@ -228,7 +230,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$Value=0; Try{ $Value= (Get-ItemProperty -Path 'HKLM:\\\\SYSTEM\\CurrentControlSet\\Services\\LanManServer\\Parameters' -Name NullSessionPipes -ErrorAction Stop) | Select -ExpandProperty NullSessionPipes } Catch { } ; $obj = New-Object psobject; If ($Value -match \"netlogon|samr|lsarpc\"){ $Value =1;}else { $Value=0;}  $obj | add-member -Type Noteproperty \"NullSessionPipes\" -Value ($Value ); $obj;",
+                        "query": "$key= 'HKLM:\\\\SYSTEM\\CurrentControlSet\\Services\\LanManServer\\Parameters' ; $value = 'NullSessionPipes'; $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $KeyValue=\"n/a\"; $ValuePresent=\"NO\"; } } $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value ($keyValue -join \",\") ; $obj;",
                         "description": "[PCI: Server-Hardening] Named pipes that can be accessed anonymously must be configured with limited values on domain controllers. WN12-SO-000055-DC"
                     },
                     "description": "[PCI: Server-Hardening] Named pipes that can be accessed anonymously must be configured with limited values on domain controllers. WN12-SO-000055-DC",
@@ -315,6 +317,17 @@
                     "name": "[PCI: Server-Hardening] Optional Subsystems must not be permitted to operate on the system. WN12-SO-000088",
                     "error": false,
                     "checks": {
+                        "VALUE": [
+                            {
+                                "check": "equals",
+                                "expected": "EMPTY",
+                                "background": "",
+                                "remediation": "",
+                                "valueSelectList": null,
+                                "attributeSelectList": null,
+                                "availableAttributes": null
+                            }
+                        ],
                         "present": [
                             {
                                 "exp": "true",
@@ -322,13 +335,6 @@
                                 "expected": "true",
                                 "background": "The POSIX subsystem is an Institute of Electrical and Electronic Engineers (IEEE) standard that defines a set of operating system services. The POSIX Subsystem is required if the server supports applications that use that subsystem. The subsystem introduces a security risk relating to processes that can potentially persist across logins. That is, if a user starts a process and then logs out, there is a potential that the next user who logs in to the system could access the previous users process. This is dangerous because the process started by the first user may retain that users system privileges, and anything the second user does with that process will be performed with the privileges of the first user.",
                                 "remediation": "Configure the policy value for Computer Configuration -> Windows Settings -> Security Settings -> Local Policies -> Security Options -> \"System settings: Optional subsystems\" to \"Blank\" (Configured with no entries)."
-                            }
-                        ],
-                        "OptionalSubSystems": [
-                            {
-                                "exp": "1",
-                                "check": "equals",
-                                "expected": "1"
                             }
                         ]
                     },
@@ -339,7 +345,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$Value=0; Try{ $Value= (Get-ItemProperty -Path 'HKLM:\\\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Subsystems' -Name Optional -ErrorAction Stop) | Select -ExpandProperty Optional } Catch { } ; $obj = New-Object psobject; If($Value -eq $null) { $Value =1; }else { $Value=0;} $obj | add-member -Type Noteproperty \"OptionalSubSystems\" -Value $Value; $obj;",
+                        "query": "$key= 'HKLM:\\\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Subsystems' ; $value = 'Optional';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $KeyValue=\"n/a\"; $ValuePresent=\"NO\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent;  If ([string]::IsNullOrWhitespace($keyValue)) { $keyValue=\"EMPTY\"};  $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;",
                         "description": "[PCI: Server-Hardening] Optional Subsystems must not be permitted to operate on the system. WN12-SO-000088"
                     },
                     "description": "[PCI: Server-Hardening] Optional Subsystems must not be permitted to operate on the system. WN12-SO-000088",
@@ -354,6 +360,17 @@
                     "name": "[PCI: Server-Hardening] Autoplay must be disabled for all drives. WIN12-CC-000074",
                     "error": false,
                     "checks": {
+                        "VALUE": [
+                            {
+                                "check": "equals",
+                                "expected": "255",
+                                "background": "Allowing autoplay to execute may introduce malicious code to a system. Autoplay begins reading from a drive as soon media is inserted into the drive. As a result, the setup file of programs or music on audio media may start. By default, autoplay is disabled on removable drives, such as the floppy disk drive (but not the CD-ROM drive) and on network drives. Enabling this policy disables autoplay on all drives.",
+                                "remediation": "Configure the policy value for Computer Configuration -> Administrative Templates -> Windows Components -> AutoPlay Policies -> \"Turn off AutoPlay\" to \"Enabled:All Drives\".",
+                                "valueSelectList": null,
+                                "attributeSelectList": null,
+                                "availableAttributes": null
+                            }
+                        ],
                         "present": [
                             {
                                 "exp": "true",
@@ -361,15 +378,6 @@
                                 "expected": "true",
                                 "background": "Allowing autoplay to execute may introduce malicious code to a system. Autoplay begins reading from a drive as soon media is inserted into the drive. As a result, the setup file of programs or music on audio media may start. By default, autoplay is disabled on removable drives, such as the floppy disk drive (but not the CD-ROM drive) and on network drives. Enabling this policy disables autoplay on all drives.",
                                 "remediation": "Configure the policy value for Computer Configuration -> Administrative Templates -> Windows Components -> AutoPlay Policies -> \"Turn off AutoPlay\" to \"Enabled:All Drives\"."
-                            }
-                        ],
-                        "NoDriveTypeAutoRun": [
-                            {
-                                "check": "equals",
-                                "expected": "255",
-                                "valueSelectList": null,
-                                "attributeSelectList": null,
-                                "availableAttributes": null
                             }
                         ]
                     },
@@ -380,7 +388,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$Value=0; Try{ $Value= (Get-ItemProperty -Path 'HKLM:\\\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\Explorer' -Name NoDriveTypeAutoRun -ErrorAction Stop) | Select -ExpandProperty NoDriveTypeAutoRun } Catch { } ; $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"NoDriveTypeAutoRun\" -Value $Value; $obj;",
+                        "query": "$key= 'HKLM:\\\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\Explorer' ; $value = 'NoDriveTypeAutoRun';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $KeyValue=\"n/a\"; $ValuePresent=\"NO\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;",
                         "description": "[PCI: Server-Hardening] Autoplay must be disabled for all drives. WIN12-CC-000074"
                     },
                     "description": "[PCI: Server-Hardening] Autoplay must be disabled for all drives. WIN12-CC-000074",
@@ -391,6 +399,17 @@
                     "name": "[PCI: Server-Hardening] The use of biometrics must be disabled. WN12-CC-000075",
                     "error": false,
                     "checks": {
+                        "VALUE": [
+                            {
+                                "check": "equals",
+                                "expected": "n/a",
+                                "background": "Allowing biometrics may bypass required authentication methods. Biometrics may only be used as an additional authentication factor where an enhanced strength of identity credential is necessary or desirable. Additional factors must be met per DoD policy.",
+                                "remediation": "Configure the policy value for Computer Configuration -> Administrative Templates -> Windows Components -> Biometrics -> \"Allow the use of biometrics\" to \"Disabled\".",
+                                "valueSelectList": null,
+                                "attributeSelectList": null,
+                                "availableAttributes": null
+                            }
+                        ],
                         "present": [
                             {
                                 "exp": "true",
@@ -398,13 +417,6 @@
                                 "expected": "true",
                                 "background": "Allowing biometrics may bypass required authentication methods. Biometrics may only be used as an additional authentication factor where an enhanced strength of identity credential is necessary or desirable. Additional factors must be met per DoD policy.",
                                 "remediation": "Configure the policy value for Computer Configuration -> Administrative Templates -> Windows Components -> Biometrics -> \"Allow the use of biometrics\" to \"Disabled\"."
-                            }
-                        ],
-                        "BiometricsStatus": [
-                            {
-                                "exp": "0",
-                                "check": "equals",
-                                "expected": "0"
                             }
                         ]
                     },
@@ -415,7 +427,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "$Value=0; Try{ $Value= (Get-ItemProperty -Path 'HKLM:\\\\SOFTWARE\\Policies\\Microsoft\\Biometric' -Name Enabled -ErrorAction Stop) | Select -ExpandProperty Enabled } Catch { } ; $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"BiometricsStatus\" -Value $Value; $obj;",
+                        "query": "$key= 'HKLM:\\\\SOFTWARE\\Policies\\Microsoft\\Biometric' ; $value = 'BiometricsStatus';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $KeyValue=\"n/a\"; $ValuePresent=\"NO\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;",
                         "description": "[PCI: Server-Hardening] The use of biometrics must be disabled. WN12-CC-000075"
                     },
                     "description": "[PCI: Server-Hardening] The use of biometrics must be disabled. WN12-CC-000075",
@@ -440,7 +452,7 @@
                     "ci_path": null,
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "echo \"20170922-0\"",
+                        "query": "echo \"20171011-0\";",
                         "description": "[PCI: Server-Hardening] Policy Version"
                     },
                     "description": "[PCI: Server-Hardening] Policy Version",
@@ -473,7 +485,7 @@
             },
             {
                 "description": "[PCI: Server-Hardening] Named pipes that can be accessed anonymously must be configured with limited values on domain controllers. WN12-SO-000055-DC",
-                "query": "$Value=0; Try{ $Value= (Get-ItemProperty -Path 'HKLM:\\\\SYSTEM\\CurrentControlSet\\Services\\LanManServer\\Parameters' -Name NullSessionPipes -ErrorAction Stop) | Select -ExpandProperty NullSessionPipes } Catch { } ; $obj = New-Object psobject; If ($Value -match \"netlogon|samr|lsarpc\"){ $Value =1;}else { $Value=0;}  $obj | add-member -Type Noteproperty \"NullSessionPipes\" -Value ($Value ); $obj;"
+                "query": "$key= 'HKLM:\\\\SYSTEM\\CurrentControlSet\\Services\\LanManServer\\Parameters' ; $value = 'NullSessionPipes'; $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $KeyValue=\"n/a\"; $ValuePresent=\"NO\"; } } $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value ($keyValue -join \",\") ; $obj;"
             },
             {
                 "description": "[PCI: Server-Hardening] FTP servers must be configured to prevent access to the system drive. WN12-GE-000027",
@@ -485,19 +497,19 @@
             },
             {
                 "description": "[PCI: Server-Hardening] Optional Subsystems must not be permitted to operate on the system. WN12-SO-000088",
-                "query": "$Value=0; Try{ $Value= (Get-ItemProperty -Path 'HKLM:\\\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Subsystems' -Name Optional -ErrorAction Stop) | Select -ExpandProperty Optional } Catch { } ; $obj = New-Object psobject; If($Value -eq $null) { $Value =1; }else { $Value=0;} $obj | add-member -Type Noteproperty \"OptionalSubSystems\" -Value $Value; $obj;"
+                "query": "$key= 'HKLM:\\\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Subsystems' ; $value = 'Optional';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $KeyValue=\"n/a\"; $ValuePresent=\"NO\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent;  If ([string]::IsNullOrWhitespace($keyValue)) { $keyValue=\"EMPTY\"};  $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;"
             },
             {
                 "description": "[PCI: Server-Hardening] Autoplay must be disabled for all drives. WIN12-CC-000074",
-                "query": "$Value=0; Try{ $Value= (Get-ItemProperty -Path 'HKLM:\\\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\Explorer' -Name NoDriveTypeAutoRun -ErrorAction Stop) | Select -ExpandProperty NoDriveTypeAutoRun } Catch { } ; $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"NoDriveTypeAutoRun\" -Value $Value; $obj;"
+                "query": "$key= 'HKLM:\\\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\policies\\Explorer' ; $value = 'NoDriveTypeAutoRun';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $KeyValue=\"n/a\"; $ValuePresent=\"NO\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;"
             },
             {
                 "description": "[PCI: Server-Hardening] The use of biometrics must be disabled. WN12-CC-000075",
-                "query": "$Value=0; Try{ $Value= (Get-ItemProperty -Path 'HKLM:\\\\SOFTWARE\\Policies\\Microsoft\\Biometric' -Name Enabled -ErrorAction Stop) | Select -ExpandProperty Enabled } Catch { } ; $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"BiometricsStatus\" -Value $Value; $obj;"
+                "query": "$key= 'HKLM:\\\\SOFTWARE\\Policies\\Microsoft\\Biometric' ; $value = 'BiometricsStatus';  $KeyPresent=Test-Path $key ; if ($KeyPresent -eq $False){ $KeyPresent=\"NO\"; $ValuePresent='n/a'; $KeyValue=\"n/a\"; } else { $KeyPresent=\"YES\"; Try{ $KeyValue = (Get-ItemProperty -Path $key -Name $value -ErrorAction Stop) | Select -ExpandProperty $value; $ValuePresent = \"YES\"; } catch{ $KeyValue=\"n/a\"; $ValuePresent=\"NO\"; } }  $obj = New-Object psobject; $obj | add-member -Type Noteproperty \"KEY PRESENT\" -Value $KeyPresent; $obj | add-member -Type Noteproperty \"VALUE PRESENT\" -Value $ValuePresent; $obj | add-member -Type Noteproperty \"VALUE\" -Value $keyValue ; $obj;"
             },
             {
                 "description": "[PCI: Server-Hardening] Policy Version",
-                "query": "echo \"20170922-0\""
+                "query": "echo \"20171011-0\";"
             }
         ]
     }

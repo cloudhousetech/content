@@ -4,7 +4,7 @@ require 'erb'
 
 Puppet::Reports.register_report(:upguard) do
 
-  VERSION = "v1.5.2"
+  VERSION = "v1.5.3"
   CONFIG_FILE_NAME = "upguard.yaml"
   VERSION_TAG = "Added by #{File.basename(__FILE__)} #{VERSION}"
   desc "Create a node (if not present) and kick off a node scan in UpGuard if changes were made."
@@ -497,7 +497,7 @@ Puppet::Reports.register_report(:upguard) do
       Puppet.info("#{log_prefix} puppet virtualization platform for node is: virtual=#{virtual}")
       if virtual == 'physical'
         virtual = 'Baremetal'
-      elsif virtual == 'zen'
+      elsif virtual == 'xen'
         virtual = 'AWS'
       elsif virtual == 'vmware'
         # VMware the the "default", don't display anything for it.

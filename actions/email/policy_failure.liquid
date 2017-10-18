@@ -1,0 +1,28 @@
+###########################################################################################################
+# Description: Print out policy failure results. This will loop over affected nodes and construct a       #
+#              table detailing which policy checks have failed.                                           #
+# Event variables required: scan_id OR (job_id AND policy_id)                                             #
+# Example event: type=Policy Ran AND variables.success=false                                              #
+# Website version required: >= v2.28.0                                                                    #
+###########################################################################################################
+
+{% for f in failures %}
+Node name: {{ f[0] }}
+
+<table border="1">
+{% for c in f[1] %}
+<tr>
+<td>Check: {{ c['name'] }}</td>
+<td>Result: {{ c['result'] }}</td>
+<td><table border="1">
+{% for a in c['checks'] %}
+<tr><td>Attribute name</td><td>{{ a[0] }}</td></tr>
+<tr><td>Expected</td><td>{{ a[1]['expected'] }}</td></tr>
+<tr><td>Actual</td><td>{{ a[1]['actual'] }}</td></tr>
+<tr><td>Result</td><td>{{ a[1]['result'] }}</td></tr>
+{% endfor %}
+</table></td>
+</tr>
+{% endfor %}
+</table>
+{% endfor %}

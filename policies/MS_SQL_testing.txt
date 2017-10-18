@@ -1,0 +1,57 @@
+Test scripts:
+3.5-7
+Test for 3.6 and 3.7 are same as 3.5. Just use other accounts retrived from the query.
+a) select * from sys.dm_server_services
+b) net localgroup Administrators "NT Service\MSSQLSERVER" /add
+c) net localgroup Administrators "NT Service\MSSQLSERVER" /delete
+d) net localgroup Administrators
+I can not prepare test cript for "Query LocalSystem account (aka NT AUTHORITY\SYSTEM) used for the MSSQL service"
+because it requires new installation of MS SQL Server with other configuration steps.
+
+3.8
+The check is changed (Measure-object + Count=0)
+
+-- The way to add rows in the query result:
+grant ALTER ANY DATABASE to public
+go
+grant CREATE ANY DATABASE to public
+go
+
+3.9 
+The check is changed (Measure-object + Count=0)
+You already (default configuration) have one row here. It's enough for testing.
+
+3.10
+The check is changed (Measure-object + Count=0)
+
+-- The way to add rows in the query result:
+-- 1. create localgroup in the command line
+PS C:\Users\Administrator> net localgroup test_group /add
+
+-- 2. create logon for this group
+use [master]
+go
+CREATE LOGIN  "EC2AMAZ-ULB4L5F\test_group" FROM WINDOWS;
+GO
+
+3.11
+The check is changed (Measure-object + Count=0)
+-- The way to add rows in the query result:
+USE msdb ;
+GO
+-- already created
+--create CREDENTIAL CredentialForEKMq
+--WITH IDENTITY='NT Service\SQLSERVERAGENT'
+[[GO
+
+EXEC dbo.sp_add_proxy
+    @proxy_name = 'Catalog application proxy 3',
+    @enabled = 1,
+    @description = 'Maintenance tasks on catalog application.',
+    @credential_name = 'CredentialForEKMq' ;
+GO
+
+EXEC dbo.sp_grant_login_to_proxy @msdb_role = N'public', @proxy_name =N'Catalog application proxy 3';
+GO
+
+

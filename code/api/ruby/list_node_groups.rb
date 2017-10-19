@@ -17,18 +17,40 @@ require 'optparse'
 #   ./<path-to-script>/list_node_groups.rb
 #   ./<path-to-script>/list_node_groups.rb --node_group_id 32
 
+# Optional Debug
+def write_optional_debug (str="")
+  if $options[:debug_output]
+    puts str
+  end
+end
+
 # Flag Parsing
-options                 = {}
-options[:SSL_cert]      = true
-options[:node_group_id] = nil
+$options                   = {}
+$options[:SSL_cert]        = true
+$options[:node_group_id]   = nil
+$options[:print_json]      = false
+$options[:debug_output]    = false 
+$options[:node_group_name] = nil
 
 opt_parser = OptionParser.new do |opt|
+  opt.on('--print_json') do
+    $options[:print_json] = true
+  end
+
+  opt.on('--debug_output') do
+    $options[:debug_output] = true
+  end
+
   opt.on('--disable_ssl') do
-    options[:SSL_cert] = false
+    $options[:SSL_cert] = false
   end
 
   opt.on('--node_group_id=NODEGROUP') do |ng|
-    options[:node_group_id] = ng
+    $options[:node_group_id] = ng
+  end
+
+  opt.on('--node_group_name=NODEGROUPNAME') do |ngn|
+    $options[:node_group_name] = ngn
   end
 end
 
@@ -45,32 +67,57 @@ per_page     = 100
 node_groups   = Array.new
 response     = nil
 
-api_endpoint = 'node_groups.json'
-if options[:node_group_id] != nil
-  api_endpoint = "node_groups/#{options[:node_group_id]}/nodes.json"
-end
 
 # TLS 1.2
 OpenSSL::SSL::SSLContext::DEFAULT_PARAMS[:ssl_version] = :TLSv1_2
 
-# Paginate API requests
-while response.nil? || response.count == per_page
-  link = "#{url}/api/v2/#{api_endpoint}?page=#{page.to_s}&per_page=#{per_page.to_s}"
-  puts "Attempting to invoke #{link}"
-  response = HTTParty.get(link, headers: header, :verify => options[:SSL_cert])
+def invoke_web_request(link, header, ssl)
+  write_optional_debug("Attempting to invoke #{link}")
+  response = HTTParty.get(link, headers: header, :verify => $options[:SSL_cert])
   if response.code != 200
-    puts "Error, server responded with: #{response.code} - #{response["error"]}"
+    write_optional_debug("Error, server responded with: #{response.code} - #{response["error"]}")
+    nil
   else
-    node_groups += response
+    response
+  end
+end
+
+if $options[:node_group_name] != nil
+  # Retrieve node group ID from a node group name
+  link = "#{url}/api/v2/node_groups/lookup.json?name=#{$options[:node_group_name]}"
+  response = invoke_web_request(link, header, $options[:SSL_cert])
+  if response != nil
+    puts "Node Group Name: #{$options[:node_group_name]}"
+    puts "Node Group ID: #{response['node_group_id']}"
+  end
+else
+  # Show node groups or a node group's nodes
+  api_endpoint = 'node_groups.json'
+  if $options[:node_group_id] != nil
+    api_endpoint = "node_groups/#{$options[:node_group_id]}/nodes.json"
   end
 
-  page += 1
+  # Paginate API requests
+  while response.nil? || response.count == per_page
+    link = "#{url}/api/v2/#{api_endpoint}?page=#{page.to_s}&per_page=#{per_page.to_s}"
+    response = invoke_web_request(link, header, $options[:SSL_cert])
+    if response != nil
+      node_groups += response
+    end
+  
+    page += 1
+  end
 end
 
 # Print Results
-if options[:node_group_id] != nil
-  puts "Retrieved #{node_groups.count} nodes from node group #{options[:node_group_id]}"
+if $options[:node_group_id] != nil
+  write_optional_debug("Retrieved #{node_groups.count} nodes from node group #{$options[:node_group_id]}")
 else
-  puts "Retreived #{node_groups.count} node groups"
+  write_optional_debug("Retreived #{node_groups.count} node groups")
 end
-puts JSON.pretty_generate(node_groups)
+
+if $options[:print_json]
+  puts JSON.pretty_generate(node_groups)
+else
+  puts node_groups
+end

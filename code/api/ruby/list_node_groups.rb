@@ -8,9 +8,12 @@ require 'optparse'
 #   - Minimum requirements: httparty gem, Ruby 2.0.0
 #
 # API Flag(s):
-#   --node_group_id: lists nodes categorized under a node group ID number
+#   --node_group_id: Lists nodes categorized under a node group ID number
+#   --node_group_name: Lists a node group's numeric ID given a node group name
 #
 # Optional Flag(s):
+#   --print_json: Prints API results in JSON format
+#   --debug_output: Enables script debugging output
 #   --disable_ssl: Disable SSL certificate verification
 #
 # Usage Example(s):

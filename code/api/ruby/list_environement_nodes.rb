@@ -65,6 +65,7 @@ url          = '' # Example: https://123.0.0.1 or http://<my-server>.com
 api_key      = '' # service Api key under Manage Accounts | Account 
 secret_key   = '' # secret key shown when API enabled in Manage Accounts | Account | Enable API Access
 
+header     = { "Authorization" => "Token token=\"#{api_key}#{secret_key}\"" }
 page         = 1
 per_page     = 100
 environments = Array.new

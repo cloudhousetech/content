@@ -1,0 +1,12 @@
+<h1>{{ node_group_name }} Differences</h1>
+<p>For full results click <a href="{{ group_diff_url }}">here</a></p>
+<hr />
+{% for ci in group_diffs %}
+  <h3>{{ ci[0] | replace: ",", " &gt; " }}</h3>
+  {% for result in ci[1] %}
+    <h4>{% for node in result[1] %}{{ node }}:{% endfor %}</h4>
+    <pre>{{ result[0] }}</pre>
+  {% endfor %}
+  <br />
+  <hr />
+{% endfor %}

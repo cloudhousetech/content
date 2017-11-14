@@ -4,7 +4,7 @@
 {% for ci in group_diffs %}
   <h3>{{ ci[0] | replace: ",", " &gt; " }}</h3>
   {% for result in ci[1] %}
-    <h4>{% for node in result[1] %}{{ node }}:{% endfor %}</h4>
+    <h4><i>Value on nodes:</i>&nbsp;&nbsp;{% for node in result[1] %}{{ node }}&nbsp;&nbsp;{% endfor %}</h4>
     <pre>{{ result[0] }}</pre>
   {% endfor %}
   <br />

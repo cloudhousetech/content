@@ -1,7 +1,7 @@
-<!-- 
-# Description: Prints out information about policy and attribute failures                                 
-# Event variables required: failures                                                                      
-# Website version required: >= v2.28.0                                                                    
+<!--
+# Description: Prints out information about policy and attribute failures
+# Event variables required: failures
+# Website version required: >= v2.56.0
 -->
 
 <h1>{{ policy }} Failures</h1>
@@ -17,32 +17,50 @@
     <h3>{{ c['name'] | replace: ",", " &gt;" }}</h3>
     {% assign not_present = false %}
     {% for a in c['checks'] %}
-      {% if a[0] == 'present' and a[1]['expected'] == 'true' and a[1]['actual'] == 'false' %}
-        {% assign not_present = true %}
-      {% endif %}
-    {% endfor %}   
+      {% for r in a[1] %}
+        {% if a[0] == 'present' and r['expected'] == 'true' and r['actual'] == 'false' %}
+          {% assign not_present = true %}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
     {% if not_present == true %}
       <table style="margin-left:10px" border="0">
-        <tr><td>Configuration item was expected, but <span style="color: red">not found</span>, on this node.</td></tr>        
+        <tr><td>Configuration item was expected, but <span style="color: red">not found</span>, on this node.</td></tr>
       </table
     {% else %}
       <table style="margin-left:10px" border="0">
         {% for a in c['checks'] %}
-        <tr>
-          <th style="text-align:left; vertical-align:top;">Attribute:</th>
-          <td style="text-align:left; vertical-align:top; padding-left:10px;">{{ a[0] }}</td>
-        </tr>
-        <tr>
-          <th style="text-align:left; vertical-align:top;">Expected:</th>
-          <td style="text-align:left; vertical-align:top; padding-left:10px">{{ a[1]['expected'] }}</td>
-        </tr>
-        <tr>
-          <th style="text-align:left; vertical-align:top;">Actual:</th>  
-          <td style="text-align:left; vertical-align:top; padding:0 0 10px 10px; color: red">{{ a[1]['actual'] }}</td>
-        </tr>
+          {% for r in a[1] %}
+          <tr>
+            <th style="text-align:left; vertical-align:top;">Attribute:</th>
+            <td style="text-align:left; vertical-align:top; padding-left:10px;">{{ a[0] }}</td>
+          </tr>
+          <tr>
+            <th style="text-align:left; vertical-align:top;">
+              {% if r['check'] == 'whitelist' %}Whitelist/Blacklist:{% elsif r['check'] %}{{ r['check'] | capitalize }}:{% else %}Expected:{% endif %}
+            </th>
+            <td style="text-align:left; vertical-align:top; padding-left:10px">
+              {{ r['expected'] }}
+            </td>
+          </tr>
+          {% if r['conditions'] %}
+          <tr>
+            <th style="text-align:left; vertical-align:top;">
+              Conditions:
+            </th>
+            <td style="text-align:left; vertical-align:top; padding-left:10px">
+              {% for c in r['conditions'] %}{{ c['op'] }}{{ c['val'] }} {% endfor %}
+            </td>
+          </tr>
+          {% endif %}
+          <tr>
+            <th style="text-align:left; vertical-align:top;">Actual:</th>
+            <td style="text-align:left; vertical-align:top; padding:0 0 10px 10px; color: red">{{ r['actual'] }}</td>
+          </tr>
+          {% endfor %}
         {% endfor %}
       </table>
-    {% endif %}        
+    {% endif %}
   {% endfor %}
   <br />
   <br />

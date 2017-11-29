@@ -1,13 +1,13 @@
 # WinRM GPO 
-_The WinRM GPO is designed to allow customers the ability to standardize WinRM settings to meet those consistent with the defaults enabled in Windows Management Foundation 5.1 (PowerShell 5.1).  This approach serves to align earlier WinRM settings with future revisions of PowerShell and to adhere to standard security practices. 
+The WinRM GPO is designed to allow customers the ability to standardize WinRM settings to meet those consistent with the defaults enabled in Windows Management Foundation 5.1 (PowerShell 5.1).  This approach serves to align earlier WinRM settings with future revisions of PowerShell and to adhere to standard security practices.
 
 ## Application
 WMF prior to 4.0 will not have the proper WinRM settings enabled to allow remote connectivity, this GPO applied to hosts prior to that revision will enable PowerShell remoting functionality by attaching the proper settings to a HTTP listener. HTTPS listeners at this time require a certificate to be attached to the listner which is not a capability of the GPO settings library.  In that particular case, DSC, is the recommend approach.    
 
-*Scoping*
-_The GPO should be applied against either an Organzational Unit (OU) or a Security Group containing the assets that lack the proper WinRM settings and need to be scanned by UpGuard.
+**Scoping**
+_The GPO should be applied against either an Organzational Unit (OU) or a Security Group containing the assets that lack the proper WinRM settings and need to be scanned by UpGuard._
 
-*Danger Dragons Ahead*
+**Danger Dragons Ahead**
 
 _The following WinRM settings or specific server types should be further scrutinized prior to applicaiton of this GPO as they have not been tested extensively for impact._
 1. Hosts with legacy listeners, or hosts that have enabled compatibility for WinRM legacy listeners.
@@ -48,10 +48,12 @@ This section covers the settings applied by the GPO.
 
 ### Administrative Templates
 1. Network/Network/Connections/Windows Firewall/Domain Profile
-Policy                              |Value 
-|:------                            |:----- 
+
+|Policy                                               |Value 
+|:------                                              |:----- 
 |Windows Firewall: Define Inbound program exceptions  |enabled
-|Define Program Exceptions |5985:TCP:*:Enabled:WinRM
+|Define Program Exceptions                            |5985:TCP:*:Enabled:WinRM
+
 2. Windows Components/Windows Remote Management (WinRM)/WinRM Client
 
 |Policy                              |Value 

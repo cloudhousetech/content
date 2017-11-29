@@ -42,7 +42,7 @@ This section covers the settings applied by the GPO.
 |Local Scope | Any
 |Remote Scope | Any
 |Profile | Domain
-|Netowrk Interface Type | All
+|Network Interface Type | All
 |Allow Edge traversal | false
 |Group | Windows Remote Management
 

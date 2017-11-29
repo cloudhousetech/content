@@ -8,7 +8,8 @@ WMF prior to 4.0 will not have the proper WinRM settings enabled to allow remote
 _The GPO should be applied against either an Organzational Unit (OU) or a Security Group containing the assets that lack the proper WinRM settings and need to be scanned by UpGuard.
 
 *Danger Dragons Ahead*
-_The following WinRM settings or specific server types should be further scrutinized prior to applicaiton of this GPO as they have not been tested extensively for impact.
+
+_The following WinRM settings or specific server types should be further scrutinized prior to applicaiton of this GPO as they have not been tested extensively for impact._
 1. Hosts with legacy listeners, or hosts that have enabled compatibility for WinRM legacy listeners.
 2. Any host with specialized or non-default PS listeners.
 3. Exchange 2010 & 2013, Lync 2010 & 2013
@@ -19,13 +20,16 @@ _The following WinRM settings or specific server types should be further scrutin
 This section covers the settings applied by the GPO. 
 
 
-###System Services
+### System Services
 1. Windows Remote Management (WS-Management) - Startup Mode Automatic
 
 ### Windows Firewall with Advanced Security
+
 1. Global Settings - None Configured
+
 2. Inbound Rules - Windows Remote Management (HTTP-IN)
-Policy                              |Value 
+
+|Policy                               |Value 
 |:------                             |:----- 
 |Enabled | True
 |Program | System
@@ -41,6 +45,7 @@ Policy                              |Value
 |Netowrk Interface Type | All
 |Allow Edge traversal | false
 |Group | Windows Remote Management
+
 ### Administrative Templates
 1. Network/Network/Connections/Windows Firewall/Domain Profile
 Policy                              |Value 
@@ -76,7 +81,9 @@ Policy                              |Value
 |token hardening level               |Relaxed
 |Turn On Compatibality HTTP Listener                      |Disabled 
 |Turn on Compatiablity HTTPS Listener                  |*
+
 4. Windows Components/Windows Remote Shell
+
 |Property                            |Value 
 |:------                             |:----- 
 |Allow Remote Shell Access           | Enabled

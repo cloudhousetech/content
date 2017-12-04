@@ -5,7 +5,13 @@
 -->
 
 <h1>{{ policy }} Failures</h1>
-<p>For full results click <a href="{{ instance_hostname }}/reports#/policy/{{ policy_id }}">here</a></p>
+{% if ran_on == "node" %}
+<p>For full results click <a href="{{ node_url }}">here</a></p>
+{% elsif ran_on == "group" %}
+<p>For full results click <a href="{{ instance_hostname }}/reports#/policy/{{ policy_id }}?node_group={{ group_id }}">here</a></p>
+{% elsif ran_on == "environment" %}
+<p>For full results click <a href="{{ instance_hostname }}/reports#/policy/{{ policy_id }}?environment={{ environment_id }}">here</a></p>
+{% endif %} 
 <hr />
 {% for f in failures %}
   {% assign node_name = node %}
@@ -40,7 +46,11 @@
               {% if r['check'] == 'whitelist' %}Whitelist/Blacklist:{% elsif r['check'] %}{{ r['check'] | capitalize }}:{% else %}Expected:{% endif %}
             </th>
             <td style="text-align:left; vertical-align:top; padding-left:10px">
-              {{ r['expected'] }}
+              {% if r['check'] == 'whitelist' %}
+                See below for allowed (+) and unallowed (-) values...
+              {% else %}
+                {% if r['expected'] %}{{ r['expected'] }}{% else %}See below...{% endif %}
+              {% endif %}
             </td>
           </tr>
           {% if r['conditions'] %}

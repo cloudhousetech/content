@@ -1,0 +1,54 @@
+{
+  "policy": {
+    "name": "rhel_7_meltdownspectre",
+    "short_description": "RHEL 7 Meltdown/Spectre",
+    "description": null,
+    "settings": {
+      "tests": {
+        "output_format": null
+      }
+    },
+    "operating_system_family_id": null,
+    "operating_system_id": null,
+    "type": null
+  },
+  "data": [
+    {
+      "packages": [
+        {
+          "yum": [
+            {
+              "name": "kernel",
+              "checks": {
+                "version": [
+                  {
+                    "cond": [
+                      {
+                        "op": ">=",
+                        "val": "3.10.0-693.11.6.el7"
+                      }
+                    ],
+                    "check": "version_comparison",
+                    "expected": "3.10.0-693.el7",
+                    "background": "See https://access.redhat.com/errata/RHSA-2018:0007 for the Red Hat advisory.",
+                    "remediation": "Update kernel to latest version."
+                  }
+                ]
+              },
+              "ci_path": [
+                "packages",
+                "yum",
+                "kernel"
+              ],
+              "packages": {
+                "name": "kernel"
+              },
+              "check_type": "packages"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scan_options": {}
+}

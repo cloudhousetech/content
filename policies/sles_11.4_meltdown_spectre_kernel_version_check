@@ -1,0 +1,89 @@
+{
+  "policy": {
+    "name": "suse_11_sp4_meltdown_kernel_check",
+    "short_description": "SUSE 11 SP4 Meltdown Kernel Check",
+    "description": "",
+    "settings": {
+      "tests": {
+        "output_format": null
+      }
+    },
+    "operating_system_family_id": null,
+    "operating_system_id": null,
+    "type": null
+  },
+  "data": [
+    {
+      "packages": [
+        {
+          "yum": [
+            {
+              "id": "packagesyumThe-kernel-package-should-be-upgraded-above-versions-affected-by-Meltdown-",
+              "name": "The kernel package should be upgraded above versions affected by Meltdown.",
+              "checks": {
+                "version": [
+                  {
+                    "cond": [
+                      {
+                        "op": ">=",
+                        "val": "3.0.101-108.21.1"
+                      }
+                    ],
+                    "check": "version_comparison",
+                    "expected": "3.0.101-108.21.1",
+                    "background": "See SUSE advisory for Meltdown and Spectre: https://www.suse.com/support/kb/doc/?id=7022512",
+                    "remediation": "Update kernel to latest version."
+                  }
+                ]
+              },
+              "ci_path": [
+                "packages",
+                "yum",
+                "kernel-default"
+              ],
+              "packages": {
+                "name": "kernel-default"
+              },
+              "check_type": "packages",
+              "description": "The kernel package should be upgraded above versions affected by Meltdown.",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "packagesyumThe-package-microcode-ctl-should-be-installed-",
+              "name": "The microcode_ctl package should be upgraded above versions affected by Meltdown.",
+              "error": false,
+              "checks": {
+                "version": [
+                  {
+                    "check": "version_comparison",
+                    "background": "https://www.suse.com/support/kb/doc/?id=7022512",
+                    "absent_pass": true,
+                    "remediation": "Upgrade microcode_ctl."
+                  }
+                ]
+              },
+              "ci_path": [
+                "packages",
+                "yum",
+                "microcode_ctl"
+              ],
+              "packages": {
+                "name": "microcode_ctl",
+                "provider": "*"
+              },
+              "check_type": "packages",
+              "selectList": [
+                "{\"status\":\"installed\",\"version\":\"2.1-22.el7\"}",
+                "{\"status\":\"installed\",\"version\":\"2.1-16.3.el7_3\"}",
+                "*"
+              ],
+              "description": "The microcode_ctl package should be upgraded above versions affected by Meltdown.",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scan_options": {}
+}

@@ -1,0 +1,54 @@
+{
+  "policy": {
+    "name": "rhel_6_meltdownspectre_",
+    "short_description": "RHEL 6 Meltdown/Spectre ",
+    "description": "",
+    "settings": {
+      "tests": {
+        "output_format": null
+      }
+    },
+    "operating_system_family_id": null,
+    "operating_system_id": null,
+    "type": null
+  },
+  "data": [
+    {
+      "packages": [
+        {
+          "yum": [
+            {
+              "name": "kernel",
+              "checks": {
+                "version": [
+                  {
+                    "cond": [
+                      {
+                        "op": ">=",
+                        "val": "2.6.32-696.18.7.el6"
+                      }
+                    ],
+                    "check": "version_comparison",
+                    "expected": "2.6.32-431.29.2.el6",
+                    "background": "See Red Hat advisory here: https://access.redhat.com/errata/RHSA-2018:0008",
+                    "remediation": "Update kernel to latest version."
+                  }
+                ]
+              },
+              "ci_path": [
+                "packages",
+                "yum",
+                "kernel"
+              ],
+              "packages": {
+                "name": "kernel"
+              },
+              "check_type": "packages"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scan_options": {}
+}

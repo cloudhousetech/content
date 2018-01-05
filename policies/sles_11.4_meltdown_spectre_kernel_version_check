@@ -1,0 +1,54 @@
+{
+  "policy": {
+    "name": "suse_11_sp4_meltdown_kernel_check",
+    "short_description": "SUSE 11 SP4 Meltdown Kernel Check",
+    "description": "",
+    "settings": {
+      "tests": {
+        "output_format": null
+      }
+    },
+    "operating_system_family_id": null,
+    "operating_system_id": null,
+    "type": null
+  },
+  "data": [
+    {
+      "packages": [
+        {
+          "yum": [
+            {
+              "name": "kernel-default",
+              "checks": {
+                "version": [
+                  {
+                    "cond": [
+                      {
+                        "op": ">=",
+                        "val": "3.0.101-108.21.1"
+                      }
+                    ],
+                    "check": "version_comparison",
+                    "expected": "3.0.101-108.21.1",
+                    "background": "See SUSE advisory for Meltdown and Spectre: https://www.suse.com/support/kb/doc/?id=7022512",
+                    "remediation": "Update kernel to latest version."
+                  }
+                ]
+              },
+              "ci_path": [
+                "packages",
+                "yum",
+                "kernel-default"
+              ],
+              "packages": {
+                "name": "kernel-default"
+              },
+              "check_type": "packages"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scan_options": {}
+}

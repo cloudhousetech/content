@@ -1,0 +1,124 @@
+{
+  "policy": {
+    "name": "meltdown_spectre",
+    "short_description": "Meltdown Spectre",
+    "description": null,
+    "settings": {
+      "tests": {
+        "output_format": null
+      }
+    },
+    "operating_system_family_id": 1,
+    "operating_system_id": 123,
+    "type": null
+  },
+  "data": [
+    {
+      "PowerShell": [
+        {
+          "Meltdown-Spectre Mitigation": [
+            {
+              "id": "PowerShellMeltdown-Spectre-MitigationThe-output-of-the-PowerShell-query-function-Write-Host-res-New-Object-PSObject-Select-Name-Module-Installation-Supported-Speculation-Control-Module-Installed-BTI-Hardware-Support-Present-BTI-OS-Support-Present-BTI-OS-Support-Enabled-BTI-Disabled-by-Policy-BTI-Disabled-by-Hardware-KVA-Shadowing-Required-KV-OS-Support-Present-KV-OS-Support-Enabled-KV-OS-PCID-Support-Enabled-res-Name-Meltdown-Spectre-Mitigation-res-Module-Installation-Supported-false-res-Speculation-Control-Module-Installed-false-res-BTI-Hardware-Support-Present-false-res-BTI-OS-Support-Present-false-res-BTI-OS-Support-Enabled-false-res-BTI-Disabled-by-Policy-false-res-BTI-Disabled-by-Hardware-true-res-KVA-Shadowing-Required-true-res-KV-OS-Support-Present-false-res-KV-OS-Support-Enabled-false-res-KV-OS-PCID-Support-Enabled-false-Set-ExecutionPolicy-ExecutionPolicy-Unrestricted-Scope-Process-installsupport-false-if-Get-Command-Install-Module-ErrorAction-SilentlyContinue-installsupport-true-moduleinstalled-false-if-Get-Command-Get-SpeculationControlSettings-ErrorAction-SilentlyContinue-moduleinstalled-true-if-not-moduleinstalled-and-installsupport-Install-Module-SpeculationControl-WarningAction-SilentlyContinue-moduleinstalled-true-if-moduleinstalled-cs-Get-SpeculationControlSettings-WarningAction-SilentlyContinue-res-BTI-Hardware-Support-Present-cs-BTIHardwarePresent-res-BTI-OS-Support-Present-cs-BTIWindowsSupportPresent-res-BTI-OS-Support-Enabled-cs-BTIWindowsSupportEnabled-res-BTI-Disabled-by-Policy-cs-BTIDisabledBySystemPolicy-res-BTI-Disabled-by-Hardware-cs-BTIDisabledByNoHardwareSupport-res-KVA-Shadowing-Required-cs-KVAShadowRequired-res-KV-OS-Support-Present-cs-KVAShadowWindowsSupportPresent-res-KV-OS-Support-Enabled-cs-KVAShadowWindowsSupportEnabled-res-KV-OS-PCID-Support-Enabled-cs-KVAShadowPcidEnabled-res-Module-Installation-Supported-installsupport-res-Speculation-Control-Module-Installed-moduleinstalled-remove-item-function-Write-Host-ErrorAction-SilentlyContinue-WarningAction-SilentlyContinue-res-should-contain-the-specified-value",
+              "name": "Output of a query designed to detect whether Meltdown and Spectre have been mitigated.",
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true",
+                    "remediation": "Check the scan logs to determine if the script encountered errors."
+                  }
+                ],
+                "KV OS Support Enabled": [
+                  {
+                    "check": "equals",
+                    "expected": "true",
+                    "remediation": "Install the 1/3/2018 Windows security patch"
+                  }
+                ],
+                "KV OS Support Present": [
+                  {
+                    "check": "equals",
+                    "expected": "true",
+                    "remediation": "Install the 1/3/2018 Windows security patch"
+                  }
+                ],
+                "BTI Disabled by Policy": [
+                  {
+                    "check": "equals",
+                    "expected": "false",
+                    "remediation": "Check group policy settings to ensure that the branch target injection support is not disabled."
+                  }
+                ],
+                "BTI OS Support Enabled": [
+                  {
+                    "check": "equals",
+                    "expected": "true",
+                    "remediation": "Ensure that the 1/3/2018 Windows security patch is installed.\nCheck the policy status for 'BTI Disabled by Hardware' and 'BTI Disabled by Policy' checks and refer to their remediation steps."
+                  }
+                ],
+                "BTI OS Support Present": [
+                  {
+                    "check": "equals",
+                    "expected": "true",
+                    "remediation": "Install the 1/3/2018 Windows security patch."
+                  }
+                ],
+                "BTI Disabled by Hardware": [
+                  {
+                    "check": "equals",
+                    "expected": "false",
+                    "remediation": "Install BIOS or firmware update."
+                  }
+                ],
+                "KV OS PCID Support Enabled": [
+                  {
+                    "check": "equals",
+                    "expected": "true",
+                    "remediation": "Install the 1/3/2018 Windows security patch"
+                  }
+                ],
+                "BTI Hardware Support Present": [
+                  {
+                    "check": "equals",
+                    "expected": "true",
+                    "remediation": "Install BIOS or firmware updates."
+                  }
+                ],
+                "Speculation Control Module Installed": [
+                  {
+                    "check": "equals",
+                    "expected": true,
+                    "remediation": "Perform one of:\n- Upgrade PowerShell to version 5 and re run this script\n- Install PowerShellGet and re run this script\n- Install the SpeculationControl module manually and re run this script"
+                  }
+                ]
+              },
+              "ci_path": [
+                "PowerShell",
+                "Meltdown-Spectre Mitigation",
+                "Meltdown-Spectre Mitigation"
+              ],
+              "check_type": "powershell",
+              "powershell": {
+                "query": "function Write-Host {}\n$res = New-Object PSObject | Select Name, 'Module Installation Supported', 'Speculation Control Module Installed', 'BTI Hardware Support Present', 'BTI OS Support Present', 'BTI OS Support Enabled', 'BTI Disabled by Policy', 'BTI Disabled by Hardware', 'KVA Shadowing Required', 'KV OS Support Present', 'KV OS Support Enabled', 'KV OS PCID Support Enabled'\n$res.Name = 'Meltdown-Spectre Mitigation'\n$res.'Module Installation Supported' = $false\n$res.'Speculation Control Module Installed' = $false\n\n$res.'BTI Hardware Support Present' = $false\n$res.'BTI OS Support Present' = $false\n$res.'BTI OS Support Enabled' = $false\n$res.'BTI Disabled by Policy' = $false\n$res.'BTI Disabled by Hardware' = $true\n\n$res.'KVA Shadowing Required' = $true\n$res.'KV OS Support Present' = $false\n$res.'KV OS Support Enabled' = $false\n$res.'KV OS PCID Support Enabled' = $false\n\nSet-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process\n$installsupport = $false\n\nif (Get-Command \"Install-Module\" -ErrorAction SilentlyContinue) { \n    $installsupport = $true \n}\n$moduleinstalled = $false\nif (Get-Command \"Get-SpeculationControlSettings\" -ErrorAction SilentlyContinue) {\n    $moduleinstalled = $true\n}\nif ((-not $moduleinstalled) -and $installsupport) {\n    Install-Module SpeculationControl  -WarningAction SilentlyContinue\n    $moduleinstalled = $true\n}\nif ($moduleinstalled) {\n    $cs = Get-SpeculationControlSettings  -WarningAction SilentlyContinue\n\n    $res.'BTI Hardware Support Present' = $cs.BTIHardwarePresent\n    $res.'BTI OS Support Present' = $cs.BTIWindowsSupportPresent\n    $res.'BTI OS Support Enabled' = $cs.BTIWindowsSupportEnabled\n    $res.'BTI Disabled by Policy' = $cs.BTIDisabledBySystemPolicy\n    $res.'BTI Disabled by Hardware' = $cs.BTIDisabledByNoHardwareSupport\n\n    $res.'KVA Shadowing Required' = $cs.KVAShadowRequired\n    $res.'KV OS Support Present' = $cs.KVAShadowWindowsSupportPresent\n    $res.'KV OS Support Enabled' = $cs.KVAShadowWindowsSupportEnabled\n    $res.'KV OS PCID Support Enabled' = $cs.KVAShadowPcidEnabled\n}\n$res.'Module Installation Supported' = $installsupport\n$res.'Speculation Control Module Installed' = $moduleinstalled\nremove-item function:Write-Host -ErrorAction SilentlyContinue -WarningAction SilentlyContinue\n$res",
+                "key_name": "Name",
+                "key_value": "Meltdown-Spectre Mitigation",
+                "description": "Meltdown-Spectre Mitigation"
+              },
+              "description": "Output of a query designed to detect whether Meltdown and Spectre have been mitigated.",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scan_options": {
+    "powershell_queries": [
+      {
+        "description": "Meltdown-Spectre Mitigation",
+        "query": "function Write-Host {}\n$res = New-Object PSObject | Select Name, 'Module Installation Supported', 'Speculation Control Module Installed', 'BTI Hardware Support Present', 'BTI OS Support Present', 'BTI OS Support Enabled', 'BTI Disabled by Policy', 'BTI Disabled by Hardware', 'KVA Shadowing Required', 'KV OS Support Present', 'KV OS Support Enabled', 'KV OS PCID Support Enabled'\n$res.Name = 'Meltdown-Spectre Mitigation'\n$res.'Module Installation Supported' = $false\n$res.'Speculation Control Module Installed' = $false\n\n$res.'BTI Hardware Support Present' = $false\n$res.'BTI OS Support Present' = $false\n$res.'BTI OS Support Enabled' = $false\n$res.'BTI Disabled by Policy' = $false\n$res.'BTI Disabled by Hardware' = $true\n\n$res.'KVA Shadowing Required' = $true\n$res.'KV OS Support Present' = $false\n$res.'KV OS Support Enabled' = $false\n$res.'KV OS PCID Support Enabled' = $false\n\nSet-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope Process\n$installsupport = $false\n\nif (Get-Command \"Install-Module\" -ErrorAction SilentlyContinue) { \n    $installsupport = $true \n}\n$moduleinstalled = $false\nif (Get-Command \"Get-SpeculationControlSettings\" -ErrorAction SilentlyContinue) {\n    $moduleinstalled = $true\n}\nif ((-not $moduleinstalled) -and $installsupport) {\n    Install-Module SpeculationControl  -WarningAction SilentlyContinue\n    $moduleinstalled = $true\n}\nif ($moduleinstalled) {\n    $cs = Get-SpeculationControlSettings  -WarningAction SilentlyContinue\n\n    $res.'BTI Hardware Support Present' = $cs.BTIHardwarePresent\n    $res.'BTI OS Support Present' = $cs.BTIWindowsSupportPresent\n    $res.'BTI OS Support Enabled' = $cs.BTIWindowsSupportEnabled\n    $res.'BTI Disabled by Policy' = $cs.BTIDisabledBySystemPolicy\n    $res.'BTI Disabled by Hardware' = $cs.BTIDisabledByNoHardwareSupport\n\n    $res.'KVA Shadowing Required' = $cs.KVAShadowRequired\n    $res.'KV OS Support Present' = $cs.KVAShadowWindowsSupportPresent\n    $res.'KV OS Support Enabled' = $cs.KVAShadowWindowsSupportEnabled\n    $res.'KV OS PCID Support Enabled' = $cs.KVAShadowPcidEnabled\n}\n$res.'Module Installation Supported' = $installsupport\n$res.'Speculation Control Module Installed' = $moduleinstalled\nremove-item function:Write-Host -ErrorAction SilentlyContinue -WarningAction SilentlyContinue\n$res",
+        "key_name": "Name"
+      }
+    ]
+  }
+}

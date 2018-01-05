@@ -18,7 +18,8 @@
         {
           "yum": [
             {
-              "name": "kernel-default",
+              "id": "packagesyumThe-kernel-package-should-be-upgraded-above-versions-affected-by-Meltdown-",
+              "name": "The kernel package should be upgraded above versions affected by Meltdown.",
               "checks": {
                 "version": [
                   {
@@ -43,7 +44,41 @@
               "packages": {
                 "name": "kernel-default"
               },
-              "check_type": "packages"
+              "check_type": "packages",
+              "description": "The kernel package should be upgraded above versions affected by Meltdown.",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "packagesyumThe-package-microcode-ctl-should-be-installed-",
+              "name": "The microcode_ctl package should be upgraded above versions affected by Meltdown.",
+              "error": false,
+              "checks": {
+                "version": [
+                  {
+                    "check": "version_comparison",
+                    "background": "https://www.suse.com/support/kb/doc/?id=7022512",
+                    "absent_pass": true,
+                    "remediation": "Upgrade microcode_ctl."
+                  }
+                ]
+              },
+              "ci_path": [
+                "packages",
+                "yum",
+                "microcode_ctl"
+              ],
+              "packages": {
+                "name": "microcode_ctl",
+                "provider": "*"
+              },
+              "check_type": "packages",
+              "selectList": [
+                "{\"status\":\"installed\",\"version\":\"2.1-22.el7\"}",
+                "{\"status\":\"installed\",\"version\":\"2.1-16.3.el7_3\"}",
+                "*"
+              ],
+              "description": "The microcode_ctl package should be upgraded above versions affected by Meltdown.",
+              "nodeGroupsOpen": true
             }
           ]
         }

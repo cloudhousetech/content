@@ -37,12 +37,12 @@ try {
     $service = Get-Service -Name 'upguardd'
 } catch {
     Write-Host $_
-    return $ERR_NO_UPGUARD_SERVICE
+    exit $ERR_NO_UPGUARD_SERVICE
 }
 
 if ($service -eq $null) {
     Write-Host 'Could not find upguardd service, exiting'
-    return $ERR_NO_UPGUARD_SERVICE
+    exit $ERR_NO_UPGUARD_SERVICE
 }
 
 if ($service.Status -ne 'Running') {
@@ -53,7 +53,7 @@ if ($service.Status -ne 'Running') {
     } catch {
         Write-Host 'The upguardd service did not start within 10 seconds, exiting'
         Write-Host $_
-        return $ERR_UPGUARD_SERVICE_STOPPED
+        exit $ERR_UPGUARD_SERVICE_STOPPED
     }
 }
 
@@ -63,7 +63,7 @@ $response = webRequest ($url + '/heartbeat')
 
 if ($response -eq $null -or $response.StatusCode -ne 200) {
     Write-Host "Could not contact $url. Status code: $($response.StatusCode)"
-    return $ERR_NO_HEARTBEAT
+    exit $ERR_NO_HEARTBEAT
 }
 
 Write-Host "Connected to $url successfully. Looking up node"
@@ -73,7 +73,7 @@ $response = webRequest ($url + "/api/v2/nodes/lookup.json?name=$nodeHostname")
 
 if ($response -eq $null -or $response.StatusCode -ne 200) {
     Write-Host "Could not find node via lookup using $nodeHostname"
-    return $ERR_NODE_NOT_FOUND
+    exit $ERR_NODE_NOT_FOUND
 }
 
 $nodeId = ($response.Content | ConvertFrom-Json)
@@ -86,14 +86,14 @@ $response =  webRequest ($url + "/api/v2/nodes/$nodeId/last_scan_status.json")
 
 if ($response -eq $null -or $response.StatusCode -ne 200) {
     Write-Host "Could not look up last scan status for node with ID $nodeId"
-    return $ERR_LAST_STATUS_NOT_FOUND
+    exit $ERR_LAST_STATUS_NOT_FOUND
 }
 
 $lastScanDate = [datetime]::ParseExact(($response.Content | ConvertFrom-Json).updated_at,'yyyy-MM-ddTHH:mm:ss.fffzzz', [Globalization.CultureInfo]::InvariantCulture)
 
 if ($lastScanDate -gt (Get-Date).AddHours(-$interval)) {
     Write-Host "Last successful scan less than $interval hours ago ($lastScanDate), exiting"
-    return $ERR_SUCCESS
+    exit $ERR_SUCCESS
 }
 
 Write-Host "Last scan was more than $interval hours ago, attempting to create scan task"
@@ -103,7 +103,7 @@ $response = webRequest ($url + "/api/v2/nodes/$nodeId/start_scan.json") 'Post'
 
 if ($response -eq $null -or $response.StatusCode -ne 201) {
     Write-Host "Failed to start scan for node with ID $nodeId"
-    return $ERR_COULD_NOT_START_SCAN
+    exit $ERR_COULD_NOT_START_SCAN
 }
 
 Write-Host "Started scan job for node with ID $nodeId"

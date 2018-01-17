@@ -57,7 +57,7 @@ if ($service.Status -ne 'Running') {
     }
 }
 
-Write-Host 'Service is running, confirming connectivity to UpGUard appliance'
+Write-Host 'Service is running, confirming connectivity to UpGuard appliance'
 
 $response = webRequest ($url + '/heartbeat')
 

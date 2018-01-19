@@ -1,10 +1,1 @@
-###########################################################################################################
-# Description: Displays policy failures. A policy can have many checks and a check can have many tests.   #
-# Event variables required: scan_id or job_id                                                             #
-# Website version required: >= v2.28.0                                                                    #
-###########################################################################################################
-
-{% for f in failures %}*{{ f[0] }}*
-{% for p in f[1] %}{{ p['name'] }} ({% for a in p['checks'] %}{{ a[1]['actual'] }}{% endfor %})
-{% endfor %}
-{% endfor %}
+{{ policy }} failed on {% if ran_on == 'environment' %}environment <{{ instance_hostname }}/reports#/policy/{{ policy_id }}?environment={{ environment_id }}|{{ environment }}>{% elsif ran_on == 'group' %}group <{{ instance_hostname }}/reports#/policy/{{ policy_id }}?node_group={{ group_id }}|{{ group }}>{% else %}node <{{ node_url }}|{{ node }}>{% endif %}

@@ -1,0 +1,17 @@
+{% if warnings.size > 0 %}
+    <br/>
+    Messages for tasks:
+    <br/>
+    {% for warning in warnings %}
+        {% if warning.messages.size > 0 %}
+            <br/>  
+            Node: {{ warning.source_name }}
+            <br/>
+            {% for msg in warning.messages %}
+                &nbsp;-&nbsp;{{ msg }}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+{% else %}
+    No warnings were generated during this job
+{% endif %}

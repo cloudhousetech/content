@@ -42,6 +42,7 @@ token = "{}{}".format("api_key", "secret_key")
 Now you have a connection and token you can use to make API calls. For example, if you want to get a list of all the nodes:
 
 ```
+from snippets import getNodes
 nodes = getNodes(browser=browser, token=token, details=True)
 print("\n\nNodes\n-----")
 for node in nodes:

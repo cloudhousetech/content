@@ -196,7 +196,7 @@ def getEvents(browser, token, view, since=None):
         done = True if len(new_events) < per_page else False
     return events
 
-def scan(browser, token, node=None, group=None, environment=None, wait=False, label="Scan from ansible"):
+def scan(browser, token, node=None, group=None, environment=None, wait=False, label=""):
     """
     Scan a node, group, or environment. If `wait` is True, then this function will wait for the scan job to complete before returning.
     """

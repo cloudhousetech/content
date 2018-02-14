@@ -1,3 +1,7 @@
+# Return all Windows shares along with the permissions for each share
+# Description: Share Permissions
+# Key Name: Name
+
 $all_shares = Get-WmiObject win32_LogicalShareSecuritySetting
 $shares = @()
 if($all_shares){

@@ -4,7 +4,7 @@ require 'erb'
 
 Puppet::Reports.register_report(:upguard) do
 
-  VERSION = "v1.5.3"
+  VERSION = "v1.5.4"
   CONFIG_FILE_NAME = "upguard.yaml"
   VERSION_TAG = "Added by #{File.basename(__FILE__)} #{VERSION}"
   desc "Create a node (if not present) and kick off a node scan in UpGuard if changes were made."
@@ -118,6 +118,8 @@ Puppet::Reports.register_report(:upguard) do
           unique_puppet_runs = puppet_runs.uniq {|r| r['node_ip_hostname']}
           unique_puppet_runs.each do |run|
             provision_node_in_upguard(run)
+            puts 'Sleeping so as not to hammer the appliance'
+            sleep(30 + Random.rand(30))
           end
         else
           Puppet.info("#{log_prefix} #{OFFLINE_MODE_FILENAME} present, but an array of puppet runs not found, removing")
@@ -126,6 +128,23 @@ Puppet::Reports.register_report(:upguard) do
         FileUtils.rm(OFFLINE_MODE_FILENAME)
       end
       # Make sure to process the current puppet run
+      # but do a (very rough) estimation of load on the appliance first, and calm down if necessary
+      job_list = upguard_job_lookup('PENDING')
+      if job_list.length > 3
+        hostname = "#{`hostname`}".strip
+        puppet_run['manifest_filename'] += ERB::Util.url_encode(" (offline mode, processed by #{hostname})")
+        store_puppet_run(OFFLINE_MODE_FILENAME, puppet_run)
+        Puppet.info("#{log_prefix} returning early, load on '#{APPLIANCE_URL}' is too high")
+      end
+
+      job_list = upguard_job_lookup('PROCESSING')
+      if job_list.length > 3
+        hostname = "#{`hostname`}".strip
+        puppet_run['manifest_filename'] += ERB::Util.url_encode(" (offline mode, processed by #{hostname})")
+        store_puppet_run(OFFLINE_MODE_FILENAME, puppet_run)
+        Puppet.info("#{log_prefix} returning early, load on '#{APPLIANCE_URL}' is too high")
+      end
+
       provision_node_in_upguard(puppet_run)
     end
   end
@@ -576,6 +595,14 @@ Puppet::Reports.register_report(:upguard) do
     JSON.load(response)
   end
   module_function :upguard_node_lookup
+
+  # Check how many jobs exist for a given status
+  def upguard_job_lookup(status)
+    job_query_response = `curl -X GET #{UPGUARD_CURL_FLAGS} #{APPLIANCE_URL}/api/v2/jobs.json?status=#{status}`
+    Puppet.info("#{log_prefix} job_query response=#{job_query_response}")
+    JSON.load(job_query_response)
+  end
+  module_function :upguard_job_lookup
 
   # We create UpGuard node groups to map to Puppet roles
   def upguard_node_group_create(node_group_name, node_group_rule)

@@ -2,13 +2,15 @@ require 'puppet'
 require 'json'
 require 'erb'
 
+# TODO: What should this wrapper be? Is it still getting called from within Puppet
 Puppet::Reports.process_offline(:upguard) do
 
-  VERSION = "v1.5.3"
+  VERSION = "v1.5.4"   # Keep in sync with upguard.rb
   CONFIG_FILE_NAME = "upguard.yaml"
   VERSION_TAG = "Added by #{File.basename(__FILE__)} #{VERSION}"
-  desc "Create a node (if not present) and kick off a node scan in UpGuard if changes were made."
+  desc "Bulk processing of puppet run nodes that occurred when UpGuard was offline."
 
+  # TODO: Can we grab this file like this? Related to first question of whether this is running in a Puppet context
   configfile = File.join([File.dirname(Puppet.settings[:config]), CONFIG_FILE_NAME])
   raise(Puppet::ParseError, "#{CONFIG_FILE_NAME} config file #{configfile} not readable") unless File.exist?(configfile)
   begin
@@ -39,7 +41,7 @@ Puppet::Reports.process_offline(:upguard) do
   UPGUARD_CURL_FLAGS       = "-s -k -H 'Authorization: Token token=\"#{API_KEY}\"' -H 'Accept: application/json' -H 'Content-Type: application/json'"
 
   def process
-    Puppet.info("#{log_prefix} starting report processor #{VERSION}")
+    Puppet.info("#{log_prefix} starting bulk processor #{VERSION}")
 
     self.status != nil ? status = self.status : status = 'undefined'
     Puppet.info("#{log_prefix} status=#{status}")
@@ -62,50 +64,9 @@ Puppet::Reports.process_offline(:upguard) do
       Puppet.info("#{log_prefix} returning early, ensure that missing config variables are present in #{CONFIG_FILE_NAME}")
       return
     end
-
-    ##########################################################################
-    # PUPPET DB (PDB) METHODS                                                #
-    ##########################################################################
-
-    # Create a hash to store the PDB info we need.
-    puppet_run = {}
-
-    # Get the node name
-    puppet_run['node_ip_hostname'] = pdb_get_hostname(self.host)
-    if puppet_run['node_ip_hostname'].include?(IGNORE_HOSTNAME_INCLUDE)
-      Puppet.info("#{log_prefix} returning early, '#{puppet_run['node_ip_hostname']}' includes '#{IGNORE_HOSTNAME_INCLUDE}'")
-      return
-    end
-
-    # We use this to tag node scans with the puppet "file(s)" that have caused the change
-    puppet_run['manifest_filename'] = pdb_manifest_files(self.logs)
-    # Get trusted facts from the Puppet DB once
-    facts = pdb_get_facts(puppet_run['node_ip_hostname'])
-    # Get the operating system
-    puppet_run['os'] = pdb_get_os(facts)
-    puppet_run['os_version'] = pdb_get_os_major_release(facts)
-    # Extract the role, environment and datacenter
-    puppet_run['node_group_name'] = pdb_get_role(facts)
-    puppet_run['environment_name'] = pdb_get_environment(facts)
-    puppet_run['datacenter_name'] = pdb_get_datacenter(facts)
-    # The format for environment names is datacenter_environment
-    puppet_run['environment_name'] = generate_environment_name(puppet_run['datacenter_name'], puppet_run['environment_name'])
-    # Is the node on baremetal, AWS or VMware?
-    puppet_run['virt_platform'] = pdb_get_virt_platform(facts)
-
-    ##########################################################################
-    # DRIVER METHODS                                                         #
-    ##########################################################################
-
+    
     # Check to see if we need to operate in offline mode as UpGuard may not always be available.
     if upguard_offline
-      Puppet.info("#{log_prefix} #########################################")
-      Puppet.info("#{log_prefix} #       OPERATING IN OFFLINE MODE       #")
-      Puppet.info("#{log_prefix} #########################################")
-      # Let the user know that this scan was done from offline mode.
-      hostname = "#{`hostname`}".strip
-      puppet_run['manifest_filename'] += ERB::Util.url_encode(" (offline mode, processed by #{hostname})")
-      store_puppet_run(OFFLINE_MODE_FILENAME, puppet_run)
       Puppet.info("#{log_prefix} returning early, '#{APPLIANCE_URL}' is offline")
       return
     else
@@ -126,8 +87,6 @@ Puppet::Reports.process_offline(:upguard) do
         # Finally, remove the state file
         FileUtils.rm(OFFLINE_MODE_FILENAME)
       end
-      # Make sure to process the current puppet run
-      provision_node_in_upguard(puppet_run)
     end
   end
 

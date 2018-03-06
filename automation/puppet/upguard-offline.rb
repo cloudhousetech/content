@@ -2,7 +2,7 @@ require 'puppet'
 require 'json'
 require 'erb'
 
-Puppet::Reports.register_report(:upguard) do
+Puppet::Reports.process_offline(:upguard) do
 
   VERSION = "v1.5.3"
   CONFIG_FILE_NAME = "upguard.yaml"
@@ -109,6 +109,24 @@ Puppet::Reports.register_report(:upguard) do
       Puppet.info("#{log_prefix} returning early, '#{APPLIANCE_URL}' is offline")
       return
     else
+      if File.exists?(OFFLINE_MODE_FILENAME)
+        # We're back online, but have a backlog of nodes to process.
+        Puppet.info("#{log_prefix} #{OFFLINE_MODE_FILENAME} present, working through puppet runs backlog")
+        file_state = File.read(OFFLINE_MODE_FILENAME)
+        puppet_runs = JSON.parse(file_state)
+        process_backlog
+        if !puppet_runs.nil? && puppet_runs.any?
+          unique_puppet_runs = puppet_runs.uniq {|r| r['node_ip_hostname']}
+          unique_puppet_runs.each do |run|
+            provision_node_in_upguard(run)
+          end
+        else
+          Puppet.info("#{log_prefix} #{OFFLINE_MODE_FILENAME} present, but an array of puppet runs not found, removing")
+        end
+        # Finally, remove the state file
+        FileUtils.rm(OFFLINE_MODE_FILENAME)
+      end
+      # Make sure to process the current puppet run
       provision_node_in_upguard(puppet_run)
     end
   end

@@ -1,6 +1,6 @@
 // NetApp Clustered Data-OnTap pluggable blueprint for UpGuard
 // Please contact UpGuard support for installation
-// 2018-02-28 v1.0
+// 2018-03-08 v1.1
 
 // Required permissions:
 // Service user must be able to run the following commands:
@@ -24,6 +24,38 @@
 //      set advanced; set -rows 0; set -showallfields true; set -showseparator "|||";
 
 function main(targetHost) {
+    class Serializer {
+        constructor(__debug) {
+            this.__debug = __debug;
+            this.funcs = [];
+            this.ret = [];
+        }
+    
+        debug(msg) {
+            if (this.__debug != null) {
+                this.__debug(msg);
+            }
+        }
+    
+        add(fn) {
+            this.funcs.push(fn);
+            this.ret.push(null);
+        }
+    
+        runi(i) {
+            if (i >= this.funcs.length) {
+                return this.ret;
+            }
+            this.debug("serializer, fn " + (i + 1) + " of " + this.funcs.length + "\n");
+            return this.funcs[i]().then((reti) => { this.ret[i] = reti; return this.runi(i + 1); });
+        }
+    
+        run() {
+            // runs all input promises, returning a results array
+            return this.runi(0);
+        }
+    }
+
     // convenience thing to get debug() function available
     let debug = targetHost.debug;
 
@@ -32,6 +64,9 @@ function main(targetHost) {
 
     // this is an array of promises for all of the things we want to run
     let parts = [];
+
+    // serialize tabular-output commands
+    let serializer = new Serializer();
 
     // function to extract stdout from the runCmd response
     let programOutputStdout = resp => {
@@ -74,7 +109,7 @@ function main(targetHost) {
 
     function extractTabularObjects(text, separator = '|||') {
         let objects = [];
-        if (text.length === 0) {
+        if (text === undefined || text.length === 0) {
             return objects;
         }
         let tabLines = text.split("\r\n");
@@ -361,9 +396,10 @@ function main(targetHost) {
         })
     );
 
+
     // security login role show (tabular)
-    parts.push(
-        targetHost.runCmd(tabularOutputSetup + "security login role show").then(resp => {
+    serializer.add(() => {
+        return targetHost.runCmd(tabularOutputSetup + "security login role show").then(resp => {
             let entries = extractTabularObjects(programOutputStdout(resp));
             let returnObj = {};
 
@@ -388,11 +424,11 @@ function main(targetHost) {
             }
             return { 'roles' : returnObj };
         })
-    );
+    });
 
     // df (tabular)
-    parts.push(
-        targetHost.runCmd(tabularOutputSetup + "df").then(resp => {
+    serializer.add(() => {
+        return targetHost.runCmd(tabularOutputSetup + "df").then(resp => {
             let entries = extractTabularObjects(programOutputStdout(resp));
             let returnObj = {};
 
@@ -409,34 +445,35 @@ function main(targetHost) {
 
             return { 'df' : returnObj };
         })
-    );
+    });
 
     // storage disk show (tabular)
-    parts.push(
-        targetHost.runCmd(tabularOutputSetup + "storage disk show").then(resp => {
+    serializer.add(() => {
+        return targetHost.runCmd(tabularOutputSetup + "storage disk show").then(resp => {
             let entries = extractTabularObjects(programOutputStdout(resp));
-            return basicTabularSection(entries, "Disks", "Owner", "Disk Name");
+            return basicTabularSection(entries, "disks", "Owner", "Disk Name");
         })
-    );
+    });
 
     // dns show (tabular)
-    parts.push(
-        targetHost.runCmd(tabularOutputSetup + "dns show").then(resp => {
+    serializer.add(() => {
+        return targetHost.runCmd(tabularOutputSetup + "dns show").then(resp => {
             let entries = extractTabularObjects(programOutputStdout(resp));
-            return basicTabularSection(entries, "DNS", "Vserver", "Domains");
+            return basicTabularSection(entries, "dns", "Vserver", "Domains");
         })
-    );
+    });
 
     // network routing-groups route show (tabular)
-    parts.push(
-        targetHost.runCmd(tabularOutputSetup + "network routing-groups route show").then(resp => {
+    serializer.add(() => {
+        return targetHost.runCmd(tabularOutputSetup + "network routing-groups route show").then(resp => {
             let entries = extractTabularObjects(programOutputStdout(resp));
-            return basicTabularSection(entries, "Routes", "Vserver Name", "Routing Group");
+            return basicTabularSection(entries, "routes", "Vserver Name", "Routing Group");
         })
-    );
+    });
 
     // environment chassis (tabular)
-    parts.push(
+    // DOESN'T RESPOND TO TABULAR FORMATTING COMMANDS
+    /* parts.push(
         targetHost.runCmd(tabularOutputSetup + "system node run -node local -command environment chassis all").then(resp => {
             let entries = extractTabularObjects(programOutputStdout(resp));
             let returnObj = {};
@@ -445,32 +482,37 @@ function main(targetHost) {
                 returnObj[entry['Sensor Name']] = entry;
             }
 
-            return { 'Chassis': {'Sensors': returnObj }};
+            return { 'chassis': {'Sensors': returnObj }};
         })
-    );
+    ); */
 
     // license (tabular)
-    parts.push(
-        targetHost.runCmd(tabularOutputSetup + "system license show").then(resp => {
+    serializer.add(() => {
+        return targetHost.runCmd(tabularOutputSetup + "system license show").then(resp => {
             let output = programOutputStdout(resp);
 
             if (output.trim().includes('Error: show failed:')) {
-                return { 'License': {'Netapp': { 'Error': { 'value': output.trim()}}}};
+                return { 'license': {'Netapp': { 'Error': { 'value': output.trim()}}}};
             }
 
             let returnObj = {};
             let entries = extractTabularObjects(output);
-            return basicTabularSection(entries, 'License', 'Owner', 'Package');
+            return basicTabularSection(entries, 'license', 'Owner', 'Package');
         })
-    );
+    });
 
     // options (tabular)
-    parts.push(
-        targetHost.runCmd(tabularOutputSetup + "options").then(resp => {
+    serializer.add(() => {
+        return targetHost.runCmd(tabularOutputSetup + "options").then(resp => {
             let entries = extractTabularObjects(programOutputStdout(resp));
-            return basicTabularSection(entries, 'Options', 'Vserver', 'Option Name');
+            return basicTabularSection(entries, 'options', 'Vserver', 'Option Name');
         })
-    );
+    });
+
+    // trigger the serializer to run
+    parts.push(serializer.run().then(partial_scans => {
+        return targetHost.mergeAll(partial_scans);
+    }));
 
     // once all of the constituent parts of
     // the blueprint have all returned

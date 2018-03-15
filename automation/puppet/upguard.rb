@@ -4,7 +4,7 @@ require 'erb'
 
 Puppet::Reports.register_report(:upguard) do
 
-  VERSION = "v1.5.4"   # Keep in sync with upguard-offline.rb
+  VERSION = "v1.5.6"
   CONFIG_FILE_NAME = "upguard.yaml"
   VERSION_TAG = "Added by #{File.basename(__FILE__)} #{VERSION}"
   desc "Create a node (if not present) and kick off a node scan in UpGuard if changes were made."
@@ -13,7 +13,7 @@ Puppet::Reports.register_report(:upguard) do
   raise(Puppet::ParseError, "#{CONFIG_FILE_NAME} config file #{configfile} not readable") unless File.exist?(configfile)
   begin
     config = YAML.load_file(configfile)
-  rescue TypeError => e
+  rescue TypeError
     raise(Puppet::ParserError, "#{CONFIG_FILE_NAME} file is invalid")
   end
 
@@ -36,7 +36,8 @@ Puppet::Reports.register_report(:upguard) do
   SLEEP_BEFORE_SCAN        = config[:sleep_before_scan]
   IGNORE_HOSTNAME_INCLUDE  = config[:ignore_hostname_include]
   OFFLINE_MODE_FILENAME    = config[:offline_mode_filename]
-  UPGUARD_CURL_FLAGS       = "-s -k -H 'Authorization: Token token=\"#{API_KEY}\"' -H 'Accept: application/json' -H 'Content-Type: application/json'"
+  HTTP_TIMEOUTS            = config[:http_timeouts] || 20
+  UPGUARD_CURL_FLAGS       = "--connect-timeout #{HTTP_TIMEOUTS} --max-time #{HTTP_TIMEOUTS} -s -k -H 'Authorization: Token token=\"#{API_KEY}\"' -H 'Accept: application/json' -H 'Content-Type: application/json'"
 
   def process
     Puppet.info("#{log_prefix} starting report processor #{VERSION}")

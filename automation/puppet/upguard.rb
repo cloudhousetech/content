@@ -4,7 +4,7 @@ require 'erb'
 
 Puppet::Reports.register_report(:upguard) do
 
-  VERSION = "v1.5.4"
+  VERSION = "v1.5.6"
   CONFIG_FILE_NAME = "upguard.yaml"
   VERSION_TAG = "Added by #{File.basename(__FILE__)} #{VERSION}"
   desc "Create a node (if not present) and kick off a node scan in UpGuard if changes were made."
@@ -13,7 +13,7 @@ Puppet::Reports.register_report(:upguard) do
   raise(Puppet::ParseError, "#{CONFIG_FILE_NAME} config file #{configfile} not readable") unless File.exist?(configfile)
   begin
     config = YAML.load_file(configfile)
-  rescue TypeError => e
+  rescue TypeError
     raise(Puppet::ParserError, "#{CONFIG_FILE_NAME} file is invalid")
   end
 
@@ -36,7 +36,8 @@ Puppet::Reports.register_report(:upguard) do
   SLEEP_BEFORE_SCAN        = config[:sleep_before_scan]
   IGNORE_HOSTNAME_INCLUDE  = config[:ignore_hostname_include]
   OFFLINE_MODE_FILENAME    = config[:offline_mode_filename]
-  UPGUARD_CURL_FLAGS       = "-s -k -H 'Authorization: Token token=\"#{API_KEY}\"' -H 'Accept: application/json' -H 'Content-Type: application/json'"
+  HTTP_TIMEOUTS            = config[:http_timeouts] || 20
+  UPGUARD_CURL_FLAGS       = "--connect-timeout #{HTTP_TIMEOUTS} --max-time #{HTTP_TIMEOUTS} -s -k -H 'Authorization: Token token=\"#{API_KEY}\"' -H 'Accept: application/json' -H 'Content-Type: application/json'"
 
   def process
     Puppet.info("#{log_prefix} starting report processor #{VERSION}")
@@ -219,20 +220,21 @@ Puppet::Reports.register_report(:upguard) do
   end
 
   def upguard_offline
-    offline_status = true
+    return false
+#    offline_status = true
     # Perform an authenticated request to UpGuard. This additionally proves that ones auth credentials are correct.
-    response = `curl -X GET -m 20 #{UPGUARD_CURL_FLAGS} #{APPLIANCE_URL}/api/v2/users`
-    Puppet.info("#{log_prefix} user_lookup response=#{response}")
-    if !response.nil? && response.include?("email")
-      offline_status = false
-    end
-    offline_status
+#    response = `curl -X GET #{UPGUARD_CURL_FLAGS} #{APPLIANCE_URL}/api/v2/users`
+#    Puppet.info("#{log_prefix} user_lookup response=#{response}")
+#    if !response.nil? && response.include?("email")
+#      offline_status = false
+#    end
+#    offline_status
   end
 
   def generate_environment_name(datacenter_name, environment_name)
     if (!datacenter_name.nil? && !datacenter_name.empty?) && (!environment_name.nil? && !environment_name.empty?)
       datacenter_environment_name = "#{datacenter_name}_#{environment_name}"
-      Puppet.err("#{log_prefix} datacenter_environment_name=#{datacenter_environment_name}")
+      Puppet.info("#{log_prefix} datacenter_environment_name=#{datacenter_environment_name}")
       datacenter_environment_name
     else
       Puppet.err("#{log_prefix} either pp_datacenter (#{datacenter_name}) or pp_environment (#{environment_name}) is nil or empty")

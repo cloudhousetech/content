@@ -11,6 +11,8 @@
 
 # To use:
 
+Ensure that the `pathlib2` module is installed: `pip install -r requirements.txt` 
+
 `convert_scan` is the function that does all the work
 
 `example_of_how_to_run` shows how you can read a file and output a fixed json format.

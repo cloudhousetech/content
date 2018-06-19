@@ -223,7 +223,7 @@ def example_of_how_to_run():
     output_json = json.dumps(fixed)
     print output_json
 
-example_of_how_to_run()
+# example_of_how_to_run()
 
 # ----------------------------------------
 # sandbox area for quick unit testing of functions

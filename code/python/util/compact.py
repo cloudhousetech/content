@@ -48,6 +48,8 @@ def find_good_name(o):
         return "VpcId"
     elif "Key" in o and "Value" in o:
         return "Value"
+    elif len(o) == 1:
+        return o.keys()[0]
     else:
         print "find for me a nice value in these values I can use as a name"
         print o
@@ -73,7 +75,10 @@ def compact(scan):
             if is_dict(elem):
                 name_key = find_good_name(elem)
                 name = elem[name_key]
-                ret[name] = compact(elem)
+                if is_dict(name):
+                    ret[name_key] = compact(elem)
+                else:
+                    ret[name] = compact(elem)
             else:
                 raise "don't know how to translate a list of non-dicts yet, please teach me"
     elif is_value(scan):
@@ -208,9 +213,11 @@ def example_of_how_to_run():
     filename = "input.json"
     content = Path(filename).read_text()
     obj = json.loads(content)
-    fixed_json = convert_scan(content)
-    print fixed_json
+    fixed = convert_scan(obj)
+    output_json = json.dumps(fixed)
+    print output_json
 
+example_of_how_to_run()
 
 # ----------------------------------------
 # sandbox area for quick unit testing of functions

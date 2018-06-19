@@ -228,38 +228,42 @@ def assertEqual(expected, actual):
         print expected
         print "    Actual:"
         print actual
-
+        
 # test flatten
-assertEqual(
-    {"a b": "banana", "a c": "carrot"},
-    flatten({"a":{"b":"banana", "c":"carrot"}})
-)
-assertEqual(
-    {"a b c": "carrot", "a b d": "dog"},
-    flatten({"a":{"b":{"c":"carrot", "d":"dog"}}})
-)
-assertEqual(
-    {"a b c d": "dog", "a b c e": "egg"},
-    flatten({"a":{"b":{"c":{"d":"dog","e":"egg"}}}})
-)
+def runTests():
+    assertEqual(
+        {"a b": "banana", "a c": "carrot"},
+        flatten({"a":{"b":"banana", "c":"carrot"}})
+    )
+    assertEqual(
+        {"a b c": "carrot", "a b d": "dog"},
+        flatten({"a":{"b":{"c":"carrot", "d":"dog"}}})
+    )
+    assertEqual(
+        {"a b c d": "dog", "a b c e": "egg"},
+        flatten({"a":{"b":{"c":{"d":"dog","e":"egg"}}}})
+    )
+    
+    proper_input = {"env vars": {"linux": {"PATH": {"name":"PATH", "value": "/bin" } } } }
+    output = convert_scan(proper_input)
+    assertEqual(
+        True,
+        validate_proper_node_scan_struct_depth(output)
+    )
+    
+    input_with_arrays = {"subnets": [{"name":"north", "range":"192.168.1.1"}, {"name": "south", "range": "1.1.1.1"}]}
+    output = convert_scan(input_with_arrays)
+    assertEqual(
+        True,
+        validate_proper_node_scan_struct_depth(output)
+    )
+    
+    input_with_arrays_in_arrays = {"subnets": [{"name":"north", "range":"192.168.1.1", "tags": [{"name":"resident", "value":"santa"}]}, {"name": "south", "range": "1.1.1.1", "tags":[{"name":"resident", "value": "penguin"}]}]}
+    output = convert_scan(input_with_arrays_in_arrays)
+    assertEqual(
+        True,
+        validate_proper_node_scan_struct_depth(output)
+    )
 
-proper_input = {"env vars": {"linux": {"PATH": {"name":"PATH", "value": "/bin" } } } }
-output = convert_scan(proper_input)
-assertEqual(
-    True,
-    validate_proper_node_scan_struct_depth(output)
-)
-
-input_with_arrays = {"subnets": [{"name":"north", "range":"192.168.1.1"}, {"name": "south", "range": "1.1.1.1"}]}
-output = convert_scan(input_with_arrays)
-assertEqual(
-    True,
-    validate_proper_node_scan_struct_depth(output)
-)
-
-input_with_arrays_in_arrays = {"subnets": [{"name":"north", "range":"192.168.1.1", "tags": [{"name":"resident", "value":"santa"}]}, {"name": "south", "range": "1.1.1.1", "tags":[{"name":"resident", "value": "penguin"}]}]}
-output = convert_scan(input_with_arrays_in_arrays)
-assertEqual(
-    True,
-    validate_proper_node_scan_struct_depth(output)
-)
+    
+# runTests()

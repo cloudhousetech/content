@@ -48,16 +48,22 @@ def find_good_name(o):
         return "VpcId"
     elif "Key" in o and "Value" in o:
         return "Value"
+    elif "path" in o:
+        return "path"
+    elif "counterSpecifier" in o:
+        return "counterSpecifier"
+    elif len(o) == 1:
+        return o.keys()[0]
     else:
         print "find for me a nice value in these values I can use as a name"
-        print o
+        print o.keys()
         raise "Not Implemented"
-    
+
 
 # tries to expand out arrays into dictionaries
 def compact(scan):
     ret = {}
-    
+
     if is_dict(scan):
         # good
         for key in scan:
@@ -66,14 +72,17 @@ def compact(scan):
                 ret[key] = val
             else:
                 ret[key] = compact(val)
-            
+
     elif is_list(scan):
         # need to turn this into a dict
         for elem in scan:
             if is_dict(elem):
                 name_key = find_good_name(elem)
                 name = elem[name_key]
-                ret[name] = compact(elem)
+                if is_dict(name):
+                    ret[name_key] = compact(elem)
+                else:
+                    ret[name] = compact(elem)
             else:
                 raise "don't know how to translate a list of non-dicts yet, please teach me"
     elif is_value(scan):
@@ -83,7 +92,7 @@ def compact(scan):
         print "scan:"
         print scan
         raise "Not Implemented"
-        
+
     return ret
 
 # takes in a dict<string, dict<string, ....>> and tries to make it just a dict<string, string>
@@ -93,7 +102,7 @@ def flatten(obj):
     return obj
 
 def is_flat(obj):
-    if is_string(obj):
+    if is_value(obj):
         return True
     elif is_dict(obj):
         all_vals_are_strings = True
@@ -103,8 +112,10 @@ def is_flat(obj):
                 all_vals_are_strings = False
         return all_vals_are_strings
     else:
+        print "don't know how to is_flat this type"
+        print type(obj)
         raise "Not Implemented"
-    
+
 
 def flatten_1_layer(obj):
     if is_string(obj):
@@ -133,7 +144,7 @@ def make_3_deep(scan):
             continue
         elif is_dict(v1) == False:
             raise "Not Supported"
-        
+
         for k2 in v1.keys():
             v2 = v1[k2]
             if is_value(v2):
@@ -141,7 +152,7 @@ def make_3_deep(scan):
                 continue
             elif is_dict(v2) == False:
                 raise "Not Supported"
-            
+
             for k3 in v2.keys():
                 v3 = v2[k3]
                 if is_value(v3):
@@ -149,7 +160,7 @@ def make_3_deep(scan):
                     continue
                 elif is_dict(v3) == False:
                     raise "Not Supported"
-                
+
                 all_of_v4s_are_values = True
                 for k4 in v3.keys():
                     v4 = v3[k4]
@@ -208,9 +219,11 @@ def example_of_how_to_run():
     filename = "input.json"
     content = Path(filename).read_text()
     obj = json.loads(content)
-    fixed_json = convert_scan(content)
-    print fixed_json
+    fixed = convert_scan(obj)
+    output_json = json.dumps(fixed)
+    print output_json
 
+# example_of_how_to_run()
 
 # ----------------------------------------
 # sandbox area for quick unit testing of functions
@@ -225,36 +238,40 @@ def assertEqual(expected, actual):
         print actual
 
 # test flatten
-assertEqual(
-    {"a b": "banana", "a c": "carrot"},
-    flatten({"a":{"b":"banana", "c":"carrot"}})
-)
-assertEqual(
-    {"a b c": "carrot", "a b d": "dog"},
-    flatten({"a":{"b":{"c":"carrot", "d":"dog"}}})
-)
-assertEqual(
-    {"a b c d": "dog", "a b c e": "egg"},
-    flatten({"a":{"b":{"c":{"d":"dog","e":"egg"}}}})
-)
+def runTests():
+    assertEqual(
+        {"a b": "banana", "a c": "carrot"},
+        flatten({"a":{"b":"banana", "c":"carrot"}})
+    )
+    assertEqual(
+        {"a b c": "carrot", "a b d": "dog"},
+        flatten({"a":{"b":{"c":"carrot", "d":"dog"}}})
+    )
+    assertEqual(
+        {"a b c d": "dog", "a b c e": "egg"},
+        flatten({"a":{"b":{"c":{"d":"dog","e":"egg"}}}})
+    )
 
-proper_input = {"env vars": {"linux": {"PATH": {"name":"PATH", "value": "/bin" } } } }
-output = convert_scan(proper_input)
-assertEqual(
-    True,
-    validate_proper_node_scan_struct_depth(output)
-)
+    proper_input = {"env vars": {"linux": {"PATH": {"name":"PATH", "value": "/bin" } } } }
+    output = convert_scan(proper_input)
+    assertEqual(
+        True,
+        validate_proper_node_scan_struct_depth(output)
+    )
 
-input_with_arrays = {"subnets": [{"name":"north", "range":"192.168.1.1"}, {"name": "south", "range": "1.1.1.1"}]}
-output = convert_scan(input_with_arrays)
-assertEqual(
-    True,
-    validate_proper_node_scan_struct_depth(output)
-)
+    input_with_arrays = {"subnets": [{"name":"north", "range":"192.168.1.1"}, {"name": "south", "range": "1.1.1.1"}]}
+    output = convert_scan(input_with_arrays)
+    assertEqual(
+        True,
+        validate_proper_node_scan_struct_depth(output)
+    )
 
-input_with_arrays_in_arrays = {"subnets": [{"name":"north", "range":"192.168.1.1", "tags": [{"name":"resident", "value":"santa"}]}, {"name": "south", "range": "1.1.1.1", "tags":[{"name":"resident", "value": "penguin"}]}]}
-output = convert_scan(input_with_arrays_in_arrays)
-assertEqual(
-    True,
-    validate_proper_node_scan_struct_depth(output)
-)
+    input_with_arrays_in_arrays = {"subnets": [{"name":"north", "range":"192.168.1.1", "tags": [{"name":"resident", "value":"santa"}]}, {"name": "south", "range": "1.1.1.1", "tags":[{"name":"resident", "value": "penguin"}]}]}
+    output = convert_scan(input_with_arrays_in_arrays)
+    assertEqual(
+        True,
+        validate_proper_node_scan_struct_depth(output)
+    )
+
+
+# runTests()

@@ -1,6 +1,6 @@
 ﻿Param(    
     [switch]$disableSSL,
-    [switch]$disableDebugOutput,
+    [switch]$debug,
     [switch]$printJSON,
     [string]$status,
     [string]$lastScanStatus
@@ -29,7 +29,7 @@ $json.MaxJsonLength = 104857600 #100mb as bytes, default is 2mb
 # Optional Script Flags:
 #   - returnJSON: Returns results in JSON format
 #   - disableSSLCert: Disables SSL Certificate check for the API call.
-#   - disableDebugOutput: Disables debugging output.
+#   - debug: enables debugging output.
 #
 # Example Usage:
 #   - List all nodes without requiring an SSLCertificate check:
@@ -39,7 +39,7 @@ $json.MaxJsonLength = 104857600 #100mb as bytes, default is 2mb
 
 function Write-OptionalDebug {
     param([string]$output)
-    if (-Not $disableDebugOutput) {
+    if ($debug) {
         Write-Host $output
     }
 }

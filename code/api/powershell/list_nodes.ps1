@@ -114,7 +114,7 @@ function Invoke-UpGuardApi {
     Write-OptionalDebug "Attempting to invoke $uri with $Method"
 
     try {
-        $req = Invoke-WebRequest -Uri $uri -Method $Method -Headers $headers -UseBasicParsing
+        $req = Invoke-RestMethod -Uri $uri -Method $Method -Headers $headers #-UseBasicParsing
     } catch {
         $result = $_.Exception.Response.GetResponseStream()
         $reader = New-Object System.IO.StreamReader($result)
@@ -125,9 +125,7 @@ function Invoke-UpGuardApi {
         Write-Output "Got Status Code $($_.Exception.Response.StatusCode): $($respJson."error")"
         break
     }
-    $content = $req.Content
-    $nodes   = $json.Deserialize($content, [System.Object])
-    $nodes
+    $req
 }
 
 function Start-Main {
@@ -162,40 +160,16 @@ function Start-Main {
         $nodes = Invoke-UpGuardApi -RequestPath "api/v2/nodes.json?page=$($page)&per_page=$($perPage)$($statusString)$($lastScanString)"
         $nodeCount = $nodes.Length
         ForEach($node in $nodes) {
-            $nodeArr += @{"name" = $node."name";
-            "id"                         = $node."id";
-            "environment_id"             = $node."environment_id";
-            "node_type"                  = $node."node_type";
-            "mac_address"                = $node."mac_address";
-            "ip_address"                 = $node."ip_address";
-            "short_description"          = $node."short_description";
-            "operating_system_family_id" = $node."operating_system_family_id";
-            "operating_system_id"        = $node."operating_system_id";
-            "external_id"                = $node."external_id";
-            "online"                     = $node."online"
-            "url"                        = $node."url"}
+            $nodeArr += $node
         }
         $page++
     }
 
     if($printJSON) {
-        $json.Serialize($nodeArr)
+        $nodeArr | ConvertTo-Json
     } else {
         Write-OptionalDebug "Retrieved $($nodeArr.count) nodes`n"
-        ForEach($node in $nodeArr) {        
-            Write-Host "Name:              $($node["name"])"
-            Write-Host "Node Id:           $($node["id"])"
-            Write-Host "Environment Id:    $($node["environment_id"])"
-            Write-Host "Node Type:         $($node["node_type"])"
-            Write-Host "Mac Address:       $($node["mac_address"])"
-            Write-Host "IP Address:        $($node["ip_address"])"
-            Write-Host "Short Description: $($node["short_description"])"
-            Write-Host "OS Family Id:      $($node["operating_system_family_id"])"
-            Write-Host "OS ID:             $($node["operating_system_id"])"
-            Write-Host "External Id:       $($node["external_id"])"
-            Write-Host "Online:            $($node["online"])"
-            Write-Host "Url:               $($node["url"])`n"
-        }
+        Write-Output $nodeArr
     }
 }
 

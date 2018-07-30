@@ -6,9 +6,20 @@ import time
 
 jobStatus = {"Failure": -1, "Pending": 0, "Processing": 1, "Success": 2, "Failure": 3}
 
+def getUrl(url):
+    """
+    Return a URL from a hostname
+    """
+    if "https" in url: return url
+    if "http" in url:
+        # Remove http and add https
+        return "https://{}".format(re.sub('http?:\/\/', '', url))
+    return "https://{}".format(url)
+
 def getSession(api_key, secret_key, insecure=False):
     session = requests.Session()
     session.headers.update({"Authorization": "Token token=\"{}{}\"".format(api_key, secret_key)})
+    session.headers.update({"Content-Type": "application/json"})
     if insecure:
         requests.packages.urllib3.disable_warnings()
     return session
@@ -134,9 +145,8 @@ def addNode(browser, token, obj):
     """
     Create a new node from the given node object (a dictionary)
     """
-    raise NotImplementedError
-    status, data = APICall(browser, token, "POST", "/api/v2/nodes.json", body=json.dumps({"node": obj}))
-    return json.loads(data)
+    response = session.post("{}/api/v2/nodes.json".format(url), params={}, data=json.dumps({"node": node}), verify=verify).json()
+    return response
 
 def addNodeGroup(browser, token, obj):
     """

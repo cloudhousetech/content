@@ -141,7 +141,7 @@ def addPolicy(browser, token, name):
     new_policy = json.loads(data)
     return new_policy
 
-def addNode(browser, token, obj):
+def addNode(session, url, node, verify=True):
     """
     Create a new node from the given node object (a dictionary)
     """

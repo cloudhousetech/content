@@ -66,3 +66,26 @@ print("Total Events: {}".format(len(events)))
 # Scan
 result = scan(session=session, url=args.target_url, node="dev", wait=True)
 print("Node scanned, result:\n{}".format(str(result)))
+
+# Add Node
+# Commented fields are optional
+# Description for each field can be found at the commented URL
+node = {
+    "name": "",
+    # "mac_address": "",
+    "node_type": "SV", # From https://support.upguard.com/upguard/nodes-api-v2.html#node-types
+    "environment_id": 0, # https://support.upguard.com/upguard/bulk-add-nodes.html#environment-id
+    "operating_system_family_id": 0, # https://support.upguard.com/upguard/bulk-add-nodes.html#operating-system-family-id
+    "operating_system_id": 0, # https://support.upguard.com/upguard/bulk-add-nodes.html#operating-system-id
+    "medium_type": 0, # From https://support.upguard.com/upguard/nodes-api-v2.html#medium-types
+    # "medium_username": "", # https://support.upguard.com/upguard/bulk-add-nodes.html#medium-username
+    "medium_hostname": "", # https://support.upguard.com/upguard/bulk-add-nodes.html#medium-hostname
+    # "medium_port": "", # https://support.upguard.com/upguard/bulk-add-nodes.html#medium-port
+    # "medium_password": "", # https://support.upguard.com/upguard/bulk-add-nodes.html#medium-password
+    # "external_id": "", # https://support.upguard.com/upguard/bulk-add-nodes.html#external-id
+    "connection_manager_group_id": 0, # https://support.upguard.com/upguard/bulk-add-nodes.html#connection-manager-group-id
+    # "short_description":  # https://support.upguard.com/upguard/bulk-add-nodes.html#short-description
+}
+print("\n\nAdding node '{}'...".format(node["name"]))
+result = addNode(session=session, url=getUrl(args.target_url), node=node, verify=(not args.insecure))
+print(result)

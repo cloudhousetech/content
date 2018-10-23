@@ -1,0 +1,187 @@
+{
+    "policy": {
+	"name": "aws_iam_best_practice",
+	"short_description": "AWS IAM Password Policy and Permissions Best Practice",
+	"description": "Validate password policy and settings for your AWS account",
+	"settings": {
+	    "tests": {
+		"output_format": null
+	    }
+	},
+	"operating_system_family_id": 28,
+	"operating_system_id": 2807,
+	"type": null
+    },
+    "data": [{
+	"PasswordPolicy":[
+	    {
+		"check_type": "passwordpolicy",
+		"checks":{
+		    "allow users to change password":[{
+			"check":"equals",
+			"expected":"true"
+		    }]
+		},
+		"ci_path":["PasswordPolicy", "PasswordPolicy", "policy"],
+		"name": "All users should be allowed to change their own passwords"
+	    },
+	    {
+		"check_type": "passwordpolicy",
+		"checks":{			 	    
+		    "min password length":[{
+			"check":"conditional",
+			"cond":[{ "op": ">=", "val": "8" }]
+		    }]
+		},
+		"ci_path":["PasswordPolicy", "PasswordPolicy", "policy"],
+		"name": "All users should have a minimum password length of 8 characters"
+	    },
+	    {
+		"check_type": "passwordpolicy",
+		"checks":{
+		    "max password age":[{
+			"check":"conditional",
+			"cond":[{
+			    "op": "<=",
+			    "val": "90"
+			}]
+		    }]
+		},
+		"ci_path":["PasswordPolicy", "PasswordPolicy", "policy"],
+		"name": "All users should have their passwords expire at most every 90 days"
+	    },
+	    {
+		"check_type": "passwordpolicy",
+		"checks":{
+		    "number of previous passwords prevented from reusing":[{
+			"check":"conditional",
+			"cond":[{
+			    "op": ">=",
+			    "val": "10"
+			}]
+		    }]
+		},
+		"ci_path": ["PasswordPolicy", "PasswordPolicy", "policy"],
+		"name": "All users should not be able to use at least their last 10 cycled passwords"
+	    },
+	    {
+		"check_type": "passwordpolicy",
+		"checks":{
+		    "passwords require lowercase characters":[{
+			"check":"equals",
+			"expected":"true"
+		    }]
+		},
+		"ci_path": ["PasswordPolicy", "PasswordPolicy", "policy"],
+		"name": "All passwords should contain at least 1 lowercase character"
+	    },
+	    {
+		"check_type": "passwordpolicy",
+		"checks":{
+		    "passwords require numbers":[{
+			"check":"equals",
+			"expected":"true"
+		    }]
+		},
+		"ci_path": ["PasswordPolicy", "PasswordPolicy", "policy"],
+		"name": "All passwords should contain at least 1 numeric character"
+	    },
+	    {
+		"check_type": "passwordpolicy",
+		"checks":{
+		    "passwords require symbols":[{
+			"check":"equals",
+			"expected":"true"
+		    }]
+		},
+		"ci_path": ["PasswordPolicy", "PasswordPolicy", "policy"],
+		"name": "All passwords should contain at least 1 symbolic character"
+	    },
+	    {
+		"check_type": "passwordpolicy",
+		"checks":{
+		    "passwords require uppercase characters":[{
+			"check":"equals",
+			"expected":"true"
+		    }]
+		},
+		"ci_path": ["PasswordPolicy", "PasswordPolicy", "policy"],
+		"name": "All passwords should contain at least 1 uppercase character"
+	    }
+	],
+	"User Access Keys":[
+	    {
+		"check_type": "useraccesskeys",
+		"checks": {
+		    "last used date":[{
+			"check":"time_comparison",
+			"cond":[{ "op": ">", "val": "6 months ago"}]
+		    }],
+		    "ci_path":["UserAccessKeys", "user_access_keys", "*"],
+		    "name": "User Access Keys that have not been used in the last 6 months should be removed"
+		}
+	    }
+	],
+	"Users":[
+	    {
+		"check_type":"users",
+		"checks": {
+		    "mfa enabled": [{
+			"check": "equals",
+			"expected": "true"
+		    }]
+		},
+		"ci_path": ["users", "*","*" ],
+		"name": "All users should have MFA enabled",
+		"users": {
+		    "name": "*"
+		}
+	    },
+	    {
+		"check_type":"users",
+		"checks":{
+		    "mfa device count": [{
+			"check":"equals",
+			"expected":"1"
+		    }]
+		},
+		"ci_path": ["users", "*", "*"],
+		"name": "All users should have exactly 1 MFA device",
+		"users": {
+		    "name": "*"
+		}
+	    },
+	    {
+		"check_type":"users",
+		"checks":{
+		    "inline policy count":[{
+			"check":"equals",
+			"expected":"0"
+		    }]
+		},
+		"ci_path": ["users", "*", "*"],
+		"name": "All users should not have any inline policies directly assigned to them.",
+		"background": "Permissions via policies should be assigned to a role or group instead and the user attached to that role or group.",
+		"users": {
+		    "name": "*"
+		}
+	    },
+	    {
+		"check_type":"users",
+		"checks":{
+		    "managed policy count":[{
+			"check":"equals",
+			"expected":"0"
+		    }]
+		},
+		"ci_path": ["users", "*", "*"],
+		"name": "All users should not have any managed policies directly assigned to them.",
+		"background": "Permissions via policies should be assigned to a role or group instead and the user attached to that role or group.",
+		"users": {
+		    "name": "*"
+		}
+	    }
+	]
+    }],
+    "scan_options": {}
+}

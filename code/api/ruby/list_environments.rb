@@ -8,8 +8,8 @@ require 'optparse'
 #   - Minimum requirements: httparty gem, Ruby 2.0.0
 # 
 # API Flags:
-#   --env_id: Lists an environment's nodes given it's numeric environment ID
-#   --env_name: Lists an environment's environment numeric ID given it's name
+#   --env_id: Lists an environment's nodes given its numeric environment ID
+#   --env_name: Lists an environment's environment numeric ID given its name
 #
 # Optional Flags:
 #   --print_json: Prints API results in JSON format
@@ -102,9 +102,9 @@ else
 
   # Print Results
   if options[:env_id] != nil
-    write_optional_debug("Retreived #{environments.count} nodes from environment #{options[:env_id]}")
+    write_optional_debug("Retrieved #{environments.count} nodes from environment #{options[:env_id]}")
   else 
-    write_optional_debug("Retreived #{environments.count} environments")
+    write_optional_debug("Retrieved #{environments.count} environments")
   end
   if options[:print_json]
     puts JSON.pretty_generate(environments)

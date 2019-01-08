@@ -117,7 +117,7 @@ end
 if options[:node_group_id] != nil
   write_optional_debug("Retrieved #{node_groups.count} nodes from node group #{options[:node_group_id]}")
 else
-  write_optional_debug("Retreived #{node_groups.count} node groups")
+  write_optional_debug("Retrieved #{node_groups.count} node groups")
 end
 
 if options[:print_json]

@@ -46,7 +46,7 @@ else
     ForEach ($node in $nodes)
     {
         # Need to perform an additional lookup to get detailed node information.
-        $node_details = Invoke-WebRequest -Uri "https://$($Url)/api/v2/nodes/$($node.id).json -Headers $headers -Method "GET"
+        $node_details = Invoke-WebRequest -Uri "https://$($Url)/api/v2/nodes/$($node.id).json" -Headers $headers -Method "GET"
         $node_details = ConvertFrom-Json -InputObject $node_details
 
         $dn = Get-ADComputer -Identity "$($node_details.name)" -Credential $creds -Server $DomainController

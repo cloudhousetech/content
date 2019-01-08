@@ -97,7 +97,7 @@ while !response.nil? and response.count == per_page
 end
 
 # Print Results
-write_optional_debug("Retreived #{nodes.count} nodes")
+write_optional_debug("Retrieved #{nodes.count} nodes")
 if options[:print_json]
   puts JSON.pretty_generate(nodes)
 else

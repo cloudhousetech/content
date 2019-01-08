@@ -1,7 +1,7 @@
 {
     "policy": {
-        "name": "pci_32_ms_sql_check",
-        "short_description": "PCI 3.2 MS SQL Check",
+        "name": "pci_32_ms_sql_checks_--_windows",
+        "short_description": "PCI 3.2 MS SQL Checks -- Windows",
         "description": "",
         "settings": {
             "tests": {
@@ -16,19 +16,10 @@
         {
             "Ensure Latest SQL Server Service Packs and Hotfixes are Installed": [
                 {
-                    "id": "Ensure-Latest-SQL-Server-Service-Packs-and-Hotfixes-are-InstalledQuery-Product-Level-and-Product-Version",
+                    "id": "Ensure-Latest-SQL-Server-Service-Packs-and-Hotfixes-are-Installed-PCI-MS-SQL-Query-Product-Level-and-Product-Version",
                     "name": "[PCI: MS-SQL] Query Product Level and Product Version",
                     "error": false,
                     "checks": {
-                        "Version": [
-                            {
-                                "check": "equals",
-                                "expected": "12.0.5000.0",
-                                "valueSelectList": null,
-                                "attributeSelectList": null,
-                                "availableAttributes": null
-                            }
-                        ],
                         "present": [
                             {
                                 "check": "equals",
@@ -54,7 +45,7 @@
         {
             "8.7.a Review database and application configuration settings and verify that all users are authenticated prior to access.": [
                 {
-                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-Server-Authentication-Property",
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-PCI-MS-SQL-Query-Server-Authentication-Property",
                     "name": "[PCI: MS-SQL] Query Server Authentication Property",
                     "error": false,
                     "checks": {
@@ -91,7 +82,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-CONNECT-permission-granted-to-guest-user",
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-PCI-MS-SQL-Query-CONNECT-permission-granted-to-guest-user",
                     "name": "[PCI: MS-SQL] Query CONNECT permission granted to guest user",
                     "error": false,
                     "checks": {
@@ -132,7 +123,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-Orphaned-Users",
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-PCI-MS-SQL-Query-Orphaned-Users",
                     "name": "[PCI: MS-SQL] Query Orphaned Users",
                     "error": false,
                     "checks": {
@@ -171,7 +162,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-the-use-of-SQL-Authentication",
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-PCI-MS-SQL-Query-the-use-of-SQL-Authentication",
                     "name": "[PCI: MS-SQL] Query the use of SQL Authentication",
                     "error": false,
                     "checks": {
@@ -210,7 +201,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-non-default-permissions-granted-to-the-public-server-role",
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-PCI-MS-SQL-Query-non-default-permissions-granted-to-the-public-server-role",
                     "name": "[PCI: MS-SQL] Query non-default permissions granted to the public server role",
                     "error": false,
                     "checks": {
@@ -281,7 +272,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-Windows-BUILTIN-groups-or-accounts-have-been-added-as-SQL-Server-Logins",
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-PCI-MS-SQL-Query-Windows-BUILTIN-groups-or-accounts-have-been-added-as-SQL-Server-Logins",
                     "name": "[PCI: MS-SQL] Query Windows BUILTIN groups or accounts have been added as SQL Server Logins",
                     "error": false,
                     "checks": {
@@ -338,7 +329,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-Windows-local-groups-that-are-SQL-Logins",
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-PCI-MS-SQL-Query-Windows-local-groups-that-are-SQL-Logins",
                     "name": "[PCI: MS-SQL] Query Windows local groups that are SQL Logins",
                     "error": false,
                     "checks": {
@@ -395,7 +386,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-public-role-in-the-msdb-database-with-granted-access-to-SQL-Agent-proxies",
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-PCI-MS-SQL-Query-public-role-in-the-msdb-database-with-granted-access-to-SQL-Agent-proxies",
                     "name": "[PCI: MS-SQL] Query public role in the msdb database with granted access to SQL Agent proxies",
                     "error": false,
                     "checks": {
@@ -448,7 +439,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-LocalSystem-account-aka-NT-AUTHORITY-SYSTEM-used-for-the-MSSQL-service",
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-PCI-MS-SQL-Query-Local-System-account-aka-NT-AUTHORITY-SYSTEM-used-for-the-MSSQL-service",
                     "name": "[PCI: MS-SQL] Query Local System account (aka NT AUTHORITY\\SYSTEM) used for the MSSQL service",
                     "error": false,
                     "checks": {
@@ -485,7 +476,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-MSSQL-Service-Account-as-Administrator",
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-PCI-MS-SQL-Query-MSSQL-Service-Account-as-Administrator",
                     "name": "[PCI: MS-SQL] Query MSSQL Service Account as Administrator",
                     "error": false,
                     "checks": {
@@ -528,7 +519,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-SQLAgent-Service-Account-as-Administrator",
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-PCI-MS-SQL-Query-SQLAgent-Service-Account-as-Administrator",
                     "name": "[PCI: MS-SQL] Query SQLAgent Service Account as Administrator",
                     "error": false,
                     "checks": {
@@ -567,7 +558,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-Query-Full-Text-Service-Account-as-Administrator",
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-PCI-MS-SQL-Query-Full-Text-Service-Account-as-Administrator",
                     "name": "[PCI: MS-SQL] Query Full-Text Service Account as Administrator",
                     "error": false,
                     "checks": {
@@ -606,7 +597,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-accessQuery-CHECK-EXPIRATION-Option-set-to-OFF",
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-PCI-MS-SQL-Query-CHECK-EXPIRATION-Option-set-to-OFF",
                     "name": "[PCI: MS-SQL] Query CHECK_EXPIRATION Option set to OFF",
                     "error": false,
                     "checks": {
@@ -643,7 +634,7 @@
                     "nodeGroupsOpen": true
                 },
                 {
-                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-accessQuery-CHECK-POLICY-Option-set-to-OFF",
+                    "id": "8-7-a-Review-database-and-application-configuration-settings-and-verify-that-all-users-are-authenticated-prior-to-access-PCI-MS-SQL-Query-CHECK-POLICY-Option-set-to-OFF",
                     "name": "[PCI: MS-SQL] Query CHECK_POLICY Option set to OFF",
                     "error": false,
                     "checks": {
@@ -702,7 +693,7 @@
                     ],
                     "check_type": "powershell",
                     "powershell": {
-                        "query": "echo \"20170914-0\"",
+                        "query": "echo \"20170926-0\"",
                         "description": "[PCI: MS-SQL] Policy Version"
                     },
                     "description": "[PCI: MS-SQL] Policy Version",
@@ -775,7 +766,7 @@
             },
             {
                 "description": "[PCI: MS-SQL] Policy Version",
-                "query": "echo \"20170914-0\""
+                "query": "echo \"20170926-0\""
             }
         ]
     }

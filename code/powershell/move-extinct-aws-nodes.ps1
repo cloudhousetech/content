@@ -79,7 +79,7 @@ else
 	  if ($DryRun -eq $false) {
 	      Write-Host "Adding node to the holding node group"
 
-	      $response = Invoke-WebRequest -Uri "https://$($Url)/api/v2/nodes/$(node.id)/add_to_node_group.json?node_group_id=$($holding_node_group_id)" -Headers $headers -Method "POST"
+	      $response = Invoke-WebRequest -Uri "https://$($Url)/api/v2/nodes/$($node.id)/add_to_node_group.json?node_group_id=$($holding_node_group_id)" -Headers $headers -Method "POST"
 
 	      if ($response.StatusCode > 400) {
 	      	 throw [System.Exception] "$($response.StatusCode.ToString()) $($response.StatusDescription)"

@@ -91,7 +91,7 @@ else
       }
 
     } else {
-      Write-Host "node an AWS EC2 instance node type - ignoring"
+      Write-Host "not an AWS EC2 instance node type - ignoring"
     }
   }
 }

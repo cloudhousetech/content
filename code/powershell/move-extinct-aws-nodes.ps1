@@ -7,12 +7,13 @@
 # And set your AWS credentials:
 # > Set-AWSCredential -AccessKey <AWS access key> -SecretKey <AWS secret key>
 # Usage:
-#     powershell .\move-extinct-aws-nodes.ps1 -ApiKey "UpGuard API key" -SecretKey "UpGuard secret key" -Url "https://you.upguard.com"
+#     powershell .\move-extinct-aws-nodes.ps1 -ApiKey "UpGuard API key" -SecretKey "UpGuard secret key" -Url "https://you.upguard.com" -DestNodeGroupID "123"
 
 param (
       [string]$ApiKey = '',
       [string]$SecretKey = '',
       [string]$Url = 'https://',
+      [string]$DestNodeGroupID = '',
       [switch]$Insecure,
       [switch]$DryRun
 )
@@ -74,7 +75,7 @@ else
 
       if ($instance_exists -eq $false) {
 	  # replace this ID with the ID of the node group you want to add nodes to if they dont exist
-          $holding_node_group_id = 1
+          $holding_node_group_id = $DestNodeGroupID
 
 	  if ($DryRun -eq $false) {
 	      Write-Host "Adding node to the holding node group"

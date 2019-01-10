@@ -7,7 +7,7 @@
 # And set your AWS credentials:
 # > Set-AWSCredential -AccessKey <AWS access key> -SecretKey <AWS secret key>
 # Usage:
-#     powershell .\move-extinct-aws-nodes.ps1 -ApiKey "UpGuard API key" -SecretKey "UpGuard secret key" -Url "you.upguard.com"
+#     powershell .\move-extinct-aws-nodes.ps1 -ApiKey "UpGuard API key" -SecretKey "UpGuard secret key" -Url "https://you.upguard.com"
 
 param (
       [string]$ApiKey = '',
@@ -39,7 +39,7 @@ $headers = @{'Authorization' = "Token token=""$($ApiKey)$($SecretKey)""";
                  'Accept' = 'application/json'; 'Content-Type' = 'application/json'}
 
 Write-Host "about to ask for a list of all nodes"
-$nodes = Invoke-WebRequest -Uri "https://$($Url)/api/v2/nodes.json?page=1&per_page=50000" -Headers $headers -Method "GET"
+$nodes = Invoke-WebRequest -Uri "$($Url)/api/v2/nodes.json?page=1&per_page=50000" -Headers $headers -Method "GET"
 
 if ($nodes.StatusCode > 400)
 {
@@ -52,7 +52,7 @@ else
   ForEach ($node in $nodes) {
     Write-Host "about to get more information on node $($node.name)"
     # Need to lookup more information about this particular node first
-    $node_details = Invoke-WebRequest -Uri "https://$($Url)/api/v2/nodes/$($node.id).json" -Headers $headers -Method "GET"
+    $node_details = Invoke-WebRequest -Uri "$($Url)/api/v2/nodes/$($node.id).json" -Headers $headers -Method "GET"
     $node_details = ConvertFrom-Json -InputObject $node_details
 
     # only do the check for EC2 nodes at the moment
@@ -79,7 +79,7 @@ else
 	  if ($DryRun -eq $false) {
 	      Write-Host "Adding node to the holding node group"
 
-	      $response = Invoke-WebRequest -Uri "https://$($Url)/api/v2/nodes/$($node.id)/add_to_node_group.json?node_group_id=$($holding_node_group_id)" -Headers $headers -Method "POST"
+	      $response = Invoke-WebRequest -Uri "$($Url)/api/v2/nodes/$($node.id)/add_to_node_group.json?node_group_id=$($holding_node_group_id)" -Headers $headers -Method "POST"
 
 	      if ($response.StatusCode > 400) {
 	      	 throw [System.Exception] "$($response.StatusCode.ToString()) $($response.StatusDescription)"

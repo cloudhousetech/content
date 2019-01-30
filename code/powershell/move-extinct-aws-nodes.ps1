@@ -8,12 +8,21 @@
 # > Set-AWSCredential -AccessKey <AWS access key> -SecretKey <AWS secret key>
 # Usage:
 #     powershell .\move-extinct-aws-nodes.ps1 -ApiKey "UpGuard API key" -SecretKey "UpGuard secret key" -Url "https://you.upguard.com" -DestNodeGroupID "123"
+# Params:
+#     -ApiKey               : your UpGuard API Key
+#     -SecretKey            : your UpGuard API Secret Key
+#     -Url                  : the full URL of your UpGuard instance, for example 'https://you.upguard.com'
+#     -DestNoGroupID        : the ID of the node group you want to move extinct nodes to for final review and possible delete
+#     -IngoreNodeNamePrefix : if specified, nodes with names matching this prefix will be ignored and not moved to the dest node group
+#     -Insecure             : if you are using a self signed or not-prefect SSL cert, this prevents SSL cert checks connecting to your appliance
+#     -DryRun               : if specified, the script prints out what it would like to do rather than actually moving any nodes
 
 param (
       [string]$ApiKey = '',
       [string]$SecretKey = '',
       [string]$Url = 'https://',
       [string]$DestNodeGroupID = '',
+      [string]$IgnoreNodeNamePrefix = '',
       [switch]$Insecure,
       [switch]$DryRun
 )
@@ -55,6 +64,14 @@ else
     # Need to lookup more information about this particular node first
     $node_details = Invoke-WebRequest -Uri "$($Url)/api/v2/nodes/$($node.id).json" -Headers $headers -Method "GET"
     $node_details = ConvertFrom-Json -InputObject $node_details
+
+    # if we specified an ignore prefix, if the node matches the prefix, then skip
+    if ("$($IgnoreNodeNamePrefix)" -ne "") {
+      if ($node_details.name.StartsWith($IgnoreNodeNamePrefix)) {
+        Write-Host "skipping $($node_details.name) because it matches the IgnoreNodeNamePrefix prefix"
+        continue
+      }
+    }
 
     # only do the check for EC2 nodes at the moment
     if ("$($node_details.operating_system_id)" -eq "2801") {

@@ -145,18 +145,19 @@ function Aggregate-Per-Difference-Set
     $CIPath = Get-CI-Path -Path $Diff.path
     $DiffType = Get-Diff-Type -Old $Diff.old_attrs -New $Diff.new_attrs
 
-    $ScanDiffs[$Key] = @{}
+    If ($ScanDiffs.Keys -NotContains $Key) { $ScanDiffs[$Key] = @{} }
     $ScanDiffs[$Key].node_id = $Diff.node_id
     $ScanDiffs[$Key].node_name = $Diff.node_name
-    $ScanDiffs[$Key].stats = @{}
-    $ScanDiffs[$Key].stats[$CIPath] = @{}
+    $ScanDiffs[$Key].created_at = $Diff.created_at
+    If ($ScanDiffs[$Key].Keys -NotContains "stats") { $ScanDiffs[$Key].stats = @{} }
+    If ($ScanDiffs[$Key].stats.Keys -NotContains $CIPath) { $ScanDiffs[$Key].stats[$CIPath] = @{} }
 
     # Increment a counter for the diff type
     If ($ScanDiffs[$Key].stats[$CIPath] -NotContains $DiffType) { $ScanDiffs[$Key].stats[$CIPath][$DiffType] = 0 }
     $ScanDiffs[$Key].stats[$CIPath][$DiffType] += 1
 
     # Now store a checksum of the diff in an array
-    $ScanDiffs[$Key].diff_checksums = @()
+    If ($ScanDiffs[$Key].Keys -NotContains "diff_checksums") { $ScanDiffs[$Key].diff_checksums = @() }
     $ScanDiffs[$Key].diff_checksums += [System.BitConverter]::ToString($MD5.ComputeHash($UTF8.GetBytes("$($Diff['old_attrs'])$($Diff['new_attrs'])")))
     $ScanDiffs[$Key].diff_checksums = Sort-Object -InputObject $ScanDiffs[$Key].diff_checksums
   }
@@ -183,6 +184,7 @@ function Aggregate-Per-Difference-Set
       node_id = $DiffData.node_id
       node_name = $DiffData.node_name
       scan_id = $ScanID
+      timestamp = $DiffData.created_at
       # url =
       # "url": get_node_url(url, diff_data.node_id, scan_id, True)})
     }
@@ -234,9 +236,10 @@ Foreach ($Environment in $Environments)
 
         # TODO: Handle each change for each node in diff set
         # Variables:
-        # * $Node    : Node detail hash, usable variables are: node_name, node_id
-        # * $CIPath  : Path to the UpGuard CI (ex. 'services -> windows')
-        # * $DiffType: The type of change: Added, Modified, Removed (This variable is a hash)
+        # * $Node     : Node detail hash, usable variables are: node_name, node_id
+        # * $CIPath   : Path to the UpGuard CI (ex. 'services -> windows')
+        # * $DiffType : The type of change: Added, Modified, Removed (This variable is a hash)
+        # * $Timestamp: Time when the diff was detected
       }
     }
   }

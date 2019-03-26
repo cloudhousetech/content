@@ -55,21 +55,16 @@ function UpGuard-WebRequest
       if ($Body.Keys -notcontains "page") { $Body.page = 1 }
       if ($Body.Keys -notcontains "per_page") { $Body.per_page = 50 }
       while ($true) {
+        Write-Verbose "Retrieving $($Endpoint) page $($Body.page)..."
         $new = Invoke-WebRequest -Method $Method -Uri $Endpoint -Headers $headers -Body $Body -ContentType "application/json"
         if ($new.StatusCode > 400){throw [System.Exception] "$($new.StatusCode.ToString()) $($new.StatusDescription)"}
         $new = ConvertFrom-Json $new.Content
+        Write-Verbose "$($new)"
 
-        if ($CombineAttribute -ne "") {
-          $new = $new | Select -ExpandProperty $CombineAttribute
-
-          $result += $new
-          if ([int]$new.Count -lt [int]$Body.per_page) { return $result}
-        }
-        else {
-          # No CombineAttribute was provided
-          $result += $new
-          if ([int]$new.Count -lt [int]$Body.per_page) { return $result }
-        }
+        if ($CombineAttribute -ne "") { $new = $new | Select -ExpandProperty $CombineAttribute }
+        $result += $new
+        Write-Verbose "After retrieving page $($Body.page), result now has $($result.Count) items"
+        if ([int]$new.Count -lt [int]$Body.per_page) { return $result }
         $Body.page = [int]$Body.page + 1
       }
     }

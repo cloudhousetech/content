@@ -5,6 +5,7 @@ require "httparty"
 @secret_key = <INSERT_SECRET_KEY>
 @website    = 'https://<INSERT_SITE_DOMAIN>'
 @headers    = { "Authorization" => "Token token=\"#{@api_key}#{@secret_key}\"" }
+@output_file = '/tmp/node_extract.csv'
 
 # Get environments
 env_lookup  = {}
@@ -28,12 +29,12 @@ oss.each do |os|
 end
 
 # Set up file headers
-File.open("/tmp/node_extract.csv", 'w') { |file| file.write("ID,Name,OSF,OS,Environment,URL\n") }
+File.open(@output_file, 'w') { |file| file.write("ID,Name,OSF,OS,Environment,URL\n") }
 
 # Get nodes
 nodes       = HTTParty.get("#{@website}/api/v2/nodes.json?page=1&per_page=1000", :headers => @headers)
 
 # Loop and write to file
 nodes.each do |node|
-  File.open("/tmp/node_extract.csv", 'a') { |file| file.write("#{node["id"]},#{node["name"]},#{osf_lookup[node["operating_system_family_id"]]},#{os_lookup[node["operating_system_id"]]},#{env_lookup[node["environment_id"]]},#{@website}/node_groups#/nodes/#{node["id"]}\n") }
+  File.open(@output_file, 'a') { |file| file.write("#{node["id"]},#{node["name"]},#{osf_lookup[node["operating_system_family_id"]]},#{os_lookup[node["operating_system_id"]]},#{env_lookup[node["environment_id"]]},#{@website}/node_groups#/nodes/#{node["id"]}\n") }
 end

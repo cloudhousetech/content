@@ -3,7 +3,7 @@ require "httparty"
 
 @api_key    = <INSERT_API_KEY>
 @secret_key = <INSERT_SECRET_KEY>
-@website    = 'https://greatcall.upguard.com'
+@website    = 'https://<INSERT_SITE_DOMAIN>'
 @headers    = { "Authorization" => "Token token=\"#{@api_key}#{@secret_key}\"" }
 
 # Get environments

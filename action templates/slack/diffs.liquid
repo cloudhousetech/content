@@ -1,0 +1,4 @@
+{% for diff in diffs %}
+{{ diff['item'] }} {% if diff['old'] == nil %}Added{% elsif diff['new'] == nil %}Removed{% else %}Modified{% endif %}
+{% if diff['old'] != nil and diff['new'] != nil %}{% assign oldvalues = "" %}{% for att in diff['old'] %}{% assign oldvalues = oldvalues | append: att[0] | append: att[1] %}{% endfor %}{% for att in diff['new'] %}{% assign attstring = att[0] | append: att[1] %}{% unless oldvalues contains attstring %} - Attribute changed: {{ att[0] }} => {{ att[1] }}
+{% endunless %}{% endfor %}{% endif %}{% endfor %}

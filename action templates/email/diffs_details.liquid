@@ -1,0 +1,18 @@
+{% for diff in diffs %}
+{% assign new = diff["new"] %}
+
+{% for val in diff["old"] %}
+{% assign attribute = val[0] %}
+
+{% assign old_val = val[1] %}
+{% assign new_val = new[attribute] %}
+
+{% if old_val != new_val %}
+<b>Item: {{ diff["item"] }}<b><br>
+Attribute: {{ attribute }} <br>
+Old Value: {{ old_val }} <br>
+New Value: {{ new_val }} <br><br>
+
+{% endif %}
+{% endfor %}
+{% endfor %}

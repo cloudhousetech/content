@@ -1,0 +1,23 @@
+<!--
+# Description: Prints out information about policy and attribute failures
+# Event variables required: failures
+# Website version required: >= v2.56.0
+-->
+
+<h1>{{ node }} File Differences</h1>
+<table style="margin-left:10px" border="0">
+{% for diff in file_diffs %}
+  	<tr><td style="text-align:left; vertical-align:top;" colspan="2"><h3>{{ diff['file_path'] }}</h3></td></tr>
+	<tr>
+		<td style="text-align:left; vertical-align:top;"><b>Change Type:</b></td>
+		<td style="text-align:left; vertical-align:top;">{{ diff['changed'] }}</td>
+	</tr>
+	<tr>
+		<td style="text-align:left; vertical-align:top;"><b>Attributes Changed:</b></td>
+		<td style="text-align:left; vertical-align:top;">{{ diff['changed_attributes'] }}</td>
+	</tr>
+	<tr><td colspan="2">&nbsp;</td></tr>
+{% endfor %}  
+</table>
+<br />
+Click <a href="{{ node_diff_link }}">here</a> for full diff details.

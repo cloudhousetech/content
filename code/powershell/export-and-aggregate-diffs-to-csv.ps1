@@ -10,7 +10,7 @@ param (
     [string]$DateTo = '',
     [bool]$IncludeIgnored = $false,
     [switch]$Insecure,
-    [string]$OutputFilePath = 'C:\Testing\output\diffs.csv',
+    [string]$OutputFilePath = 'C:\tmp\diffs.csv',
     [switch]$AggregateByNodeScan = $true
 )
 

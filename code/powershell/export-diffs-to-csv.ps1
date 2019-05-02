@@ -90,7 +90,7 @@ while ($diffs -eq $null -or ($diffs.Count + $ignored_items.Count) -eq $PerPage)
 
 # Print totals
 Write-Output "Total diffs found:   $($allDiffs.Count)"
-Write-Output "Total ignores found: $($allIgnores.Count)"
+if ($IncludeIgnored) { Write-Output "Total ignores found: $($allIgnores.Count)" }
 
 # Write data to file
 # Header first

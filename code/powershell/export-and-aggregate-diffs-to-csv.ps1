@@ -1,6 +1,6 @@
 param (
     [string]$ApiKey = '',
-    [string]$SecretKeay = '',
+    [string]$SecretKey = '',
     [string]$Url = '',
     [int]$PerPage = 500,
     [int]$EnvironmentId,

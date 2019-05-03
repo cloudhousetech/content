@@ -343,7 +343,10 @@ def process_events()
 
 end
 
+# ----------------------------------------------------------------------------
 # Main
+# ----------------------------------------------------------------------------
+#
 begin
   # Check to see if we just want to a field lookup pass to get ids for the events_config.yml file
   log "-----------------------------------------------"

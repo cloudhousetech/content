@@ -1,4 +1,4 @@
-Date, File Path, Changed Attributes, Owner, Change Type
+File Path, Changed Attributes, Owner, Change Type
 ---------------------------------------------------------------------------
-{% for diff in file_diffs %}{{ diff['date_time'] }}, {{ diff['file_path'] }}, {{ diff['changed_attributes'] }}, {{diff['owner'] }}, {{ diff['changed'] }}
+{% for diff in file_diffs %}{{ diff['file_path'] }}, {{ diff['changed_attributes'] | join: ":" }}, {{diff['owner'] }}, {{ diff['changed'] }}
 {% endfor %}

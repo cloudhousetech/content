@@ -8,7 +8,7 @@
 	</tr>
 	<tr>
 		<td style="text-align:left; vertical-align:top;"><b>Attributes Changed:</b></td>
-		<td style="text-align:left; vertical-align:top;">{{ diff['changed_attributes'] | join: ":" }}</td>
+		<td style="text-align:left; vertical-align:top;">{{ diff['changed_attributes'] | join: ", " }}</td>
 	</tr>
 	<tr><td colspan="2">&nbsp;</td></tr>
 {% endfor %}  

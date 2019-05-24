@@ -1,0 +1,422 @@
+{
+    "data": [
+        {
+            "Web": [
+                {
+                    "Google Safe Browsing": [
+                        {
+                            "Web": {
+                                "name": "malware"
+                            },
+                            "check_type": "web",
+                            "checks": {
+                                "safe": [
+                                    {
+                                        "check": "equals",
+                                        "expected": true
+                                    }
+                                ]
+                            },
+                            "ci_path": [
+                                "Web",
+                                "Google Safe Browsing",
+                                "malware"
+                            ],
+                            "description": "Domain should not be suspected of being a malware provider.",
+                            "id": "WebGoogle-Safe-BrowsingDomain-should-not-be-suspected-of-being-a-malware-provider-",
+                            "name": "Domain should not be suspected of being a malware provider.",
+                            "nodeGroupsOpen": true
+                        },
+                        {
+                            "Web": {
+                                "name": "phishing"
+                            },
+                            "check_type": "web",
+                            "checks": {
+                                "safe": [
+                                    {
+                                        "check": "equals",
+                                        "expected": true
+                                    }
+                                ]
+                            },
+                            "ci_path": [
+                                "Web",
+                                "Google Safe Browsing",
+                                "phishing"
+                            ],
+                            "description": "Domain should not be suspected of being a phishing website.",
+                            "id": "WebGoogle-Safe-BrowsingDomain-should-not-be-suspected-of-being-a-phishing-website-",
+                            "name": "Domain should not be suspected of being a phishing website.",
+                            "nodeGroupsOpen": true
+                        },
+                        {
+                            "Web": {
+                                "name": "unwantedSoftware"
+                            },
+                            "check_type": "web",
+                            "checks": {
+                                "safe": [
+                                    {
+                                        "check": "equals",
+                                        "expected": true
+                                    }
+                                ]
+                            },
+                            "ci_path": [
+                                "Web",
+                                "Google Safe Browsing",
+                                "unwantedSoftware"
+                            ],
+                            "description": "Domain should not be suspected of serving unwanted software.",
+                            "id": "WebGoogle-Safe-BrowsingunwantedSoftware",
+                            "name": "Domain should not be suspected of serving unwanted software.",
+                            "nodeGroupsOpen": true
+                        }
+                    ]
+                },
+                {
+                    "Headers": [
+                        {
+                            "Web": {
+                                "name": "strict-transport-security"
+                            },
+                            "check_type": "web",
+                            "checks": {
+                                "Value": [
+                                    {
+                                        "check": "includes",
+                                        "expected": "includeSubDomains"
+                                    },
+                                    {
+                                        "check": "regex",
+                                        "cond": [
+                                            {
+                                                "op": ">=",
+                                                "val": "3628800"
+                                            }
+                                        ],
+                                        "expected": ".*max-age=(\\d+).*"
+                                    }
+                                ],
+                                "present": [
+                                    {
+                                        "check": "equals",
+                                        "expected": "true"
+                                    }
+                                ],
+                                "value": [
+                                    {
+                                        "absent_pass": true,
+                                        "check": "regex_excludes",
+                                        "expected": "\\d"
+                                    },
+                                    {
+                                        "check": "includes",
+                                        "expected": "preload"
+                                    }
+                                ]
+                            },
+                            "ci_path": [
+                                "Web",
+                                "Headers",
+                                "strict-transport-security"
+                            ],
+                            "id": "WebHeadersHSTS-headers-should-exist-and-contain-enough-information-for-preload-list-inclusion-",
+                            "name": "HSTS headers should exist and contain enough information for preload list inclusion."
+                        },
+                        {
+                            "Web": {
+                                "name": "server"
+                            },
+                            "check_type": "web",
+                            "checks": {
+                                "value": [
+                                    {
+                                        "check": "regex_excludes",
+                                        "expected": "\\d"
+                                    }
+                                ]
+                            },
+                            "ci_path": [
+                                "Web",
+                                "Headers",
+                                "server"
+                            ],
+                            "id": "WebHeadersShould-not-expose-a-version-number-in-the-server-header-",
+                            "name": "Should not expose a version number in the server header."
+                        }
+                    ]
+                },
+                {
+                    "Info": [
+                        {
+                            "Web": {
+                                "name": "Domain Status"
+                            },
+                            "check_type": "web",
+                            "checks": {
+                                "clientDeleteProhibited": [
+                                    {
+                                        "check": "equals",
+                                        "expected": "set"
+                                    }
+                                ],
+                                "clientRenewProhibited": [
+                                    {
+                                        "check": "equals",
+                                        "expected": "set"
+                                    }
+                                ],
+                                "clientTransferProhibited": [
+                                    {
+                                        "check": "equals",
+                                        "expected": "set"
+                                    }
+                                ],
+                                "clientUpdateProhibited": [
+                                    {
+                                        "check": "equals",
+                                        "expected": "set"
+                                    }
+                                ],
+                                "serverDeleteProhibited": [
+                                    {
+                                        "check": "equals",
+                                        "expected": "set"
+                                    }
+                                ],
+                                "serverTransferProhibited": [
+                                    {
+                                        "check": "equals",
+                                        "expected": "set"
+                                    }
+                                ],
+                                "serverUpdateProhibited": [
+                                    {
+                                        "check": "equals",
+                                        "expected": "set"
+                                    }
+                                ]
+                            },
+                            "ci_path": [
+                                "Web",
+                                "Info",
+                                "Domain Status"
+                            ],
+                            "id": "WebInfoThe-correct-domain-registry-and-registrar-settings-should-be-configured-",
+                            "name": "The correct domain registry and registrar settings should be configured."
+                        },
+                        {
+                            "Web": {
+                                "name": "Expires On"
+                            },
+                            "check_type": "web",
+                            "checks": {
+                                "value": [
+                                    {
+                                        "check": "time_comparison",
+                                        "cond": [
+                                            {
+                                                "op": ">",
+                                                "val": "30 days from now"
+                                            }
+                                        ],
+                                        "expected": "2020-09-14T04:00:00.000Z"
+                                    }
+                                ]
+                            },
+                            "ci_path": [
+                                "Web",
+                                "Info",
+                                "Expires On"
+                            ],
+                            "id": "WebInfoThe-domain-should-not-expire-soon-or-have-expired-",
+                            "name": "The domain should not expire soon or have expired."
+                        }
+                    ]
+                },
+                {
+                    "SSL": [
+                        {
+                            "Web": {
+                                "name": "Expires"
+                            },
+                            "check_type": "web",
+                            "checks": {
+                                "value": [
+                                    {
+                                        "check": "time_comparison",
+                                        "cond": [
+                                            {
+                                                "op": ">",
+                                                "val": "30 days from now"
+                                            }
+                                        ],
+                                        "expected": "2019-10-18 12:00:00 UTC"
+                                    }
+                                ]
+                            },
+                            "ci_path": [
+                                "Web",
+                                "SSL",
+                                "Expires"
+                            ],
+                            "id": "WebSSLThe-SSL-cert-should-not-expire-in-the-next-30-days-and-should-not-have-expired-",
+                            "name": "The SSL cert should not expire in the next 30 days and should not have expired."
+                        },
+                        {
+                            "Web": {
+                                "name": "Enabled"
+                            },
+                            "check_type": "web",
+                            "checks": {
+                                "value": [
+                                    {
+                                        "check": "equals",
+                                        "expected": true
+                                    }
+                                ]
+                            },
+                            "ci_path": [
+                                "Web",
+                                "SSL",
+                                "Enabled"
+                            ],
+                            "id": "WebSSLSSL-should-be-enabled-on-the-domain-",
+                            "name": "SSL should be enabled on the domain."
+                        },
+                        {
+                            "Web": {
+                                "name": "Algorithm"
+                            },
+                            "check_type": "web",
+                            "checks": {
+                                "value": [
+                                    {
+                                        "check": "regex",
+                                        "expected": ".*[sS][hH][aA](256|384|512).*"
+                                    }
+                                ]
+                            },
+                            "ci_path": [
+                                "Web",
+                                "SSL",
+                                "Algorithm"
+                            ],
+                            "id": "WebSSLSSL-should-use-a-strong-algorithm",
+                            "name": "SSL should use a strong algorithm"
+                        },
+                        {
+                            "Web": {
+                                "name": "HTTP Available"
+                            },
+                            "check_type": "web",
+                            "checks": {
+                                "value": [
+                                    {
+                                        "absent_pass": true,
+                                        "check": "equals",
+                                        "expected": "false"
+                                    }
+                                ]
+                            },
+                            "ci_path": [
+                                "Web",
+                                "SSL",
+                                "HTTP Available"
+                            ],
+                            "id": "WebSSLHTTP-should-not-be-available-or-should-redirect-to-an-HTTPS-destination-",
+                            "name": "HTTP should not be available, or should redirect to an HTTPS destination."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "DNS": [
+                {
+                    "DMARC": [
+                        {
+                            "DNS": {
+                                "name": "v=DMARC1; p=none; pct=100; rua=mailto:BingEmailDMARC@microsoft.com;"
+                            },
+                            "check_type": "dns",
+                            "checks": {
+                                "present": [
+                                    {
+                                        "check": "equals",
+                                        "expected": "true"
+                                    }
+                                ],
+                                "record type": [
+                                    {
+                                        "check": "equals",
+                                        "expected": "TXT"
+                                    }
+                                ]
+                            },
+                            "ci_path": [
+                                "DNS",
+                                "DMARC",
+                                "*"
+                            ],
+                            "description": "DMARC should be enabled for this domain.",
+                            "id": "DNSDMARCDMARC-should-be-enabled-for-this-domain-",
+                            "name": "DMARC should be enabled for this domain.",
+                            "nodeGroupsOpen": true,
+                            "selectList": [
+                                "*"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "SPF": [
+                        {
+                            "DNS": {
+                                "name": "*"
+                            },
+                            "check_type": "dns",
+                            "checks": {
+                                "record type": [
+                                    {
+                                        "check": "equals",
+                                        "expected": "TXT"
+                                    }
+                                ],
+                                "value": [
+                                    {
+                                        "check": "regex",
+                                        "expected": "-all"
+                                    }
+                                ]
+                            },
+                            "ci_path": [
+                                "DNS",
+                                "SPF",
+                                "*"
+                            ],
+                            "id": "DNSSPFSPF-should-be-enabled-for-this-domain-and-not-be-too-lenient-",
+                            "name": "SPF should be enabled for this domain and not be too lenient."
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "policy": {
+        "description": null,
+        "name": "cyberrisk",
+        "operating_system_family_id": null,
+        "operating_system_id": null,
+        "settings": {
+            "tests": {
+                "output_format": null
+            }
+        },
+        "short_description": "CyberRisk",
+        "type": null
+    },
+    "scan_options": {}
+}

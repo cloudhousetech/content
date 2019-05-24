@@ -1,1 +1,63 @@
-{"policy":{"name":"enforce_github_private_repo_configuration","short_description":"Enforce GitHub Private Repo Configuration","description":null,"settings":{"tests":{"output_format":null}},"operating_system_family_id":null,"operating_system_id":null,"type":null},"data":[{"GitHub Private Repo Configuration":[{"id":"GitHub-Private-Repo-ConfigurationChecks-to-ensure-GitHub-repos-are-private","name":"Checks to ensure GitHub repos are private","error":false,"checks":{"Private":{"check":"equals","expected":"true","valueSelectList":["true"],"attributeSelectList":["Allow Merge Commit","Allow Rebase Merge","Allow Squash Merge","Fork","Private","Topics"],"availableAttributes":[{"Fork":false,"Topics":"","Private":true,"Allow Merge Commit":true,"Allow Rebase Merge":true,"Allow Squash Merge":true}]}},"ci_path":["Configuration","*","Settings"],"check_type":"other","path_error":"","description":"Checks to ensure GitHub repos are private","nodeGroupsOpen":true}]}],"scan_options":{}}
+{
+    "data": [
+        {
+            "GitHub Private Repo Configuration": [
+                {
+                    "check_type": "other",
+                    "checks": {
+                        "Private": {
+                            "attributeSelectList": [
+                                "Allow Merge Commit",
+                                "Allow Rebase Merge",
+                                "Allow Squash Merge",
+                                "Fork",
+                                "Private",
+                                "Topics"
+                            ],
+                            "availableAttributes": [
+                                {
+                                    "Allow Merge Commit": true,
+                                    "Allow Rebase Merge": true,
+                                    "Allow Squash Merge": true,
+                                    "Fork": false,
+                                    "Private": true,
+                                    "Topics": ""
+                                }
+                            ],
+                            "check": "equals",
+                            "expected": "true",
+                            "valueSelectList": [
+                                "true"
+                            ]
+                        }
+                    },
+                    "ci_path": [
+                        "Configuration",
+                        "*",
+                        "Settings"
+                    ],
+                    "description": "Checks to ensure GitHub repos are private",
+                    "error": false,
+                    "id": "GitHub-Private-Repo-ConfigurationChecks-to-ensure-GitHub-repos-are-private",
+                    "name": "Checks to ensure GitHub repos are private",
+                    "nodeGroupsOpen": true,
+                    "path_error": ""
+                }
+            ]
+        }
+    ],
+    "policy": {
+        "description": null,
+        "name": "enforce_github_private_repo_configuration",
+        "operating_system_family_id": null,
+        "operating_system_id": null,
+        "settings": {
+            "tests": {
+                "output_format": null
+            }
+        },
+        "short_description": "Enforce GitHub Private Repo Configuration",
+        "type": null
+    },
+    "scan_options": {}
+}

@@ -1,0 +1,47 @@
+{
+    "data": [
+        {
+            "Members": [
+                {
+                    "Members": [
+                        {
+                            "Members": {
+                                "name": "*"
+                            },
+                            "check_type": "members",
+                            "checks": {
+                                "Full Name": [
+                                    {
+                                        "check": "regex",
+                                        "expected": ".+"
+                                    }
+                                ]
+                            },
+                            "ci_path": [
+                                "Members",
+                                "Members",
+                                "*"
+                            ],
+                            "id": "MembersMembersAll-users-should-have-their-full-name-set-",
+                            "name": "All users should have their full name set."
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "policy": {
+        "description": null,
+        "name": "github_user_identity",
+        "operating_system_family_id": null,
+        "operating_system_id": null,
+        "settings": {
+            "tests": {
+                "output_format": null
+            }
+        },
+        "short_description": "GitHub User Identity",
+        "type": null
+    },
+    "scan_options": {}
+}

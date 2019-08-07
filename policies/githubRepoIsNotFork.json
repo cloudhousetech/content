@@ -1,0 +1,52 @@
+{
+    "data": [
+        {
+            "Configuration": [
+                {
+                    "Configuration": [
+                        {
+                            "Configuration": {
+                                "name": "Settings"
+                            },
+                            "check_type": "configuration",
+                            "checks": {
+                                "Fork": [
+                                    {
+                                        "check": "equals",
+                                        "expected": false
+                                    }
+                                ],
+                                "Fork Count": [
+                                    {
+                                        "check": "equals",
+                                        "expected": 0
+                                    }
+                                ]
+                            },
+                            "ci_path": [
+                                "Configuration",
+                                "Configuration",
+                                "Settings"
+                            ],
+                            "name": "Settings"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "policy": {
+        "description": null,
+        "name": "github_repo_is_not_forked",
+        "operating_system_family_id": null,
+        "operating_system_id": null,
+        "settings": {
+            "tests": {
+                "output_format": null
+            }
+        },
+        "short_description": "GitHub Repo is not forked",
+        "type": null
+    },
+    "scan_options": {}
+}

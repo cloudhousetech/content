@@ -135,6 +135,10 @@ def IsNodeEC2NodeType(node_id):
     if str(node['operating_system_id']) == "2801":
         return { "is": True, "instance_id": node['external_id'], "region": "us-east-1" }
 
+    x = re.search("^(i-[0-9a-fA-F]+)$", str(node["external_id"]))
+    if x != None:
+        return { "is": True, "instance_id": x.group(), "region": "us-east-1" }
+    
     latest_node_scan = GetMostRecentNodeScanForNode(node_id)
     if latest_node_scan == None:
         LogWarning("node " + str(node['name']) + " [id=" + str(node_id) + "] doesn't seem to have a latest scan, so can't check if its EC2")

@@ -28,10 +28,12 @@ param (
   [string]$GitHubOrganisation,
   [Parameter(Mandatory=$true)]
   [string]$GuardianHostName,
+  [Parameter(Mandatory=$true)]
+  [String]$GuardianToken,
   [Parameter()]
   [string]$GuardianEnvironment = 'Default',
-  [Parameter(Mandatory=$true)]
-  [String]$GuardianToken
+  [Parameter()]
+  [string]$CMGroupName = 'Default'
 )
 if ($PSVersionTable.PSVersion.Major -lt 7) {
   Write-Error "This script requires PS Version 7.0 or greater"
@@ -71,10 +73,17 @@ $gitHubNodes = Get-GuardianApiItems 'nodes.json' | Where-Object {$_.operating_sy
 
 $matchedEnvironments = Get-GuardianApiItems 'environments.json' | Where-Object { $_.name -eq $GuardianEnvironment}
 if ($matchedEnvironments.count -eq 0) {
-  Write-Error "No environment found matching $GuardianEnvironment in $environments"
+  Write-Error "No environment found matching $GuardianEnvironment"
 }
 $environmentId = $matchedEnvironments[0].id
 Write-Information "Selected environment $GuardianEnvironment with id $environmentId"
+
+$matchedCMGroups = Get-GuardianApiItems 'connection_manager_groups.json' | Where-Object { $_.name -eq $CMGroupName}
+if ($matchedCMGroups.count -eq 0) {
+  Write-Error "No environment found matching $CMGroupName"
+}
+$cmGroupId = $matchedCMGroups[0].id
+Write-Information "Selected connection manager group $CMGroupName with id $cmGroupId"
 
 $gitHubRepos | %{
   $repo = $_
@@ -88,7 +97,7 @@ $gitHubRepos | %{
     
     $body = @{
       "node"= @{
-        "connection_manager_group_id"=  1
+        "connection_manager_group_id"=  cmGroupId
         "description"=  ("The {0} repository" -f $repo.name)
         "environment_id"=  $environmentId
         "medium_hostname"=  $repo.html_url

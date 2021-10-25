@@ -38,53 +38,48 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
   return
 }
 
-$gitHubHeaders = @{Authorization = "Basic $([System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("ignore:$GitHubToken")))"}
-$reposUri = "https://api.github.com/orgs/$GitHubOrganisation/repos?per_page=100&page=1"
-Write-Information "Making GET call to $reposUri"
-
-$gitHubRepos = Invoke-RestMethod -URI $reposUri -Headers $gitHubHeaders -FollowRelLink
-# $gitHubRepos has nested arrays so this flattens it before iterating
-$gitHubRepos = @($gitHubRepos | %{$_})
-Write-Information "  Got $($gitHubRepos.Count) repos" 
-
-$guardianHeaders = @{Authorization="Token token=""$GuardianToken"""}
-$guardianNodesUri = "https://$GuardianHostName/api/v2/nodes.json"
-$allGitHubNodes  = @()
-$perPage = 100
-$page       = 1
-
-try 
-{
-    while ($true)
-    {
-        $qs        = "page=$($page)&per_page=$($perPage)"
-        $fullURI  = "https://$GuardianHostName/api/v2/nodes.json?$($qs)"
-
-        Write-Information "Making GET call to $fullURI"
-        $nodes = Invoke-RestMethod -Uri $fullURI -Headers $guardianHeaders
-        Write-Information "  Got $($nodes.Count) nodes" 
-        $totItems += $items.Count
-        $allGitHubNodes += $nodes| Where-Object {$_.operating_system_id -eq 1451}
-        $page += 1
-        if( $nodes.Count -lt $perPage) { break }
-    }
-}
-catch
-{
-    Write-Error "Exception: $($_.Exception.Message)"
+function Get-GitHubRepos {
+  $gitHubHeaders = @{Authorization = "Basic $([System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("ignore:$GitHubToken")))"}
+  $reposUri = "https://api.github.com/orgs/$GitHubOrganisation/repos?per_page=100&page=1"
+  Write-Information "Making GET call to $reposUri"
+  $gitHubRepos = Invoke-RestMethod -URI $reposUri -Headers $gitHubHeaders -FollowRelLink
+  # $gitHubRepos has nested arrays so this flattens it before iterating
+  $gitHubRepos = @($gitHubRepos | %{$_})
+  Write-Information "  Got $($gitHubRepos.Count) repos" 
+  $gitHubRepos
 }
 
-$environments = Invoke-RestMethod 'https://dogfood.cloudhouse.com/api/v2/environments.json' -Headers $guardianHeaders -Method GET
-$matchedEnvironments = $environments | Where-Object { $_.name -eq $GuardianEnvironment}
+function Get-GuardianApiItems {
+  param (
+    [string]$uri
+  )
+  $guardianHeaders = @{Authorization="Token token=""$GuardianToken"""}
+  $pageParams = @{per_page=100000}
+  $fullURI  = "https://$GuardianHostName/api/v2/$uri" 
+  Write-Information "Making GET call to $fullURI"
+  $items = Invoke-RestMethod -Uri $fullURI -Headers $guardianHeaders -Body $pageParams
+  Write-Information "  Got $($items.Count) items" 
+  if( $items.Count -eq $perPage) { 
+    Write-Error "This script doesn't fetch more items than $perPage from Guardian, you can increase the number or iterate smaller pages"
+  }
+  $items
+}
+
+$gitHubRepos = Get-GitHubRepos
+
+$gitHubNodes = Get-GuardianApiItems 'nodes.json' | Where-Object {$_.operating_system_id -eq 1451}
+
+$matchedEnvironments = Get-GuardianApiItems 'environments.json' | Where-Object { $_.name -eq $GuardianEnvironment}
 if ($matchedEnvironments.count -eq 0) {
-  Write-Error "No environment found matching $GuardianEnvironment"
+  Write-Error "No environment found matching $GuardianEnvironment in $environments"
 }
-$environmentId = $environments[0].id
+$environmentId = $matchedEnvironments[0].id
 Write-Information "Selected environment $GuardianEnvironment with id $environmentId"
-$gitHubRepos| %{
+
+$gitHubRepos | %{
   $repo = $_
-  Write-Information ("Checking {0}" -f $repo.url)
-  $isExistingNode = ($allGitHubNodes | Where-Object { $_.medium_hostname -eq $repo.url }).count  -gt 0
+  Write-Information ("Checking {0}" -f $repo.html_url)
+  $isExistingNode = ($gitHubNodes | Where-Object { $_.medium_hostname -eq $repo.html_url }).count  -gt 0
   if ($isExistingNode){
     Write-Information ("{0} is already added" -f $repo.url)
   } else{
@@ -105,6 +100,7 @@ $gitHubRepos| %{
         "short_description"=  ("The {0} repository" -f $repo.name)
       }
     }
+    
     $jsonBody = (ConvertTo-Json $body)
     if ($PSCmdlet.ShouldProcess($jsonBody)){
       $r = Invoke-RestMethod -URI $guardianNodesUri -Headers $guardianHeaders -Body $jsonBody -Method POST -ContentType 'application/json'

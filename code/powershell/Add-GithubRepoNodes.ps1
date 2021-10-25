@@ -22,11 +22,16 @@
 #>
 [CmdletBinding(SupportsShouldProcess)]
 param (
-    [string]$GitHubToken,
-    [string]$GitHubOrganisation,
-    [string]$GuardianHostName,
-    [string]$GuardianEnvironment = 'Default',
-    [String]$GuardianToken
+  [Parameter(Mandatory=$true)]
+  [string]$GitHubToken,
+  [Parameter(Mandatory=$true)]
+  [string]$GitHubOrganisation,
+  [Parameter(Mandatory=$true)]
+  [string]$GuardianHostName,
+  [Parameter()]
+  [string]$GuardianEnvironment = 'Default',
+  [Parameter(Mandatory=$true)]
+  [String]$GuardianToken
 )
 if ($PSVersionTable.PSVersion.Major -lt 7) {
   Write-Error "This script requires PS Version 7.0 or greater"
@@ -55,8 +60,8 @@ try
         $qs        = "page=$($page)&per_page=$($perPage)"
         $fullURI  = "https://$GuardianHostName/api/v2/nodes.json?$($qs)"
 
-        Write-Information "Making GET call to $full_url"
-        $nodes = Invoke-RestMethod -Uri $fullURI -Headers $headers
+        Write-Information "Making GET call to $fullURI"
+        $nodes = Invoke-RestMethod -Uri $fullURI -Headers $guardianHeaders
         Write-Information "  Got $($nodes.Count) nodes" 
         $totItems += $items.Count
         $allGitHubNodes += $nodes| Where-Object {$_.operating_system_id -eq 1451}
@@ -91,7 +96,7 @@ $gitHubRepos| %{
         "connection_manager_group_id"=  1
         "description"=  ("The {0} repository" -f $repo.name)
         "environment_id"=  $environmentId
-        "medium_hostname"=  $repo.url
+        "medium_hostname"=  $repo.html_url
         "medium_password"=  $GitHubToken
         "name"=  ("GitHub {0}" -f $repo.name)
         "node_type"=  "SV"

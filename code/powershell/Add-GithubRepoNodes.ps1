@@ -44,37 +44,29 @@ Write-Information "  Got $($gitHubRepos.Count) repos"
 
 $guardianHeaders = @{Authorization="Token token=""$GuardianToken"""}
 $guardianNodesUri = "https://$GuardianHostName/api/v2/nodes.json"
-$nodes     = $null
 $allGitHubNodes  = @()
-$PerPage = 100
+$perPage = 100
 $page       = 1
 
-while ($nodes -eq $null -or $nodes.Count -eq $PerPage)
+try 
 {
-    $qs        = "page=$($page)&per_page=$($PerPage)"
-    
-    $full_url  = "https://$GuardianHostName/api/v2/nodes.json?$($qs)"
-
-    Write-Information "Making GET call to $full_url"
-
-    try
+    while ($true)
     {
-        $response = Invoke-WebRequest -Uri $full_url -Headers $guardianHeaders -Method GET
-    } 
-    catch {
-        $result = $_.Exception.Response.GetResponseStream()
-        $reader = New-Object System.IO.StreamReader($result)
-        $reader.BaseStream.Position = 0
-        $reader.DiscardBufferedData()
-        $responseBody = $reader.ReadToEnd();
-        Write-Error $responseBody
-        break
+        $qs        = "page=$($page)&per_page=$($perPage)"
+        $fullURI  = "https://$GuardianHostName/api/v2/nodes.json?$($qs)"
+
+        Write-Information "Making GET call to $full_url"
+        $nodes = Invoke-RestMethod -Uri $fullURI -Headers $headers
+        Write-Information "  Got $($nodes.Count) nodes" 
+        $totItems += $items.Count
+        $allGitHubNodes += $nodes| Where-Object {$_.operating_system_id -eq 1451}
+        $page += 1
+        if( $nodes.Count -lt $perPage) { break }
     }
-    # Parse response
-    $nodes          = $response.Content | ConvertFrom-Json 
-    Write-Information "  Got $($nodes.Count) nodes" 
-    $allGitHubNodes      += $nodes| Where-Object {$_.operating_system_id -eq 1451}
-    $page += 1
+}
+catch
+{
+    Write-Error "Exception: $($_.Exception.Message)"
 }
 
 $environments = Invoke-RestMethod 'https://dogfood.cloudhouse.com/api/v2/environments.json' -Headers $guardianHeaders -Method GET

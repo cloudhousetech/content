@@ -97,7 +97,7 @@ $gitHubRepos | %{
     
     $body = @{
       "node"= @{
-        "connection_manager_group_id"=  cmGroupId
+        "connection_manager_group_id"=  $cmGroupId
         "description"=  ("The {0} repository" -f $repo.name)
         "environment_id"=  $environmentId
         "medium_hostname"=  $repo.html_url

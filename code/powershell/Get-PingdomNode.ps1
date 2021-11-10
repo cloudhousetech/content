@@ -6,7 +6,7 @@
     Your token for access the pingdom api
 
 .EXAMPLE
-.\Get-PingdomNode.ps1 {{password}}
+.\Get-PingdomNode.ps1 -APIToken {{password}}
 
 Using the above as the script path in the node configuration and setting the password field with your Pingdom api token will securely scan pingdom checks.
 #>

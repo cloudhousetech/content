@@ -1,57 +1,47 @@
 {
-    "policy":
-    {
-        "name": "aws_rds_policy",
-        "short_description": "AWS RDS Policy",
-        "description": null,
-        "settings":
-        {
-            "tests":
-            {
-                "output_format": null
-            }
-        },
-        "operating_system_family_id": null,
-        "operating_system_id": null,
-        "type": null
+  "policy": {
+    "name": "aws_rds_policy",
+    "short_description": "AWS RDS Policy",
+    "description": null,
+    "settings": {
+      "tests": {
+        "output_format": null
+      }
     },
-    "data":
-    [
+    "operating_system_family_id": null,
+    "operating_system_id": null,
+    "type": null
+  },
+  "data": [
+    {
+      "Config": [
         {
-            "Config":
-            [
-                {
-                    "id": "Config2-3-1-Ensure-that-encryption-is-enabled-for-RDS-Instances",
-                    "name": "2.3.1 Ensure that encryption is enabled for RDS Instances",
-                    "Config":
-                    {
-                        "name": "storage encrypted"
-                    },
-                    "checks":
-                    {
-                        "value":
-                        [
-                            {
-                                "exp": true,
-                                "check": "equals",
-                                "expected": true,
-                                "background": "Amazon RDS encrypted DB instances use the industry standard AES-256 encryption algorithm to encrypt your data on the server that hosts your Amazon RDS DB instances. After your data is encrypted, Amazon RDS handles authentication of access and decryption of your data transparently with a minimal impact on performance.\nDatabases are likely to hold sensitive and critical data, it is highly recommended to implement encryption in order to protect your data from unauthorized access or disclosure. With RDS encryption enabled, the data stored on the instance's underlying storage, the automated backups, read replicas, and snapshots, are all encrypted.",
-                                "remediation": "From Console:\n1. Login to the AWS Management Console and open the RDS dashboard at https://console.aws.amazon.com/rds/.\n2. In the left navigation panel, click on Databases\n3. Select the Database instance that needs to encrypt.\n4. Click on Actions button placed at the top right and select Take Snapshot.\n5. On the Take Snapshot page, enter a database name of which you want to take a\nsnapshot in the Snapshot Name field and click on Take Snapshot.\n6. Select the newly created snapshot and click on the Action button placed at the top\nright and select Copy snapshot from the Action menu.\n7. On the Make Copy of DB Snapshot page, perform the following:\n- In the New DB Snapshot Identifier field, Enter a name for the new snapshot.\n- Check Copy Tags, New snapshot must have the same tags as the source snapshot.\n- Select Yes from the Enable Encryption dropdown list to enable encryption, You can\nchoose to use the AWS default encryption key or custom key from Master Key dropdown list.\n8. Click Copy Snapshot to create an encrypted copy of the selected instance snapshot.\n9. Select the new Snapshot Encrypted Copy and click on the Action button placed at the top right and select Restore Snapshot button from the Action menu, This will\nrestore the encrypted snapshot to a new database instance.\n10. On the Restore DB Instance page, enter a unique name for the new database\ninstance in the DB Instance Identifier field.\n11. Review the instance configuration details and click Restore DB Instance.\n12. As the new instance provisioning process is completed can update application\nconfiguration to refer to the endpoint of the new Encrypted database instance Once the database endpoint is changed at the application level, can remove the unencrypted instance.\n\nFrom Command Line:\n1. Run describe-db-instances command to list all RDS database names available in the selected AWS region, The command output should return the database instance identifier.\n2. Run create-db-snapshot command to create a snapshot for the selected database instance, The command output will return the new snapshot with name DB Snapshot Name.\n3. Now run list-aliases command to list the KMS keys aliases available in a specified region, The command output should return each key alias currently available. For our RDS encryption activation process, locate the ID of the AWS default KMS key.\naws kms list-aliases --region 'region-name'\n4. Run copy-db-snapshot command using the default KMS key ID for RDS instances returned earlier to create an encrypted copy of the database instance snapshot, The command output will return the encrypted instance snapshot configuration.\n5. Run restore-db-instance-from-db-snapshot command to restore the encrypted snapshot created at the previous step to a new database instance, If successful, the command output should return the new encrypted database instance configuration.\n6. Run describe-db-instances command to list all RDS database names, available in the selected AWS region, Output will return database instance identifier name Select encrypted database name that we just created DB-Name-Encrypted.\n  aws rds describe-db-instances --region 'region-name' --query 'DBInstances[*].DBInstanceIdentifier'\n   aws rds create-db-snapshot --region 'region-name' --db-snapshot-identifier 'DB-Snapshot-Name' --db-instance-identifier 'DB-Name'\n \n  aws rds copy-db-snapshot --region 'region-name' --source-db-snapshot- identifier 'DB-Snapshot-Name' --target-db-snapshot-identifier 'DB-Snapshot- Name-Encrypted' --copy-tags --kms-key-id 'KMS-ID-For-RDS'\n   aws rds restore-db-instance-from-db-snapshot --region 'region-name' --db- instance-identifier 'DB-Name-Encrypted' --db-snapshot-identifier 'DB- Snapshot-Name-Encrypted'\n   aws rds describe-db-instances --region 'region-name' --query 'DBInstances[*].DBInstanceIdentifier'\n\n7. Run again describe-db-instances command using the RDS instance identifier returned earlier, to determine if the selected database instance is encrypted, The command output should return the encryption status True.\n aws rds describe-db-instances --region 'region-name' --db-instance-identifier 'DB-Name-Encrypted' --query 'DBInstances[*].StorageEncrypted'"
-                            }
-                        ]
-                    },
-                    "ci_path":
-                    [
-                        "Config",
-                        "storage encrypted"
-                    ],
-                    "check_type": "config",
-                    "description": "2.3.1 Ensure that encryption is enabled for RDS Instances",
-                    "nodeGroupsOpen": true
-                }
+          "id": "Config2-3-1-Ensure-that-encryption-is-enabled-for-RDS-Instances",
+          "name": "2.3.1 Ensure that encryption is enabled for RDS Instances",
+          "Config": {
+            "name": "storage encrypted"
+          },
+          "checks": {
+            "value": [
+              {
+                "exp": true,
+                "check": "equals",
+                "expected": true,
+                "background": "Amazon RDS encrypted DB instances use the industry standard AES-256 encryption algorithm to encrypt your data on the server that hosts your Amazon RDS DB instances. After your data is encrypted, Amazon RDS handles authentication of access and decryption of your data transparently with a minimal impact on performance.\nDatabases are likely to hold sensitive and critical data, it is highly recommended to implement encryption in order to protect your data from unauthorized access or disclosure. With RDS encryption enabled, the data stored on the instance's underlying storage, the automated backups, read replicas, and snapshots, are all encrypted.",
+                "remediation": "From Console:\n1. Login to the AWS Management Console and open the RDS dashboard at https://console.aws.amazon.com/rds/.\n2. In the left navigation panel, click on Databases\n3. Select the Database instance that needs to encrypt.\n4. Click on Actions button placed at the top right and select Take Snapshot.\n5. On the Take Snapshot page, enter a database name of which you want to take a\nsnapshot in the Snapshot Name field and click on Take Snapshot.\n6. Select the newly created snapshot and click on the Action button placed at the top\nright and select Copy snapshot from the Action menu.\n7. On the Make Copy of DB Snapshot page, perform the following:\n- In the New DB Snapshot Identifier field, Enter a name for the new snapshot.\n- Check Copy Tags, New snapshot must have the same tags as the source snapshot.\n- Select Yes from the Enable Encryption dropdown list to enable encryption, You can\nchoose to use the AWS default encryption key or custom key from Master Key dropdown list.\n8. Click Copy Snapshot to create an encrypted copy of the selected instance snapshot.\n9. Select the new Snapshot Encrypted Copy and click on the Action button placed at the top right and select Restore Snapshot button from the Action menu, This will\nrestore the encrypted snapshot to a new database instance.\n10. On the Restore DB Instance page, enter a unique name for the new database\ninstance in the DB Instance Identifier field.\n11. Review the instance configuration details and click Restore DB Instance.\n12. As the new instance provisioning process is completed can update application\nconfiguration to refer to the endpoint of the new Encrypted database instance Once the database endpoint is changed at the application level, can remove the unencrypted instance.\n\nFrom Command Line:\n1. Run describe-db-instances command to list all RDS database names available in the selected AWS region, The command output should return the database instance identifier.\n2. Run create-db-snapshot command to create a snapshot for the selected database instance, The command output will return the new snapshot with name DB Snapshot Name.\n3. Now run list-aliases command to list the KMS keys aliases available in a specified region, The command output should return each key alias currently available. For our RDS encryption activation process, locate the ID of the AWS default KMS key.\naws kms list-aliases --region 'region-name'\n4. Run copy-db-snapshot command using the default KMS key ID for RDS instances returned earlier to create an encrypted copy of the database instance snapshot, The command output will return the encrypted instance snapshot configuration.\n5. Run restore-db-instance-from-db-snapshot command to restore the encrypted snapshot created at the previous step to a new database instance, If successful, the command output should return the new encrypted database instance configuration.\n6. Run describe-db-instances command to list all RDS database names, available in the selected AWS region, Output will return database instance identifier name Select encrypted database name that we just created DB-Name-Encrypted.\n  aws rds describe-db-instances --region 'region-name' --query 'DBInstances[*].DBInstanceIdentifier'\n   aws rds create-db-snapshot --region 'region-name' --db-snapshot-identifier 'DB-Snapshot-Name' --db-instance-identifier 'DB-Name'\n \n  aws rds copy-db-snapshot --region 'region-name' --source-db-snapshot- identifier 'DB-Snapshot-Name' --target-db-snapshot-identifier 'DB-Snapshot- Name-Encrypted' --copy-tags --kms-key-id 'KMS-ID-For-RDS'\n   aws rds restore-db-instance-from-db-snapshot --region 'region-name' --db- instance-identifier 'DB-Name-Encrypted' --db-snapshot-identifier 'DB- Snapshot-Name-Encrypted'\n   aws rds describe-db-instances --region 'region-name' --query 'DBInstances[*].DBInstanceIdentifier'\n\n7. Run again describe-db-instances command using the RDS instance identifier returned earlier, to determine if the selected database instance is encrypted, The command output should return the encryption status True.\n aws rds describe-db-instances --region 'region-name' --db-instance-identifier 'DB-Name-Encrypted' --query 'DBInstances[*].StorageEncrypted'"
+              }
             ]
+          },
+          "ci_path": [
+            "Config",
+            "storage encrypted"
+          ],
+          "check_type": "config",
+          "description": "2.3.1 Ensure that encryption is enabled for RDS Instances",
+          "nodeGroupsOpen": true
         }
-    ],
-    "scan_options":
-    {}
+      ]
+    }
+  ],
+  "scan_options": {}
 }

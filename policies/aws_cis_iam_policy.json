@@ -26,7 +26,6 @@
               "checks": {
                 "inline policy count": [
                   {
-                    "exp": "0",
                     "check": "equals",
                     "expected": "0",
                     "background": "IAM users are granted access to services, functions, and data through IAM policies. There are three ways to define policies for a user: 1) Edit the user policy directly, aka an inline, or user, policy; 2) attach a policy directly to a user; 3) add the user to an IAM group that has an attached policy.\nOnly the third implementation is recommended.\nAssigning IAM policy only through groups unifies permissions management to a single, flexible layer consistent with organizational functional roles. By unifying permissions management, the likelihood of excessive permissions is reduced.",
@@ -45,8 +44,7 @@
                 "Users",
                 "*"
               ],
-              "check_type": "users",
-              "nodeGroupsOpen": true
+              "check_type": "users"
             }
           ]
         }
@@ -62,7 +60,6 @@
               "checks": {
                 "min password length": [
                   {
-                    "exp": 6,
                     "cond": [
                       {
                         "op": ">=",
@@ -94,7 +91,6 @@
               "checks": {
                 "password reuse prevention": [
                   {
-                    "exp": "24",
                     "cond": [
                       {
                         "op": ">=",
@@ -133,7 +129,6 @@
               "checks": {
                 "Account Access Keys Present": [
                   {
-                    "exp": "0",
                     "check": "equals",
                     "expected": "0",
                     "background": "The 'root' user account is the most privileged user in an AWS account. AWS Access Keys provide programmatic access to a given AWS account. It is recommended that all access keys associated with the 'root' user account be removed. Removing access keys associated with the 'root' user account limits vectors by which the account can be compromised. Additionally, removing the 'root' access keys encourages the creation and use of role based accounts that are least privileged.",
@@ -145,10 +140,9 @@
                 "name": "*"
               },
               "ci_path": [
-                "Account",
                 "AccountSummary",
-                "AccountSummary",
-                "*"
+                "accountSummary",
+                "summary"
               ],
               "check_type": "account",
               "selectList": [
@@ -162,9 +156,9 @@
               "checks": {
                 "Account MFA Enabled": [
                   {
-                    "exp": "true",
+                    "exp": "1",
                     "check": "equals",
-                    "expected": "true",
+                    "expected": "1",
                     "background": "The 'root' user account is the most privileged user in an AWS account. Multi-factor Authentication (MFA) adds an extra layer of protection on top of a username and password. With MFA enabled, when a user signs in to an AWS website, they will be prompted for their username and password as well as for an authentication code from their AWS MFA device.\nNote: When virtual MFA is used for 'root' accounts, it is recommended that the device used is NOT a personal device, but rather a dedicated mobile device (tablet or phone) that is managed to be kept charged and secured independent of any individual personal devices. (\"non-personal virtual MFA\") This lessens the risks of losing access to the MFA due to device loss, device trade-in or if the individual owning the device is no longer employed at the company. Enabling MFA provides increased security for console access as it requires the authenticating principal to possess a device that emits a time-sensitive key and have knowledge of a credential.",
                     "remediation": "Perform the following to establish MFA for the 'root' user account:\n1. Sign in to the AWS Management Console and open the IAM console at https://console.aws.amazon.com/iam/. Note: to manage MFA devices for the 'root' AWS account, you must use your 'root' account credentials to sign in to AWS. You cannot manage MFA devices for the 'root' account using other credentials.\n2. Choose Dashboard , and under Security Status , expand Activate MFA on your root account.\n3. Choose Activate MFA\n4. In the wizard, choose A virtual MFA device and then choose Next Step .\n5. IAM generates and displays configuration information for the virtual MFA device,\nincluding a QR code graphic. The graphic is a representation of the 'secret configuration key' that is available for manual entry on devices that do not support QR codes.\n6. Open your virtual MFA application. (For a list of apps that you can use for hosting virtual MFA devices, see Virtual MFA Applications.) If the virtual MFA application supports multiple accounts (multiple virtual MFA devices), choose the option to create a new account (a new virtual MFA device).\n\n7. Determine whether the MFA app supports QR codes, and then do one of the following:\n- Use the app to scan the QR code. For example, you might choose the camera icon or choose an option similar to Scan code, and then use the device's camera to scan the code.\n- In the Manage MFA Device wizard, choose Show secret key for manual configuration, and then type the secret configuration key into your MFA application.\n\nWhen you are finished, the virtual MFA device starts generating one-time passwords.\nIn the Manage MFA Device wizard, in the Authentication Code 1 box, type the one-time password that currently appears in the virtual MFA device. Wait up to 30 seconds for the device to generate a new one-time password. Then type the second one-time password into the Authentication Code 2 box. Choose Active Virtual MFA."
                   }
@@ -172,8 +166,8 @@
               },
               "ci_path": [
                 "AccountSummary",
-                "AccountSummary",
-                "*"
+                "accountSummary",
+                "summary"
               ],
               "check_type": "accountsummary",
               "AccountSummary": {
@@ -198,7 +192,6 @@
               "checks": {
                 "present": [
                   {
-                    "exp": "true",
                     "check": "equals",
                     "expected": "true",
                     "background": "The 'root' user account is the most privileged user in an AWS account. MFA adds an extra layer of protection on top of a user name and password. With MFA enabled, when a user signs in to an AWS website, they will be prompted for their user name and password as well as for an authentication code from their AWS MFA device. For Level 2, it is recommended that the 'root' user account be protected with a hardware MFA.\nA hardware MFA has a smaller attack surface than a virtual MFA. For example, a hardware MFA does not suffer the attack surface introduced by the mobile smartphone on which a virtual MFA resides.\nNote: Using hardware MFA for many, many AWS accounts may create a logistical device management issue. If this is the case, consider implementing this Level 2 recommendation selectively to the highest security AWS accounts and the Level 1 recommendation applied to the remaining accounts.",
@@ -234,7 +227,6 @@
               "checks": {
                 "action": [
                   {
-                    "exp": "\"*\"",
                     "check": "regex_excludes",
                     "expected": "\"*\"",
                     "background": "IAM policies are the means by which privileges are granted to users, groups, or roles. It is recommended and considered a standard security advice to grant least privilege -that is, granting only the permissions required to perform a task. Determine what users need to do and then craft policies for them that let the users perform only those tasks, instead of allowing full administrative privileges.\nIt's more secure to start with a minimum set of permissions and grant additional permissions as necessary, rather than starting with permissions that are too lenient and then trying to tighten them later.\nProviding full administrative privileges instead of restricting to the minimum set of permissions that the user is required to do exposes the resources to potentially unwanted actions.\nIAM policies that have a statement with \"Effect\": \"Allow\" with \"Action\": \"*\" over \"Resource\": \"*\" should be removed.",
@@ -279,7 +271,6 @@
               "checks": {
                 "Policy Roles": [
                   {
-                    "exp": ".",
                     "check": "regex",
                     "expected": ".",
                     "background": "AWS provides a support center that can be used for incident notification and response, as well as technical support and customer services. Create an IAM Role to allow authorized users to manage incidents with AWS Support.\nBy implementing least privilege for access control, an IAM Role will require an appropriate IAM Policy to allow Support Center Access in order to manage Incidents with AWS Support.\nImpact:\nAll AWS Support plans include an unlimited number of account and billing support cases, with no long-term contracts. Support billing calculations are performed on a per-account basis for all plans. Enterprise Support plan customers have the option to include multiple enabled accounts in an aggregated monthly billing calculation. Monthly charges for the Business and Enterprise support plans are based on each month's AWS usage charges, subject to a monthly minimum, billed in advance.",
@@ -336,6 +327,7 @@
                 "*"
               ],
               "check_type": "servercertificates",
+              "nodeGroupsOpen": true,
               "ServerCertificates": {
                 "name": "*"
               }
@@ -354,11 +346,23 @@
               "checks": {
                 "Mfa active": [
                   {
-                    "exp": "true",
                     "check": "equals",
                     "expected": "true",
                     "background": "Multi-Factor Authentication (MFA) adds an extra layer of authentication assurance beyond traditional credentials. With MFA enabled, when a user signs in to the AWS Console, they will be prompted for their user name and password as well as for an authentication code from their physical or virtual MFA token. It is recommended that MFA be enabled for all accounts that have a console password.\nEnabling MFA provides increased security for console access as it requires the authenticating principal to possess a device that displays a time-sensitive key and have knowledge of a credential.\nImpact:\nAWS will soon end support for SMS multi-factor authentication (MFA). New customers are not allowed to use this feature. We recommend that existing customers switch to one of the following alternative methods of MFA.",
                     "remediation": "Perform the following to enable MFA:\nFrom Console:\n1. Sign in to the AWS Management Console and open the IAM console at 'https://console.aws.amazon.com/iam/'\n2. In the left pane, select Users.\n3. In the User Name list, choose the name of the intended MFA user.\n4. Choose the Security Credentials tab, and then choose Manage MFA Device.\n5. In the Manage MFA Device wizard, choose Virtual MFA device, and then choose\nContinue.\nIAM generates and displays configuration information for the virtual MFA device, including a QR code graphic. The graphic is a representation of the 'secret configuration key' that is available for manual entry on devices that do not support QR codes.\n6. Open your virtual MFA application. (For a list of apps that you can use for hosting virtual MFA devices, see Virtual MFA Applications at https://aws.amazon.com/iam/details/mfa/#Virtual_MFA_Applications). If the virtual MFA application supports multiple accounts (multiple virtual MFA devices), choose the option to create a new account (a new virtual MFA device). 7. Determine whether the MFA app supports QR codes, and then do one of the following:\n Use the app to scan the QR code. For example, you might choose the camera icon or choose an option similar to Scan code, and then use the device's camera to scan the code.\n In the Manage MFA Device wizard, choose Show secret key for manual configuration, and then type the secret configuration key into your MFA application.\nWhen you are finished, the virtual MFA device starts generating one-time passwords.\n8. In the Manage MFA Device wizard, in the MFA Code 1 box, type the one-time password that currently appears in the virtual MFA device. Wait up to 30 seconds for the device to generate a new one-time password. Then type the second one-time password into the MFA Code 2 box.\n9. Click Assign MFA."
+                  }
+                ],
+                "password last used": [
+                  {
+                    "cond": [
+                      {
+                        "op": ">",
+                        "val": "45 days ago",
+                        "logic": "AND"
+                      }
+                    ],
+                    "check": "time_comparison",
+                    "expected": null
                   }
                 ]
               },
@@ -379,7 +383,6 @@
               "checks": {
                 "Password enabled": [
                   {
-                    "exp": "true",
                     "check": "equals",
                     "expected": "true",
                     "background": "AWS console defaults to no check boxes selected when creating a new IAM user. When cerating the IAM User credentials you have to determine what type of access they require.\nProgrammatic access: The IAM user might need to make API calls, use the AWS CLI, or use the Tools for Windows PowerShell. In that case, create an access key (access key ID and a secret access key) for that user.\nAWS Management Console access: If the user needs to access the AWS Management Console, create a password for the user.\nRequiring the additional steps be taken by the user for programmatic access after their profile has been created will give a stronger indication of intent that access keys are [a] necessary for their work and [b] once the access key is established on an account that the keys may be in use somewhere in the organization.\nNote: Even if it is known the user will need access keys, require them to create the keys themselves or put in a support ticket to have them created as a separate step from user creation.",
@@ -410,23 +413,10 @@
               "checks": {
                 "password enabled": [
                   {
-                    "exp": "true",
                     "check": "equals",
                     "expected": "true",
                     "background": "AWS IAM users can access AWS resources using different types of credentials, such as passwords or access keys. It is recommended that all credentials that have been unused in 45 or greater days be deactivated or removed.\nDisabling or removing unnecessary credentials will reduce the window of opportunity for credentials associated with a compromised or abandoned account to be used.",
                     "remediation": "From Console:\nPerform the following to manage Unused Password (IAM user console access)\n1. Login to the AWS Management Console:\n2. Click Services\n3. Click IAM\n4. Click on Users\n5. Click on Security Credentials\n6. Select user whose Console last sign-in is greater than 45 days\n7. Click Security credentials\n8. In section Sign-in credentials, Console password click Manage\n9. Under Console Access select Disable\n10.Click Apply\nPerform the following to deactivate Access Keys:\n1. Login to the AWS Management Console:\n2. Click Services\n3. Click IAM\n4. Click on Users\n5. Click on Security Credentials\n6. Select any access keys that are over 45 days old and that have been used and\n- Click on Make Inactive\n7. Select any access keys that are over 45 days old and that have not been used and - Click the X to Delete"
-                  }
-                ],
-                "password last used": [
-                  {
-                    "cond": [
-                      {
-                        "op": ">",
-                        "val": "45 days ago"
-                      }
-                    ],
-                    "check": "time_comparison",
-                    "logic": "AND"
                   }
                 ]
               },
@@ -444,7 +434,6 @@
             {
               "id": "credentialCredentialReport1-14-Ensure-access-keys-are-rotated-every-90-days-or-less",
               "name": "1.14 Ensure access keys are rotated every 90 days or less",
-              "error": false,
               "checks": {
                 "access key 1 last rotated": [
                   {
@@ -455,6 +444,7 @@
                       }
                     ],
                     "check": "regex",
+                    "expected": null,
                     "background": "Access keys consist of an access key ID and secret access key, which are used to sign programmatic requests that you make to AWS. AWS users need their own access keys to make programmatic calls to AWS from the AWS Command Line Interface (AWS CLI), Tools for Windows PowerShell, the AWS SDKs, or direct HTTP calls using the APIs for individual AWS services. It is recommended that all access keys be regularly rotated.\nRotating access keys will reduce the window of opportunity for an access key that is associated with a compromised or terminated account to be used.\nAccess keys should be rotated to ensure that data cannot be accessed with an old key which might have been lost, cracked, or stolen.",
                     "remediation": "Perform the following to rotate access keys:\nFrom Console:\n1. Go to Management Console (https://console.aws.amazon.com/iam)\n2. Click on Users\n3. Click on Security Credentials\n4. As an Administrator\no Click on Make Inactive for keys that have not been rotated in 90 Days 5. As an IAM User\no Click on Make Inactive or Delete for keys which have not been rotated or used in 90 Days\n6. Click on `` Create Access Key\n7. Update programmatic call with new Access Key credentials\nFrom Command Line:\n1. While the first access key is still active, create a second access key, which is active by default. Run the following command:\naws iam create-access-key\nAt this point, the user has two active access keys.\n2. Update all applications and tools to use the new access key.\n3. Determine whether the first access key is still in use by using this command:\naws iam get-access-key-last-used\n4. One approach is to wait several days and then check the old access key for any use before proceeding.\nEven if step Step 3 indicates no use of the old key, it is recommended that you do not immediately delete the first access key. Instead, change the state of the first access key to Inactive using this command:\naws iam update-access-key\n5. Use only the new access key to confirm that your applications are working. Any applications and tools that still use the original access key will stop working at this point because they no longer have access to AWS resources. If you find such an application or tool, you can switch its state back to Active to reenable the first access key. Then return to step Step 2 and update this application to use the new key.\n6. After you wait some period of time to ensure that all applications and tools have been updated, you can delete the first access key with this command:\naws iam delete-access-key"
                   }
@@ -465,9 +455,10 @@
                 "CredentialReport",
                 "*"
               ],
-              "check_type": "other",
-              "path_error": "",
-              "description": "1.14 Ensure access keys are rotated every 90 days or less",
+              "Credential": {
+                "name": "*"
+              },
+              "check_type": "credential",
               "nodeGroupsOpen": true
             }
           ]

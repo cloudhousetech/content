@@ -1,1 +1,57 @@
-{"policy":{"name":"aws_ebs_policy","short_description":"AWS EBS Policy","description":null,"settings":{"tests":{"output_format":null}},"operating_system_family_id":null,"operating_system_id":null,"type":null},"data":[{"Encryption by Default":[{"id":"Encryption-by-Default2-2-1-Ensure-EBS-volume-encryption-is-enabled","name":"2.2.1 Ensure EBS volume encryption is enabled","checks":{"EBS encryption by default":[{"exp":"true","check":"equals","expected":"true","background":"Elastic Compute Cloud (EC2) supports encryption at rest when using the Elastic Block Store (EBS) service. While disabled by default, forcing encryption at EBS volume creation is supported.\nEncrypting data at rest reduces the likelihood that it is unintentionally exposed and can nullify the impact of disclosure if the encryption remains unbroken.","remediation":"From Console:\n1. Login to AWS Management Console and open the Amazon EC2 console using https://console.aws.amazon.com/ec2/\n2. Under Account attributes, click EBS encryption.\n3. Click Manage.\n4. Click the Enable checkbox.\n5. Click Update EBS encryption\n6. Repeat for every region requiring the change.\nNote: EBS volume encryption is configured per region.\nFrom Command Line:\n1. Run\naws --region 'region' ec2 enable-ebs-encryption-by-default\n2. Verify that \"EbsEncryptionByDefault\": true is displayed.\n3. Repeat every region requiring the change."}]},"ci_path":["Encryption by Default","Encryption"],"check_type":"encryption by default","description":"2.2.1 Ensure EBS volume encryption is enabled","nodeGroupsOpen":true,"Encryption by Default":{"name":"Encryption"}}]}],"scan_options":{}}
+{
+    "policy":
+    {
+        "name": "aws_ebs_policy",
+        "short_description": "AWS EBS Policy",
+        "description": null,
+        "settings":
+        {
+            "tests":
+            {
+                "output_format": null
+            }
+        },
+        "operating_system_family_id": null,
+        "operating_system_id": null,
+        "type": null
+    },
+    "data":
+    [
+        {
+            "Encryption by Default":
+            [
+                {
+                    "id": "Encryption-by-Default2-2-1-Ensure-EBS-volume-encryption-is-enabled",
+                    "name": "2.2.1 Ensure EBS volume encryption is enabled",
+                    "checks":
+                    {
+                        "EBS encryption by default":
+                        [
+                            {
+                                "exp": "true",
+                                "check": "equals",
+                                "expected": "true",
+                                "background": "Elastic Compute Cloud (EC2) supports encryption at rest when using the Elastic Block Store (EBS) service. While disabled by default, forcing encryption at EBS volume creation is supported.\nEncrypting data at rest reduces the likelihood that it is unintentionally exposed and can nullify the impact of disclosure if the encryption remains unbroken.",
+                                "remediation": "From Console:\n1. Login to AWS Management Console and open the Amazon EC2 console using https://console.aws.amazon.com/ec2/\n2. Under Account attributes, click EBS encryption.\n3. Click Manage.\n4. Click the Enable checkbox.\n5. Click Update EBS encryption\n6. Repeat for every region requiring the change.\nNote: EBS volume encryption is configured per region.\nFrom Command Line:\n1. Run\naws --region 'region' ec2 enable-ebs-encryption-by-default\n2. Verify that \"EbsEncryptionByDefault\": true is displayed.\n3. Repeat every region requiring the change."
+                            }
+                        ]
+                    },
+                    "ci_path":
+                    [
+                        "Encryption by Default",
+                        "Encryption"
+                    ],
+                    "check_type": "encryption by default",
+                    "description": "2.2.1 Ensure EBS volume encryption is enabled",
+                    "nodeGroupsOpen": true,
+                    "Encryption by Default":
+                    {
+                        "name": "Encryption"
+                    }
+                }
+            ]
+        }
+    ],
+    "scan_options":
+    {}
+}

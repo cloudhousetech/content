@@ -1,1 +1,61 @@
-{"policy":{"name":"aws_vpc_policy","short_description":"AWS VPC Policy","description":null,"settings":{"tests":{"output_format":null}},"operating_system_family_id":null,"operating_system_id":null,"type":null},"data":[{"flow logs":[{"flow logs":[{"id":"flow-logsflow-logs3-9-Ensure-VPC-flow-logging-is-enabled-in-all-VPCs","name":"3.9 Ensure VPC flow logging is enabled in all VPCs","error":false,"checks":{"Status":[{"exp":"ACTIVE","check":"equals","expected":"ACTIVE","background":"VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. After you've created a flow log, you can view and retrieve its data in Amazon CloudWatch Logs. It is recommended that VPC Flow Logs be enabled for packet \"Rejects\" for VPCs.\nVPC Flow Logs provide visibility into network traffic that traverses the VPC and can be used to detect anomalous traffic or insight during security workflows.","remediation":"Perform the following to determine if VPC Flow logs is enabled:\nFrom Console:\n1. Sign into the management console\n2. Select Services then VPC\n3. In the left navigation pane, select Your VPCs\n4. Select a VPC\n5. In the right pane, select the Flow Logs tab.\n6. If no Flow Log exists, click Create Flow Log\n7. For Filter, select Reject\n8. Enter in a Role and Destination Log Group\n9. Click Create Log Flow\n10. Click on CloudWatch Logs Group\nNote: Setting the filter to \"Reject\" will dramatically reduce the logging data accumulation for this recommendation and provide sufficient information for the purposes of breach detection, research and remediation. However, during periods of least privilege security group engineering, setting this the filter to \"All\" can be very helpful in discovering existing traffic flows required for proper operation of an already running environment."}]},"ci_path":["Flow Logs","Flow Logs","*"],"check_type":"other","path_error":"","description":"3.9 Ensure VPC flow logging is enabled in all VPCs","nodeGroupsOpen":true}]}]}],"scan_options":{}}
+{
+    "policy":
+    {
+        "name": "aws_vpc_policy",
+        "short_description": "AWS VPC Policy",
+        "description": null,
+        "settings":
+        {
+            "tests":
+            {
+                "output_format": null
+            }
+        },
+        "operating_system_family_id": null,
+        "operating_system_id": null,
+        "type": null
+    },
+    "data":
+    [
+        {
+            "flow logs":
+            [
+                {
+                    "flow logs":
+                    [
+                        {
+                            "id": "flow-logsflow-logs3-9-Ensure-VPC-flow-logging-is-enabled-in-all-VPCs",
+                            "name": "3.9 Ensure VPC flow logging is enabled in all VPCs",
+                            "error": false,
+                            "checks":
+                            {
+                                "Status":
+                                [
+                                    {
+                                        "exp": "ACTIVE",
+                                        "check": "equals",
+                                        "expected": "ACTIVE",
+                                        "background": "VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. After you've created a flow log, you can view and retrieve its data in Amazon CloudWatch Logs. It is recommended that VPC Flow Logs be enabled for packet \"Rejects\" for VPCs.\nVPC Flow Logs provide visibility into network traffic that traverses the VPC and can be used to detect anomalous traffic or insight during security workflows.",
+                                        "remediation": "Perform the following to determine if VPC Flow logs is enabled:\nFrom Console:\n1. Sign into the management console\n2. Select Services then VPC\n3. In the left navigation pane, select Your VPCs\n4. Select a VPC\n5. In the right pane, select the Flow Logs tab.\n6. If no Flow Log exists, click Create Flow Log\n7. For Filter, select Reject\n8. Enter in a Role and Destination Log Group\n9. Click Create Log Flow\n10. Click on CloudWatch Logs Group\nNote: Setting the filter to \"Reject\" will dramatically reduce the logging data accumulation for this recommendation and provide sufficient information for the purposes of breach detection, research and remediation. However, during periods of least privilege security group engineering, setting this the filter to \"All\" can be very helpful in discovering existing traffic flows required for proper operation of an already running environment."
+                                    }
+                                ]
+                            },
+                            "ci_path":
+                            [
+                                "Flow Logs",
+                                "Flow Logs",
+                                "*"
+                            ],
+                            "check_type": "other",
+                            "path_error": "",
+                            "description": "3.9 Ensure VPC flow logging is enabled in all VPCs",
+                            "nodeGroupsOpen": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "scan_options":
+    {}
+}

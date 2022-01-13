@@ -205,7 +205,7 @@
                 "Principal": [
                   {
                     "check": "regex_excludes",
-                    "expected": "excludes {\"AllUsers\":\"*\"}, {\"AuthenticatedUsers\":\"*\"},"
+                    "expected": "excludes {\"AllUsers\":\"\\*\"}, {\"AuthenticatedUsers\":\"\\*\"},"
                   }
                 ]
               },

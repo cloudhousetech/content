@@ -218,50 +218,6 @@
       ]
     },
     {
-      "PolicyVersion": [
-        {
-          "PolicyVersion": [
-            {
-              "id": "PolicyVersionPolicyVersion1-16-Ensure-IAM-policies-that-allow-full-administrative-privileges-are-not-attached",
-              "name": "1.16 Ensure IAM policies that allow full \"*:*\" administrative privileges are not attached",
-              "checks": {
-                "action": [
-                  {
-                    "check": "regex_excludes",
-                    "expected": "\"*\"",
-                    "background": "IAM policies are the means by which privileges are granted to users, groups, or roles. It is recommended and considered a standard security advice to grant least privilege -that is, granting only the permissions required to perform a task. Determine what users need to do and then craft policies for them that let the users perform only those tasks, instead of allowing full administrative privileges.\nIt's more secure to start with a minimum set of permissions and grant additional permissions as necessary, rather than starting with permissions that are too lenient and then trying to tighten them later.\nProviding full administrative privileges instead of restricting to the minimum set of permissions that the user is required to do exposes the resources to potentially unwanted actions.\nIAM policies that have a statement with \"Effect\": \"Allow\" with \"Action\": \"*\" over \"Resource\": \"*\" should be removed.",
-                    "remediation": "From Console:\nPerform the following to detach the policy that has full administrative privileges:\n1. Sign in to the AWS Management Console and open the IAM console at https://console.aws.amazon.com/iam/.\n2. In the navigation pane, click Policies and then search for the policy name found in the audit step.\n3. Select the policy that needs to be deleted.\n4. In the policy action menu, select first Detach\n5. Select all Users, Groups, Roles that have this policy attached\n6. Click Detach Policy\n7. In the policy action menu, select Detach\nFrom Command Line:\nPerform the following to detach the policy that has full administrative privileges as found in the audit step:\n1. Lists all IAM users, groups, and roles that the specified managed policy is attached to.\naws iam list-entities-for-policy --policy-arn 'policy_arn'\n2. Detach the policy from all IAM Users:\naws iam detach-user-policy --user-name 'iam_user' --policy-arn 'policy_arn'\n3. Detach the policy from all IAM Groups:\n4. Detach the policy from all IAM Roles:\naws iam detach-role-policy --role-name 'iam_role' --policy-arn 'policy_arn'"
-                  }
-                ],
-                "effect": [
-                  {
-                    "check": "regex_excludes",
-                    "expected": "Allow"
-                  }
-                ],
-                "resource": [
-                  {
-                    "check": "regex_excludes",
-                    "expected": "\"*\""
-                  }
-                ]
-              },
-              "ci_path": [
-                "PolicyVersion",
-                "PolicyVersion",
-                "*"
-              ],
-              "check_type": "policyversion",
-              "PolicyVersion": {
-                "name": "*"
-              },
-              "nodeGroupsOpen": true
-            }
-          ]
-        }
-      ]
-    },
-    {
       "SupportAccess": [
         {
           "SupportAccess": [

@@ -201,7 +201,7 @@
                 "serial number": [
                   {
                     "check": "regex_excludes",
-                    "expected": "arn:aws:iam::\\*"
+                    "expected": "arn:aws:iam::*"
                   }
                 ]
               },

@@ -40,11 +40,15 @@
                 ]
               },
               "ci_path": [
-                "Users",
-                "Users",
+                "users",
+                "users",
                 "*"
               ],
-              "check_type": "users"
+              "check_type": "users",
+              "selectList": [
+                "*"
+              ],
+              "nodeGroupsOpen": true
             }
           ]
         }
@@ -323,7 +327,7 @@
                 ]
               },
               "ci_path": [
-                "Credential",
+                "credential",
                 "CredentialReport",
                 "*"
               ],
@@ -331,6 +335,9 @@
                 "name": "*"
               },
               "check_type": "credential",
+              "selectList": [
+                "*"
+              ],
               "nodeGroupsOpen": true
             },
             {
@@ -353,7 +360,7 @@
                 ]
               },
               "ci_path": [
-                "Credential",
+                "credential",
                 "CredentialReport",
                 "*"
               ],
@@ -361,6 +368,9 @@
                 "name": "*"
               },
               "check_type": "credential",
+              "selectList": [
+                "*"
+              ],
               "nodeGroupsOpen": true
             },
             {
@@ -377,7 +387,7 @@
                 ]
               },
               "ci_path": [
-                "Credential",
+                "credential",
                 "CredentialReport",
                 "*"
               ],
@@ -385,6 +395,9 @@
                 "name": "*"
               },
               "check_type": "credential",
+              "selectList": [
+                "*"
+              ],
               "nodeGroupsOpen": true
             },
             {
@@ -407,7 +420,7 @@
                 ]
               },
               "ci_path": [
-                "Credential",
+                "credential",
                 "CredentialReport",
                 "*"
               ],
@@ -415,6 +428,43 @@
                 "name": "*"
               },
               "check_type": "credential",
+              "selectList": [
+                "*"
+              ],
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Policies": [
+        {
+          "Policy Versions": [
+            {
+              "id": "PoliciesPolicy-Versions1-16-Ensure-IAM-policies-that-allow-full-administrative-privileges-are-not-attached",
+              "name": "1.16 Ensure IAM policies that allow full \"*:*\" administrative privileges are not attached",
+              "checks": {
+                "* Admin Privileges Attached": [
+                  {
+                    "exp": "false",
+                    "check": "equals",
+                    "expected": "false",
+                    "background": "It's more secure to start with a minimum set of permissions and grant additional permissions as necessary, rather than starting with permissions that are too lenient and then trying to tighten them later.\nProviding full administrative privileges instead of restricting to the minimum set of permissions that the user is required to do exposes the resources to potentially unwanted actions.\nIAM policies that have a statement with \"Effect\": \"Allow\" with \"Action\": \"*\" over \"Resource\": \"*\" should be removed.",
+                    "remediation": "From Console:\nPerform the following to detach the policy that has full administrative privileges:\n1. Sign in to the AWS Management Console and open the IAM console at https://console.aws.amazon.com/iam/.\n2. In the navigation pane, click Policies and then search for the policy name found in the audit step.\n3. Select the policy that needs to be deleted.\n4. In the policy action menu, select first Detach\n5. Select all Users, Groups, Roles that have this policy attached\n6. Click Detach Policy\n7. In the policy action menu, select Detach"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Policies",
+                "*",
+                "Policy Versions"
+              ],
+              "Policies": {
+                "name": "Policy Versions"
+              },
+              "check_type": "policies",
+              "description": "1.16 Ensure IAM policies that allow full \"*:*\" administrative privileges are not attached",
               "nodeGroupsOpen": true
             }
           ]

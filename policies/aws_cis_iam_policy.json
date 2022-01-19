@@ -40,11 +40,15 @@
                 ]
               },
               "ci_path": [
-                "Users",
-                "Users",
+                "users",
+                "users",
                 "*"
               ],
-              "check_type": "users"
+              "check_type": "users",
+              "selectList": [
+                "*"
+              ],
+              "nodeGroupsOpen": true
             }
           ]
         }
@@ -323,7 +327,7 @@
                 ]
               },
               "ci_path": [
-                "Credential",
+                "credential",
                 "CredentialReport",
                 "*"
               ],
@@ -331,6 +335,9 @@
                 "name": "*"
               },
               "check_type": "credential",
+              "selectList": [
+                "*"
+              ],
               "nodeGroupsOpen": true
             },
             {
@@ -353,7 +360,7 @@
                 ]
               },
               "ci_path": [
-                "Credential",
+                "credential",
                 "CredentialReport",
                 "*"
               ],
@@ -361,6 +368,9 @@
                 "name": "*"
               },
               "check_type": "credential",
+              "selectList": [
+                "*"
+              ],
               "nodeGroupsOpen": true
             },
             {
@@ -377,7 +387,7 @@
                 ]
               },
               "ci_path": [
-                "Credential",
+                "credential",
                 "CredentialReport",
                 "*"
               ],
@@ -385,6 +395,9 @@
                 "name": "*"
               },
               "check_type": "credential",
+              "selectList": [
+                "*"
+              ],
               "nodeGroupsOpen": true
             },
             {
@@ -407,7 +420,7 @@
                 ]
               },
               "ci_path": [
-                "Credential",
+                "credential",
                 "CredentialReport",
                 "*"
               ],
@@ -415,6 +428,9 @@
                 "name": "*"
               },
               "check_type": "credential",
+              "selectList": [
+                "*"
+              ],
               "nodeGroupsOpen": true
             }
           ]
@@ -426,7 +442,7 @@
         {
           "Policy Versions": [
             {
-              "id": "PolicyVersionPolicies1-16-Ensure-IAM-policies-that-allow-full-administrative-privileges-are-not-attached",
+              "id": "PoliciesPolicy-Versions1-16-Ensure-IAM-policies-that-allow-full-administrative-privileges-are-not-attached",
               "name": "1.16 Ensure IAM policies that allow full \"*:*\" administrative privileges are not attached",
               "checks": {
                 "* Admin Privileges Attached": [

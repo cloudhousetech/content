@@ -422,20 +422,13 @@
       ]
     },
     {
-      "PolicyVersion": [
+      "Policies": [
         {
-          "Policies": [
+          "Policy Versions": [
             {
               "id": "PolicyVersionPolicies1-16-Ensure-IAM-policies-that-allow-full-administrative-privileges-are-not-attached",
               "name": "1.16 Ensure IAM policies that allow full \"*:*\" administrative privileges are not attached",
-              "error": false,
               "checks": {
-                "present": [
-                  {
-                    "check": "equals",
-                    "expected": "true"
-                  }
-                ],
                 "* Admin Privileges Attached": [
                   {
                     "exp": "false",
@@ -447,15 +440,14 @@
                 ]
               },
               "ci_path": [
-                "PolicyVersion",
                 "Policies",
-                "*"
+                "*",
+                "Policy Versions"
               ],
-              "check_type": "other",
-              "path_error": "",
-              "selectList": [
-                "*"
-              ],
+              "Policies": {
+                "name": "Policy Versions"
+              },
+              "check_type": "policies",
               "description": "1.16 Ensure IAM policies that allow full \"*:*\" administrative privileges are not attached",
               "nodeGroupsOpen": true
             }

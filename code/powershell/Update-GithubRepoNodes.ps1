@@ -1,9 +1,8 @@
 <# 
 .SYNOPSIS
-  Adds all repositories in a GitHub organisation to a Guardian instance.
+  Updates credentials for all repositories in a GitHub organisation on a Guardian instance.
 .DESCRIPTION
-  Get's all repositories using token and organisation parameters, checks existing guardian nodes and only adds any missing repositories to Guardian.
-  CAVEAT: Currently uses hardcoded "connection_manager_group_id"=  1
+  Get's all repositories using token and organisation parameters, checks existing guardian nodes and only updates repositories in Guardian.
   Requires Powershell 7.0
 .PARAMETER GitHubToken
   Your API access token which can be found and generated via Personal access tokens page in GitHub Settings. Used to get repositories and provided to Guardian as access token for scans
@@ -12,11 +11,11 @@
 .PARAMETER GuardianToken
   API token for Guardian https://help.cloudhouse.com/upguard/using-the-api.html
 .EXAMPLE
-  Add-GitHubRepoNodes.ps1 -GitHubToken xyx -GitHubOrganisation yourorg -GuardianHostname yourinstance.com -GuardianToken xyz
+  Update-GitHubRepoNodes.ps1 -GitHubToken xyx -GitHubOrganisation yourorg -GuardianHostname yourinstance.com -GuardianToken xyz
 
   Basic invocation uses Default environment
 .EXAMPLE
-  Add-GitHubRepoNodes.ps1 -GitHubToken xyx -GitHubOrganisation yourorg -GuardianEnvironment Default -GuardianHostname yourinstance.com -GuardianToken xyz
+  Update-GitHubRepoNodes.ps1 -GitHubToken xyx -GitHubOrganisation yourorg -GuardianEnvironment Default -GuardianHostname yourinstance.com -GuardianToken xyz
   
   Using GuardianEnvironment parameter set as 'Default' achieves same result as EXAMPLE 1
 #>
@@ -37,7 +36,6 @@ param (
 )
 $ErrorActionPreference = 'Stop'
 $guardianHeaders = @{Authorization="Token token=""$GuardianToken"""}
-
 if ($PSVersionTable.PSVersion.Major -lt 7) {
   Write-Error "This script requires PS Version 7.0 or greater"
   return
@@ -58,7 +56,6 @@ function Get-GuardianApiItems {
   param (
     [string]$uri
   )
-  
   $pageParams = @{per_page=100000}
   $fullURI  = "https://$GuardianHostName/api/v2/$uri" 
   Write-Information "Making GET call to $fullURI"
@@ -91,31 +88,30 @@ Write-Information "Selected connection manager group $CMGroupName with id $cmGro
 $gitHubRepos | %{
   $repo = $_
   Write-Information ("Checking {0}" -f $repo.html_url)
-  $isExistingNode = ($gitHubNodes | Where-Object { $_.medium_hostname -eq $repo.html_url }).count  -gt 0
-  if ($isExistingNode){
-    Write-Information ("{0} is already added" -f $repo.url)
-  } else{
 
-    Write-Information ("Adding {0}" -f $repo.url)
+  $matchingNodes = ($gitHubNodes | Where-Object { $_.medium_hostname -eq $repo.html_url })
+  $isExistingNode = $matchingNodes.count  -gt 0
+  if ($isExistingNode){
+    Write-Information ("Found {0}, updating" -f $repo.url)
+
+    $node= $matchingNodes[0]
+    $nodeid = $matchingNodes[0].id
+
+    $guardianNodeUri = "https://$GuardianHostName/api/v2/nodes/$nodeid.json" 
     
     $body = @{
-      "node"= @{
-        "connection_manager_group_id"=  $cmGroupId
-        "description"=  ("The {0} repository" -f $repo.name)
-        "environment_id"=  $environmentId
-        "medium_hostname"=  $repo.html_url
-        "medium_password"=  $GitHubToken
-        "name"=  ("GitHub {0}" -f $repo.name)
-        "node_type"=  "SV"
-        "operating_system_family_id"=  14
-        "operating_system_id"=  1451
-        "short_description"=  ("The {0} repository" -f $repo.name)
+       "node"= @{
+              "medium_password"=  $GitHubToken
       }
     }
-    $guardianNodesUri = "https://$GuardianHostName/api/v2/nodes.json" 
+    
     $jsonBody = (ConvertTo-Json $body)
     if ($PSCmdlet.ShouldProcess($jsonBody)){
-      $r = Invoke-RestMethod -URI $guardianNodesUri -Headers $guardianHeaders -Body $jsonBody -Method POST -ContentType 'application/json'
+      Write-Information $guardianNodeUri
+      $r = Invoke-RestMethod -URI $guardianNodeUri -Headers $guardianHeaders -Body $jsonBody -Method PUT -ContentType 'application/json'
     }
+
+  } else{
+    Write-Information ("Not found {0}" -f $repo.url)
   }
 }

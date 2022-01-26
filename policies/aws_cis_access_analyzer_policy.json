@@ -1,0 +1,55 @@
+{
+  "policy": {
+    "name": "aws_access_analyzer_policy",
+    "short_description": "AWS Access Analyzer Policy",
+    "description": null,
+    "settings": {
+      "tests": {
+        "output_format": null
+      }
+    },
+    "operating_system_family_id": null,
+    "operating_system_id": null,
+    "type": null
+  },
+  "data": [
+    {
+      "Analyzers": [
+        {
+          "Analyzer": [
+            {
+              "id": "AnalyzersAnalyzer1-20-Ensure-that-IAM-Access-analyzer-is-enabled-for-all-regions",
+              "name": "1.20 Ensure that IAM Access analyzer is enabled for all regions",
+              "checks": {
+                "status": [
+                  {
+                    "exp": "ACTIVE",
+                    "check": "equals",
+                    "expected": "ACTIVE",
+                    "background": "Enable IAM Access analyzer for IAM policies about all resources in each region.\nIAM Access Analyzer is a technology introduced at AWS reinvent 2019. After the Analyzer is enabled in IAM, scan results are displayed on the console showing the accessible resources. Scans show resources that other accounts and federated users can access, such as KMS keys and IAM roles. So the results allow you to determine if an unintended user is allowed, making it easier for administrators to monitor least privileges access. Access Analyzer analyzes only policies that are applied to resources in the same AWS Region.\nAWS IAM Access Analyzer helps you identify the resources in your organization and accounts, such as Amazon S3 buckets or IAM roles, that are shared with an external entity. This lets you identify unintended access to your resources and data. Access Analyzer identifies resources that are shared with external principals by using logic-based reasoning to analyze the resource-based policies in your AWS environment. IAM Access Analyzer continuously monitors all policies for S3 bucket, IAM roles, KMS(Key Management Service) keys, AWS Lambda functions, and Amazon SQS(Simple Queue Service) queues.",
+                    "remediation": "From Console:\nPerform the following to enable IAM Access analyzer for IAM policies:\n1. Open the IAM console at https://console.aws.amazon.com/iam/.\n2. Choose Access analyzer.\n3. Choose Create analyzer.\n4. On the Create analyzer page, confirm that the Region displayed is the Region\nwhere you want to enable Access Analyzer.\n5. Enter a name for the analyzer. Optional as it will generate a name for you\nautomatically.\n6. Add any tags that you want to apply to the analyzer. Optional.\n7. Choose Create Analyzer.\n8. Repeat these step for each active region\nFrom Command Line:\nRun the following command:\n aws accessanalyzer create-analyzer --analyzer-name NAME --type \\ ACCOUNT|ORGANIZATION"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Analyzers",
+                "Analyzer",
+                "*"
+              ],
+              "Analyzers": {
+                "name": "GuardianAnalyzerTest"
+              },
+              "check_type": "analyzers",
+              "selectList": [
+                "*"
+              ],
+              "description": "1.20 Ensure that IAM Access analyzer is enabled for all regions",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scan_options": {}
+}

@@ -47,9 +47,6 @@
                 "name": "default"
               },
               "check_type": "recorders",
-              "selectList": [
-                "*"
-              ],
               "description": "3.5 Ensure AWS Config is enabled in all regions",
               "nodeGroupsOpen": true
             }

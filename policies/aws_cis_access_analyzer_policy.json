@@ -40,9 +40,6 @@
                 "name": "GuardianAnalyzerTest"
               },
               "check_type": "analyzers",
-              "selectList": [
-                "*"
-              ],
               "description": "1.20 Ensure that IAM Access analyzer is enabled for all regions",
               "nodeGroupsOpen": true
             }

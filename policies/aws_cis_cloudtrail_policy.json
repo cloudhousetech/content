@@ -205,7 +205,7 @@
                 "Principal": [
                   {
                     "check": "regex_excludes",
-                    "expected": "excludes {\"AllUsers\":\"\\*\"}, {\"AuthenticatedUsers\":\"\\*\"},"
+                    "expected": "excludes {\"AllUsers\":\"*\"}, {\"AuthenticatedUsers\":\"*\"},"
                   }
                 ]
               },
@@ -218,6 +218,9 @@
                 "name": "*"
               },
               "check_type": "policies",
+              "selectList": [
+                "*"
+              ],
               "nodeGroupsOpen": true
             }
           ]
@@ -239,152 +242,124 @@
                     "check": "regex",
                     "expected": ".",
                     "background": "S3 object-level API operations such as GetObject, DeleteObject, and PutObject are called data events. By default, CloudTrail trails don't log data events and so it is recommended to enable Object-level logging for S3 buckets.\nEnabling object-level logging will help you meet data compliance requirements within your organization, perform comprehensive security analysis, monitor specific patterns of user behavior in your AWS account or take immediate actions on any object-level API activity within your S3 Buckets using Amazon CloudWatch Events.",
-                    "remediation": "Remediation: From Console:\n1. Login to the AWS Management Console and navigate to S3 dashboard at\nhttps://console.aws.amazon.com/s3/\n2. In the left navigation panel, click buckets and then click on the S3 Bucket Name that\nyou want to examine.\n3. Click Properties tab to see in detail bucket configuration.\n4. Click on the Object-level logging setting, enter the CloudTrail name for the\nrecording activity. You can choose an existing Cloudtrail or create a new one by navigating to the Cloudtrail console link\nhttps://console.aws.amazon.com/cloudtrail/\n5. Once the Cloudtrail is selected, check the Write event checkbox, so that object-\nlevel logging for Write events is enabled.\n6. Repeat steps 2 to 5 to enable object-level logging of write events for other S3\nbuckets.\nFrom Command Line:\n1. To enable object-level data events logging for S3 buckets within your AWS account, run put-event-selectors command using the name of the trail that you want to reconfigure as identifier: \n2. The command output will be object-level event trail configuration.\n3. If you want to enable it for all buckets at once then change Values parameter to\n[\"arn:aws:s3\"] in command given above.\naws cloudtrail put-event-selectors --region <region-name> --trail-name <trail-name> --event-selectors '[{ \"ReadWriteType\": \"WriteOnly\", \"IncludeManagementEvents\":true, \"DataResources\":
-                  [
-                    {
-                      \
-                    "Type\": \"AWS::S3::Object\", \"Values\": [\"arn:aws:s3:::'s3-bucket-name'/\"] }] }]'\n2. The command output will be object-level event trail configuration.\n3. If you want to enable it for all buckets at once then change Values parameter to\n[\"arn:aws:s3\"] in command given above.\n4. Repeat step 1 for each s3 bucket to update object-level logging of write events.\n5. Change the AWS region by updating the --region command parameter and perform\nthe process for other regions."
-                    }
-                  ]
-                },
-                  "ci_path"
-                  :
-                  [
-                    "Events",
-                    "Event",
-                    "*"
-                  ],
-                  "check_type"
-                  :
-                  "other",
-                  "path_error"
-                  :
-                  "",
-                  "description"
-                  :
-                  "3.10 Ensure that Object-level logging for write events is enabled for S3 bucket (Automated)",
-                  "nodeGroupsOpen"
-                  :
-                  true
-                  },
+                    "remediation": "Remediation: From Console:\n1. Login to the AWS Management Console and navigate to S3 dashboard at\nhttps://console.aws.amazon.com/s3/\n2. In the left navigation panel, click buckets and then click on the S3 Bucket Name that\nyou want to examine.\n3. Click Properties tab to see in detail bucket configuration.\n4. Click on the Object-level logging setting, enter the CloudTrail name for the\nrecording activity. You can choose an existing Cloudtrail or create a new one by navigating to the Cloudtrail console link\nhttps://console.aws.amazon.com/cloudtrail/\n5. Once the Cloudtrail is selected, check the Write event checkbox, so that object-\nlevel logging for Write events is enabled.\n6. Repeat steps 2 to 5 to enable object-level logging of write events for other S3\nbuckets.\nFrom Command Line:\n1. To enable object-level data events logging for S3 buckets within your AWS account, run put-event-selectors command using the name of the trail that you want to reconfigure as identifier: \n2. The command output will be object-level event trail configuration.\n3. If you want to enable it for all buckets at once then change Values parameter to\n[\"arn:aws:s3\"] in command given above.\naws cloudtrail put-event-selectors --region <region-name> --trail-name <trail-name> --event-selectors '[{ \"ReadWriteType\": \"WriteOnly\", \"IncludeManagementEvents\":true, \"DataResources\": [{ \"Type\": \"AWS::S3::Object\", \"Values\": [\"arn:aws:s3:::'s3-bucket-name'/\"] }] }]'\n2. The command output will be object-level event trail configuration.\n3. If you want to enable it for all buckets at once then change Values parameter to\n[\"arn:aws:s3\"] in command given above.\n4. Repeat step 1 for each s3 bucket to update object-level logging of write events.\n5. Change the AWS region by updating the --region command parameter and perform\nthe process for other regions."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Events",
+                "Event",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "3.10 Ensure that Object-level logging for write events is enabled for S3 bucket (Automated)",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "EventsEvent3-11-Ensure-that-Object-level-logging-for-read-events-is-enabled-for-S3-bucket",
+              "name": "3.11 Ensure that Object-level logging for read events is enabled for S3 bucket",
+              "error": false,
+              "checks": {
+                "Data Resources": [
                   {
-                    "id": "EventsEvent3-11-Ensure-that-Object-level-logging-for-read-events-is-enabled-for-S3-bucket",
-                    "name": "3.11 Ensure that Object-level logging for read events is enabled for S3 bucket",
-                    "error": false,
-                    "checks": {
-                      "Data Resources": [
-                        {
-                          "exp": ".",
-                          "check": "regex",
-                          "expected": ".",
-                          "background": "S3 object-level API operations such as GetObject, DeleteObject, and PutObject are called data events. By default, CloudTrail trails don't log data events and so it is recommended to enable Object-level logging for S3 buckets.\nEnabling object-level logging will help you meet data compliance requirements within your organization, perform comprehensive security analysis, monitor specific patterns of user behavior in your AWS account or take immediate actions on any object-level API activity using Amazon CloudWatch Events.",
-                          "remediation": "From Console:\n1. Login to the AWS Management Console and navigate to S3 dashboard at\nhttps://console.aws.amazon.com/s3/\n2. In the left navigation panel, click buckets and then click on the S3 Bucket Name that\nyou want to examine.\n3. Click Properties tab to see in detail bucket configuration.\n4. Click on the Object-level logging setting, enter the CloudTrail name for the\nrecording activity. You can choose an existing Cloudtrail or create a new one by navigating to the Cloudtrail console link\nhttps://console.aws.amazon.com/cloudtrail/\n5. Once the Cloudtrail is selected, check the Read event checkbox, so that object-\nlevel logging for Read events is enabled.\n6. Repeat steps 2 to 5 to enable object-level logging of read events for other S3\nbuckets.\n\nFrom Command Line:\n1. To enable object-level data events logging for S3 buckets within your AWS account, run put-event-selectors command using the name of the trail that you want to reconfigure as identifier:\n\naws cloudtrail put-event-selectors --region <region-name> --trail-name <trail-name> --event-selectors '[{ \"ReadWriteType\": \"ReadOnly\", \"IncludeManagementEvents\":true, \"DataResources\":
-                        [
-                          {
-                            \
-                          "Type\": \"AWS::S3::Object\", \"Values\": [\"arn:aws:s3:::'s3-bucket-name'/\"] }] }]'\n\n2. The command output will be object-level event trail configuration.\n3. If you want to enable it for all buckets at ones then change Values parameter to\n[\"arn:aws:s3\"] in command given above.\n4. Repeat step 1 for each s3 bucket to update object-level logging of read events.\n5. Change the AWS region by updating the --region command parameter and perform\nthe process for other regions."
-                          }
-                        ]
-                      },
-                        "ci_path"
-                        :
-                        [
-                          "Events",
-                          "Event",
-                          "*"
-                        ],
-                        "check_type"
-                        :
-                        "other",
-                        "path_error"
-                        :
-                        "",
-                        "description"
-                        :
-                        "3.11 Ensure that Object-level logging for read events is enabled for S3 bucket",
-                        "nodeGroupsOpen"
-                        :
-                        true
-                        },
-                        {
-                          "id": "EventsEvent3-1-Ensure-CloudTrail-is-enabled-in-all-regions",
-                          "name": "3.1 Ensure CloudTrail is enabled in all regions",
-                          "error": false,
-                          "checks": {
-                            "Read Write Type": [
-                              {
-                                "check": "equals",
-                                "expected": "All"
-                              }
-                            ],
-                            "Include Management Events": [
-                              {
-                                "exp": "true",
-                                "check": "equals",
-                                "expected": "true",
-                                "background": "AWS CloudTrail is a web service that records AWS API calls for your account and delivers log files to you. The recorded information includes the identity of the API caller, the time of the API call, the source IP address of the API caller, the request parameters, and the response elements returned by the AWS service. CloudTrail provides a history of AWS API calls for an account, including API calls made via the Management Console, SDKs, command line tools, and higher-level AWS services (such as CloudFormation).\nThe AWS API call history produced by CloudTrail enables security analysis, resource change tracking, and compliance auditing. Additionally,\n- ensuring that a multi-regions trail exists will ensure that unexpected activity occurring in otherwise unused regions is detected\n- ensuring that a multi-regions trail exists will ensure that Global Service Logging is enabled for a trail by default to capture recording of events generated on AWS global services\n- for a multi-regions trail, ensuring that management events configured for all type of Read/Writes ensures recording of management operations that are performed on all resources in an AWS account",
-                                "remediation": "Perform the following to enable global (Multi-region) CloudTrail logging:\nFrom Console:\n1. Sign in to the AWS Management Console and open the IAM console at\nhttps://console.aws.amazon.com/cloudtrail\n2. Click on Trails on the left navigation pane\n3. Click Get Started Now , if presented\n- Click Add new trail\n- Enter a trail name in the Trail name box\n- Set the Apply trail to all regions option to Yes\n- Specify an S3 bucket name in the S3 bucket box\n- Click Create\n4. If 1 or more trails already exist, select the target trail to enable for global logging\n5. Click the edit icon (pencil) next to Apply trail to all regions , Click Yes and\nClick Save.\n6. Click the edit icon (pencil) next to Management Events click All for setting\nRead/Write Events and Click Save.\nFrom Command Line:\n aws cloudtrail create-trail --name 'trail_name' --bucket-name 's3_bucket_for_cloudtrail' --is-multi-region-trail\naws cloudtrail update-trail --name 'trail_name' --is-multi-region-trail"
-                              }
-                            ]
-                          },
-                          "ci_path": [
-                            "Events",
-                            "Event",
-                            "*"
-                          ],
-                          "check_type": "other",
-                          "path_error": "",
-                          "description": "3.1 Ensure CloudTrail is enabled in all regions",
-                          "nodeGroupsOpen": true
-                        }
-                      ]
-                    }
-                  ]
-                  },
+                    "exp": ".",
+                    "check": "regex",
+                    "expected": ".",
+                    "background": "S3 object-level API operations such as GetObject, DeleteObject, and PutObject are called data events. By default, CloudTrail trails don't log data events and so it is recommended to enable Object-level logging for S3 buckets.\nEnabling object-level logging will help you meet data compliance requirements within your organization, perform comprehensive security analysis, monitor specific patterns of user behavior in your AWS account or take immediate actions on any object-level API activity using Amazon CloudWatch Events.",
+                    "remediation": "From Console:\n1. Login to the AWS Management Console and navigate to S3 dashboard at\nhttps://console.aws.amazon.com/s3/\n2. In the left navigation panel, click buckets and then click on the S3 Bucket Name that\nyou want to examine.\n3. Click Properties tab to see in detail bucket configuration.\n4. Click on the Object-level logging setting, enter the CloudTrail name for the\nrecording activity. You can choose an existing Cloudtrail or create a new one by navigating to the Cloudtrail console link\nhttps://console.aws.amazon.com/cloudtrail/\n5. Once the Cloudtrail is selected, check the Read event checkbox, so that object-\nlevel logging for Read events is enabled.\n6. Repeat steps 2 to 5 to enable object-level logging of read events for other S3\nbuckets.\n\nFrom Command Line:\n1. To enable object-level data events logging for S3 buckets within your AWS account, run put-event-selectors command using the name of the trail that you want to reconfigure as identifier:\n\naws cloudtrail put-event-selectors --region <region-name> --trail-name <trail-name> --event-selectors '[{ \"ReadWriteType\": \"ReadOnly\", \"IncludeManagementEvents\":true, \"DataResources\": [{ \"Type\": \"AWS::S3::Object\", \"Values\": [\"arn:aws:s3:::'s3-bucket-name'/\"] }] }]'\n\n2. The command output will be object-level event trail configuration.\n3. If you want to enable it for all buckets at ones then change Values parameter to\n[\"arn:aws:s3\"] in command given above.\n4. Repeat step 1 for each s3 bucket to update object-level logging of read events.\n5. Change the AWS region by updating the --region command parameter and perform\nthe process for other regions."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Events",
+                "Event",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "3.11 Ensure that Object-level logging for read events is enabled for S3 bucket",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "EventsEvent3-1-Ensure-CloudTrail-is-enabled-in-all-regions",
+              "name": "3.1 Ensure CloudTrail is enabled in all regions",
+              "error": false,
+              "checks": {
+                "Read Write Type": [
                   {
-                    "Logging": [
-                      {
-                        "Logging Bucket": [
-                          {
-                            "id": "LoggingLogging-Bucket3-6-Ensure-S3-bucket-access-logging-is-enabled-on-the-CloudTrail-S3-bucket",
-                            "name": "3.6 Ensure S3 bucket access logging is enabled on the CloudTrail S3 bucket",
-                            "checks": {
-                              "target bucket": [
-                                {
-                                  "exp": ".",
-                                  "check": "regex",
-                                  "expected": ".",
-                                  "background": "S3 Bucket Access Logging generates a log that contains access records for each request made to your S3 bucket. An access log record contains details about the request, such as the request type, the resources specified in the request worked, and the time and date the request was processed. It is recommended that bucket access logging be enabled on the CloudTrail S3 bucket.\nBy enabling S3 bucket logging on target S3 buckets, it is possible to capture all events which may affect objects within any target buckets. Configuring logs to be placed in a separate bucket allows access to log information which can be useful in security and incident response workflows.",
-                                  "remediation": "Perform the following to enable S3 bucket logging:\nFrom Console:\n1. Sign in to the AWS Management Console and open the S3 console at https://console.aws.amazon.com/s3.\n2. Under All Buckets click on the target S3 bucket\n3. Click on Properties in the top right of the console\n4. Under Bucket: <s3_bucket_for_cloudtrail> click on Logging\n5. Configure bucket logging\n- Click on Enabled checkbox\n- Select Target Bucket from list o Enter a Target Prefix\n6. Click Save Default Value:\nLogging is disabled."
-                                }
-                              ],
-                              "target prefix": [
-                                {
-                                  "exp": ".",
-                                  "check": "regex",
-                                  "expected": "."
-                                }
-                              ]
-                            },
-                            "Logging": {
-                              "name": "upguardcloudtrail"
-                            },
-                            "ci_path": [
-                              "Logging",
-                              "Logging Bucket",
-                              "upguardcloudtrail"
-                            ],
-                            "check_type": "logging",
-                            "selectList": [
-                              "*"
-                            ],
-                            "description": "3.6 Ensure S3 bucket access logging is enabled on the CloudTrail S3 bucket",
-                            "nodeGroupsOpen": true
-                          }
-                        ]
-                      }
-                    ]
+                    "check": "equals",
+                    "expected": "All"
                   }
                 ],
-                "scan_options": {}
-              }
+                "Include Management Events": [
+                  {
+                    "exp": "true",
+                    "check": "equals",
+                    "expected": "true",
+                    "background": "AWS CloudTrail is a web service that records AWS API calls for your account and delivers log files to you. The recorded information includes the identity of the API caller, the time of the API call, the source IP address of the API caller, the request parameters, and the response elements returned by the AWS service. CloudTrail provides a history of AWS API calls for an account, including API calls made via the Management Console, SDKs, command line tools, and higher-level AWS services (such as CloudFormation).\nThe AWS API call history produced by CloudTrail enables security analysis, resource change tracking, and compliance auditing. Additionally,\n- ensuring that a multi-regions trail exists will ensure that unexpected activity occurring in otherwise unused regions is detected\n- ensuring that a multi-regions trail exists will ensure that Global Service Logging is enabled for a trail by default to capture recording of events generated on AWS global services\n- for a multi-regions trail, ensuring that management events configured for all type of Read/Writes ensures recording of management operations that are performed on all resources in an AWS account",
+                    "remediation": "Perform the following to enable global (Multi-region) CloudTrail logging:\nFrom Console:\n1. Sign in to the AWS Management Console and open the IAM console at\nhttps://console.aws.amazon.com/cloudtrail\n2. Click on Trails on the left navigation pane\n3. Click Get Started Now , if presented\n- Click Add new trail\n- Enter a trail name in the Trail name box\n- Set the Apply trail to all regions option to Yes\n- Specify an S3 bucket name in the S3 bucket box\n- Click Create\n4. If 1 or more trails already exist, select the target trail to enable for global logging\n5. Click the edit icon (pencil) next to Apply trail to all regions , Click Yes and\nClick Save.\n6. Click the edit icon (pencil) next to Management Events click All for setting\nRead/Write Events and Click Save.\nFrom Command Line:\n aws cloudtrail create-trail --name 'trail_name' --bucket-name 's3_bucket_for_cloudtrail' --is-multi-region-trail\naws cloudtrail update-trail --name 'trail_name' --is-multi-region-trail"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Events",
+                "Event",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "3.1 Ensure CloudTrail is enabled in all regions",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Logging": [
+        {
+          "Logging": [
+            {
+              "id": "LoggingLogging3-6-Ensure-S3-bucket-access-logging-is-enabled-on-the-CloudTrail-S3-bucket",
+              "name": "3.6 Ensure S3 bucket access logging is enabled on the CloudTrail S3 bucket",
+              "checks": {
+                "target bucket": [
+                  {
+                    "exp": ".",
+                    "check": "regex",
+                    "expected": ".",
+                    "background": "S3 Bucket Access Logging generates a log that contains access records for each request made to your S3 bucket. An access log record contains details about the request, such as the request type, the resources specified in the request worked, and the time and date the request was processed. It is recommended that bucket access logging be enabled on the CloudTrail S3 bucket.\nBy enabling S3 bucket logging on target S3 buckets, it is possible to capture all events which may affect objects within any target buckets. Configuring logs to be placed in a separate bucket allows access to log information which can be useful in security and incident response workflows.",
+                    "remediation": "Perform the following to enable S3 bucket logging:\nFrom Console:\n1. Sign in to the AWS Management Console and open the S3 console at https://console.aws.amazon.com/s3.\n2. Under All Buckets click on the target S3 bucket\n3. Click on Properties in the top right of the console\n4. Under Bucket: <s3_bucket_for_cloudtrail> click on Logging\n5. Configure bucket logging\n- Click on Enabled checkbox\n- Select Target Bucket from list o Enter a Target Prefix\n6. Click Save Default Value:\nLogging is disabled."
+                  }
+                ],
+                "target prefix": [
+                  {
+                    "exp": ".",
+                    "check": "regex",
+                    "expected": "."
+                  }
+                ]
+              },
+              "Logging": {
+                "name": "upguardcloudtrail"
+              },
+              "ci_path": [
+                "logging",
+                "logging",
+                "*"
+              ],
+              "check_type": "logging",
+              "selectList": [
+                "*"
+              ],
+              "description": "3.6 Ensure S3 bucket access logging is enabled on the CloudTrail S3 bucket",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scan_options": {}
+}

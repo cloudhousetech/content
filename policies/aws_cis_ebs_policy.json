@@ -31,9 +31,15 @@
           },
           "ci_path": [
             "Encryption by Default",
+            "Encryption by Default",
             "Encryption"
           ],
           "check_type": "encryption by default",
+          "selectList": [
+            "{\"EBS encryption by default\":false}",
+            "{\"EBS encryption by default\":false}",
+            "*"
+          ],
           "description": "2.2.1 Ensure EBS volume encryption is enabled",
           "nodeGroupsOpen": true,
           "Encryption by Default": {

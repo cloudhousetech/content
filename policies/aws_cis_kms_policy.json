@@ -40,9 +40,6 @@
                 "*"
               ],
               "check_type": "kms",
-              "selectList": [
-                "*"
-              ],
               "description": "3.8 Ensure rotation for customer created CMKs is enabled",
               "nodeGroupsOpen": true
             }

@@ -218,9 +218,6 @@
                 "name": "*"
               },
               "check_type": "policies",
-              "selectList": [
-                "*"
-              ],
               "nodeGroupsOpen": true
             }
           ]
@@ -350,9 +347,6 @@
                 "*"
               ],
               "check_type": "logging",
-              "selectList": [
-                "*"
-              ],
               "description": "3.6 Ensure S3 bucket access logging is enabled on the CloudTrail S3 bucket",
               "nodeGroupsOpen": true
             }

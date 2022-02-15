@@ -14,11 +14,11 @@
   },
   "data": [
     {
-      "KMS": [
+      "Managed Keys": [
         {
-          "Rotation Status": [
+          "Managed Keys": [
             {
-              "id": "KMSRotation-Status3-8-Ensure-rotation-for-customer-created-CMKs-is-enabled",
+              "id": "Managed-KeysManaged-Keys3-8-Ensure-rotation-for-customer-created-CMKs-is-enabled",
               "KMS": {
                 "name": "2ee7baf8-9cc2-4378-aec7-9d38fe24eab8"
               },
@@ -35,8 +35,8 @@
                 ]
               },
               "ci_path": [
-                "KMS",
-                "Rotation Status",
+                "Managed Keys",
+                "Managed Keys",
                 "*"
               ],
               "check_type": "kms",

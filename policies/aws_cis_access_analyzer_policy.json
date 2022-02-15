@@ -16,9 +16,9 @@
     {
       "Analyzers": [
         {
-          "Analyzer": [
+          "Analyzers": [
             {
-              "id": "AnalyzersAnalyzer1-20-Ensure-that-IAM-Access-analyzer-is-enabled-for-all-regions",
+              "id": "AnalyzersAnalyzers1-20-Ensure-that-IAM-Access-analyzer-is-enabled-for-all-regions",
               "name": "1.20 Ensure that IAM Access analyzer is enabled for all regions",
               "checks": {
                 "status": [
@@ -33,7 +33,7 @@
               },
               "ci_path": [
                 "Analyzers",
-                "Analyzer",
+                "Analyzers",
                 "*"
               ],
               "Analyzers": {

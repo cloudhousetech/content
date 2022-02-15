@@ -14,11 +14,11 @@
   },
   "data": [
     {
-      "Recorders": [
+      "Config Recorders": [
         {
-          "Recorders": [
+          "Config Recorders": [
             {
-              "id": "RecordersRecorders3-5-Ensure-AWS-Config-is-enabled-in-all-regions",
+              "id": "Config-RecordersConfig-Recorders3-5-Ensure-AWS-Config-is-enabled-in-all-regions",
               "name": "3.5 Ensure AWS Config is enabled in all regions",
               "checks": {
                 "recording group all supported": [
@@ -39,9 +39,9 @@
                 ]
               },
               "ci_path": [
-                "Recorders",
-                "Recorders",
-                "default"
+                "Config Recorders",
+                "Config Recorders",
+                "*"
               ],
               "Recorders": {
                 "name": "default"

@@ -40,8 +40,8 @@
                 ]
               },
               "ci_path": [
-                "users",
-                "users",
+                "Users",
+                "Users",
                 "*"
               ],
               "check_type": "users",
@@ -55,11 +55,11 @@
       ]
     },
     {
-      "PasswordPolicy": [
+      "Password Policy": [
         {
-          "PasswordPolicy": [
+          "Password Policy": [
             {
-              "id": "PasswordPolicyPasswordPolicy1-8-Ensure-IAM-password-policy-requires-minimum-length-of-14-or-greater",
+              "id": "Password-PolicyPassword-Policy1-8-Ensure-IAM-password-policy-requires-minimum-length-of-14-or-greater",
               "name": "1.8 Ensure IAM password policy requires minimum length of 14 or greater",
               "checks": {
                 "min password length": [
@@ -79,18 +79,22 @@
                 ]
               },
               "ci_path": [
-                "PasswordPolicy",
-                "PasswordPolicy",
+                "Password Policy",
+                "Password Policy",
                 "policy"
               ],
               "check_type": "passwordpolicy",
+              "selectList": [
+                "{\"allow users to change password\":false,\"expire passwords\":false,\"max password age\":null,\"min password length\":8,\"password reuse prevention\":null,\"passwords require lowercase characters\":false,\"passwords require numbers\":false,\"passwords require symbols\":false,\"passwords require uppercase characters\":true,\"prevent users from changing their password after it expires\":null}",
+                "*"
+              ],
               "PasswordPolicy": {
                 "name": "policy"
               },
               "nodeGroupsOpen": true
             },
             {
-              "id": "PasswordPolicyPasswordPolicy1-9-Ensure-IAM-password-policy-prevents-password-reuse",
+              "id": "Password-PolicyPassword-Policy1-9-Ensure-IAM-password-policy-prevents-password-reuse",
               "name": "1.9 Ensure IAM password policy prevents password reuse",
               "checks": {
                 "password reuse prevention": [
@@ -109,11 +113,15 @@
                 ]
               },
               "ci_path": [
-                "PasswordPolicy",
-                "PasswordPolicy",
+                "Password Policy",
+                "Password Policy",
                 "policy"
               ],
               "check_type": "passwordpolicy",
+              "selectList": [
+                "{\"allow users to change password\":false,\"expire passwords\":false,\"max password age\":null,\"min password length\":8,\"password reuse prevention\":null,\"passwords require lowercase characters\":false,\"passwords require numbers\":false,\"passwords require symbols\":false,\"passwords require uppercase characters\":true,\"prevent users from changing their password after it expires\":null}",
+                "*"
+              ],
               "PasswordPolicy": {
                 "name": "policy"
               },
@@ -124,11 +132,11 @@
       ]
     },
     {
-      "AccountSummary": [
+      "Account Summary": [
         {
-          "accountSummary": [
+          "account Summary": [
             {
-              "id": "AccountSummaryaccountSummary1-4-Ensure-no-root-user-account-access-key-exists",
+              "id": "Account-Summaryaccount-Summary1-4-Ensure-no-root-user-account-access-key-exists",
               "name": "1.4 Ensure no 'root' user account access key exists",
               "checks": {
                 "Account Access Keys Present": [
@@ -144,18 +152,19 @@
                 "name": "*"
               },
               "ci_path": [
-                "AccountSummary",
-                "accountSummary",
+                "Account Summary",
+                "Account Summary",
                 "summary"
               ],
               "check_type": "account",
               "selectList": [
+                "{\"MFA devices\":2,\"MFA devices in use\":1,\"access key per user quota\":2,\"account MFA enabled\":1,\"account access keys present\":0,\"account signing certificates present\":0,\"assume role policy size quota\":2048,\"attached policies per group quota\":10,\"attached policies per role quota\":10,\"attached policies per user quota\":10,\"global endpoint token version\":1,\"group policy size quota\":5120,\"groups\":1,\"groups per user quota\":10,\"groups quota\":300,\"instance profiles\":1,\"instance profiles quota\":1000,\"policies\":1,\"policies quota\":1500,\"policy size quota\":6144,\"policy versions in use\":8,\"policy versions in use quota\":10000,\"providers\":0,\"role policy size quota\":10240,\"roles\":7,\"roles quota\":1000,\"server certificates\":0,\"server certificates quota\":20,\"signing certificates per user quota\":2,\"user policy size quota\":2048,\"users\":1,\"users quota\":5000,\"versions per policy quota\":5}",
                 "*"
               ],
               "nodeGroupsOpen": true
             },
             {
-              "id": "AccountSummaryaccountSummary1-5-Ensure-MFA-is-enabled-for-the-root-user-account",
+              "id": "Account-Summaryaccount-Summary1-5-Ensure-MFA-is-enabled-for-the-root-user-account",
               "name": "1.5 Ensure MFA is enabled for the 'root' user account",
               "checks": {
                 "Account MFA Enabled": [
@@ -169,11 +178,15 @@
                 ]
               },
               "ci_path": [
-                "AccountSummary",
-                "accountSummary",
+                "Account Summary",
+                "Account Summary",
                 "summary"
               ],
               "check_type": "accountsummary",
+              "selectList": [
+                "{\"MFA devices\":2,\"MFA devices in use\":1,\"access key per user quota\":2,\"account MFA enabled\":1,\"account access keys present\":0,\"account signing certificates present\":0,\"assume role policy size quota\":2048,\"attached policies per group quota\":10,\"attached policies per role quota\":10,\"attached policies per user quota\":10,\"global endpoint token version\":1,\"group policy size quota\":5120,\"groups\":1,\"groups per user quota\":10,\"groups quota\":300,\"instance profiles\":1,\"instance profiles quota\":1000,\"policies\":1,\"policies quota\":1500,\"policy size quota\":6144,\"policy versions in use\":8,\"policy versions in use quota\":10000,\"providers\":0,\"role policy size quota\":10240,\"roles\":7,\"roles quota\":1000,\"server certificates\":0,\"server certificates quota\":20,\"signing certificates per user quota\":2,\"user policy size quota\":2048,\"users\":1,\"users quota\":5000,\"versions per policy quota\":5}",
+                "*"
+              ],
               "AccountSummary": {
                 "name": "*"
               },
@@ -184,11 +197,11 @@
       ]
     },
     {
-      "MFA": [
+      "Virtual MFA Devices": [
         {
-          "VirtualMFADevices": [
+          "Virtual MFA Devices": [
             {
-              "id": "MFAVirtualMFADevices1-6-Ensure-hardware-MFA-is-enabled-for-the-root-user-account",
+              "id": "Virtual-MFA-DevicesVirtual-MFA-Devices1-6-Ensure-hardware-MFA-is-enabled-for-the-root-user-account",
               "MFA": {
                 "name": "root"
               },
@@ -210,11 +223,15 @@
                 ]
               },
               "ci_path": [
-                "MFA",
-                "VirtualMFADevices",
+                "Virtual MFA Devices",
+                "Virtual MFA Devices",
                 "root"
               ],
               "check_type": "mfa",
+              "selectList": [
+                "{\"QR code PNG\":null,\"enable date\":\"2021-07-22T00:20:08Z\",\"serial number\":\"arn:aws:iam::737826438546:mfa/root-account-mfa-device\",\"string seed\":null,\"tags\":null}",
+                "*"
+              ],
               "nodeGroupsOpen": true
             }
           ]
@@ -222,11 +239,11 @@
       ]
     },
     {
-      "SupportAccess": [
+      "Support Access": [
         {
-          "SupportAccess": [
+          "Support Access": [
             {
-              "id": "SupportAccessSupportAccess1-17-Ensure-a-support-role-has-been-created-to-manage-incidents-with-AWS-Support",
+              "id": "Support-AccessSupport-Access1-17-Ensure-a-support-role-has-been-created-to-manage-incidents-with-AWS-Support",
               "name": "1.17 Ensure a support role has been created to manage incidents with AWS Support",
               "checks": {
                 "Policy Roles": [
@@ -239,11 +256,15 @@
                 ]
               },
               "ci_path": [
-                "SupportAccess",
-                "SupportAccess",
+                "Support Access",
+                "Support Access",
                 "AWSSupportAccess"
               ],
               "check_type": "supportaccess",
+              "selectList": [
+                "null",
+                "*"
+              ],
               "SupportAccess": {
                 "name": "AWSSupportAccess"
               },

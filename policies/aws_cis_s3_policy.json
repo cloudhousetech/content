@@ -35,22 +35,31 @@
             ]
           },
           "ci_path": [
-            "Encryption",
+            "Bucket Encryption",
+            "Bucket Encryption",
             "Encryption"
           ],
           "Encryption": {
             "name": "Encryption"
           },
-          "check_type": "encryption"
+          "check_type": "encryption",
+          "selectList": [
+            "{\"encryption enabled\":\"false\"}",
+            "{\"encryption enabled\":\"false\"}",
+            "{\"encryption enabled\":\"false\"}",
+            "{\"encryption enabled\":\"false\"}",
+            "*"
+          ],
+          "nodeGroupsOpen": true
         }
       ]
     },
     {
       "Public Access Block": [
         {
-          "Bucket Settigns": [
+          "Public Access Block": [
             {
-              "id": "Public-Access-BlockBucket-Settigns2-1-5-Ensure-that-S3-Buckets-are-configured-with-Block-public-access-bucket-settings-",
+              "id": "Public-Access-BlockPublic-Access-Block2-1-5-Ensure-that-S3-Buckets-are-configured-with-Block-public-access-bucket-settings-",
               "name": "2.1.5 Ensure that S3 Buckets are configured with 'Block public access (bucket settings)'",
               "checks": {
                 "present": [
@@ -88,10 +97,14 @@
               },
               "ci_path": [
                 "Public Access Block",
-                "Bucket Settings",
+                "Public Access Block",
                 "block public access - bucket settings"
               ],
               "check_type": "public access block",
+              "selectList": [
+                "*"
+              ],
+              "nodeGroupsOpen": true,
               "Public Access Block": {
                 "name": "block public access - bucket settings"
               }
@@ -108,8 +121,9 @@
           "checks": {
             "logging enabled": [
               {
-                "check": "regex",
-                "expected": ".",
+                "exp": "false",
+                "check": "excludes",
+                "expected": "false",
                 "background": "S3 Bucket Access Logging generates a log that contains access records for each request made to your S3 bucket. An access log record contains details about the request, such as the request type, the resources specified in the request worked, and the time and date the request was processed. It is recommended that bucket access logging be enabled on the CloudTrail S3 bucket.\nBy enabling S3 bucket logging on target S3 buckets, it is possible to capture all events which may affect objects within any target buckets. Configuring logs to be placed in a separate bucket allows access to log information which can be useful in security and incident response workflows.",
                 "remediation": "Perform the following to enable S3 bucket logging:\nFrom Console:\n1. Sign in to the AWS Management Console and open the S3 console at https://console.aws.amazon.com/s3.\n2. Under All Buckets click on the target S3 bucket\n3. Click on Properties in the top right of the console\n4. Under Bucket: <s3_bucket_for_cloudtrail> click on Logging\n5. Configure bucket logging\n- Click on Enabled checkbox\n- Select Target Bucket from list o Enter a Target Prefix\n6. Click Save Default Value:\nLogging is disabled."
               }
@@ -119,19 +133,28 @@
             "name": "Logging"
           },
           "ci_path": [
-            "Logging",
+            "Bucket Logging",
+            "Bucket Logging",
             "Logging"
           ],
-          "check_type": "logging"
+          "check_type": "logging",
+          "selectList": [
+            "{\"logging enabled\":\"false\"}",
+            "{\"logging enabled\":\"false\"}",
+            "{\"logging enabled\":\"false\"}",
+            "{\"logging enabled\":\"false\"}",
+            "*"
+          ],
+          "nodeGroupsOpen": true
         }
       ]
     },
     {
-      "Versioning": [
+      "Bucket Versioning": [
         {
-          "Versioning": [
+          "Bucket Versioning": [
             {
-              "id": "VersioningVersioningversioning",
+              "id": "Bucket-VersioningBucket-Versioning2-1-3-Ensure-MFA-Delete-is-enable-on-S3-buckets",
               "name": "2.1.3 Ensure MFA Delete is enable on S3 buckets",
               "checks": {
                 "status": [
@@ -151,14 +174,21 @@
                 ]
               },
               "ci_path": [
-                "Versioning",
-                "Versioning",
+                "Bucket Versioning",
+                "Bucket Versioning",
                 "versioning"
               ],
               "Versioning": {
                 "name": "versioning"
               },
               "check_type": "versioning",
+              "selectList": [
+                "{\"MFA delete\":\"\",\"status\":\"\"}",
+                "{\"MFA delete\":\"\",\"status\":\"\"}",
+                "{\"MFA delete\":\"\",\"status\":\"\"}",
+                "{\"MFA delete\":\"\",\"status\":\"\"}",
+                "*"
+              ],
               "description": "2.1.3 Ensure MFA Delete is enable on S3 buckets",
               "nodeGroupsOpen": true
             }

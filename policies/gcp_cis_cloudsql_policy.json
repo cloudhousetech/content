@@ -1,0 +1,743 @@
+{
+  "policy": {
+    "name": "gcp_cloudsql_policy",
+    "short_description": "GCP CloudSQL Policy",
+    "description": null,
+    "settings": {
+      "tests": {
+        "output_format": null
+      }
+    },
+    "operating_system_family_id": null,
+    "operating_system_id": null,
+    "type": null
+  },
+  "data": [
+    {
+      "Flags": [
+        {
+          "MySQL": [
+            {
+              "id": "FlagsMySQL6-1-2-Ensure-skip-show-database-database-flag-for-Cloud-SQL-Mysql-instance-is-set-to-on-",
+              "name": "6.1.2 Ensure 'skip_show_database' database flag for Cloud SQL Mysql instance is set to 'on'",
+              "error": false,
+              "checks": {
+                "skip_show_database": [
+                  {
+                    "exp": "on",
+                    "check": "equals",
+                    "expected": "on",
+                    "background": "'skip_show_database' database flag prevents people from using the SHOW DATABASES statement if they do not have the SHOW DATABASES privilege. This can improve security if you have concerns about users being able to see databases belonging to other users. Its effect depends on the SHOW DATABASES privilege: If the variable value is ON, the SHOW DATABASES statement is permitted only to users who have the SHOW DATABASES privilege, and the statement displays all database names. If the value is OFF, SHOW DATABASES is permitted to all users, but displays the names of only those databases for which the user has the SHOW DATABASES or other privilege. This recommendation is applicable to Mysql database instances.",
+                    "remediation": "Using Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the Mysql instance for which you want to enable to database flag.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag skip_show_database from the drop-down menu, and set its value to on.\n6. Click Save to save your changes.\n7. Confirm your changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "MySQL",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.1.2 Ensure 'skip_show_database' database flag for Cloud SQL Mysql instance is set to 'on'",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "FlagsMySQL6-1-3-Ensure-that-the-local-infile-database-flag-for-a-Cloud-SQL-Mysql-instance-is-set-to-off-",
+              "name": "6.1.3 Ensure that the 'local_infile' database flag for a Cloud SQL Mysql instance is set to 'off'",
+              "error": false,
+              "checks": {
+                "local_infile": [
+                  {
+                    "exp": "off",
+                    "check": "equals",
+                    "expected": "off",
+                    "background": "The local_infile flag controls the server-side LOCAL capability for LOAD DATA statements. Depending on the local_infile setting, the server refuses or permits local data loading by clients that have LOCAL enabled on the client side.\nTo explicitly cause the server to refuse LOAD DATA LOCAL statements (regardless of how client programs and libraries are configured at build time or runtime), start mysqld with local_infile disabled. local_infile can also be set at runtime.\nDue to security issues associated with the local_infile flag, it is recommended to disable it. This recommendation is applicable to MySQL database instances.",
+                    "remediation": "From Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the MySQL instance where the database flag needs to be enabled.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag local_infile from the drop-down menu, and set its value to off.\n6. Click Save.\n7. Confirm the changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "MySQL",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.1.3 Ensure that the 'local_infile' database flag for a Cloud SQL Mysql instance is set to 'off'",
+              "nodeGroupsOpen": true
+            }
+          ]
+        },
+        {
+          "PostgreSQL": [
+            {
+              "id": "FlagsPostgreSQL6-2-1-Ensure-that-the-log-checkpoints-database-flag-for-Cloud-SQL-PostgreSQL-instance-is-set-to-on-",
+              "name": "6.2.1 Ensure that the 'log_checkpoints' database flag for Cloud SQL PostgreSQL instance is set to 'on'",
+              "error": false,
+              "checks": {
+                "log_checkpoints": [
+                  {
+                    "exp": "on",
+                    "check": "equals",
+                    "expected": "on",
+                    "background": "Enabling log_checkpoints causes checkpoints and restart points to be logged in the server log. Some statistics are included in the log messages, including the number of buffers written and the time spent writing them. This parameter can only be set in the postgresql.conf file or on the server command line. This recommendation is applicable to PostgreSQL database instances.",
+                    "remediation": "From Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the PostgreSQL instance where the database flag needs to be enabled.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag log_checkpoints from the drop-down menu, and set its value.\n6. Click Save.\n7. Confirm the changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "PostgreSQL",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.2.1 Ensure that the 'log_checkpoints' database flag for Cloud SQL PostgreSQL instance is set to 'on'",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "FlagsPostgreSQL6-2-2-Ensure-log-error-verbosity-database-flag-for-Cloud-SQL-PostgreSQL-instance-is-set-to-DEFAULT-or-stricter",
+              "name": "6.2.2 Ensure 'log_error_verbosity' database flag for Cloud SQL PostgreSQL instance is set to 'DEFAULT' or stricter",
+              "error": false,
+              "checks": {
+                "log_error_verbosity": [
+                  {
+                    "exp": "(DEFAULT|VERBOSE)",
+                    "check": "regex",
+                    "expected": "(DEFAULT|VERBOSE)",
+                    "background": "Auditing helps in troubleshooting operational problems and also permits forensic analysis. If log_error_verbosity is not set to the correct value, too many details or too few details may be logged. This flag should be configured with a value of 'DEFAULT' or stricter. This recommendation is applicable to PostgreSQL database instances.",
+                    "remediation": "Using Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the PostgreSQL instance for which you want to enable the database flag.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag log_error_verbosity from the drop-down menu and set appropriate value.\n6. Click Save to save your changes.\n7. Confirm your changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "PostgreSQL",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.2.2 Ensure 'log_error_verbosity' database flag for Cloud SQL PostgreSQL instance is set to 'DEFAULT' or stricter",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "FlagsPostgreSQL6-2-3-Ensure-that-the-log-connections-database-flag-for-Cloud-SQL-PostgreSQL-instance-is-set-to-on-",
+              "name": "6.2.3 Ensure that the 'log_connections' database flag for Cloud SQL PostgreSQL instance is set to 'on'",
+              "error": false,
+              "checks": {
+                "log_connections": [
+                  {
+                    "exp": "on",
+                    "check": "equals",
+                    "expected": "on",
+                    "background": "PostgreSQL does not log attempted connections by default. Enabling the log_connections setting will create log entries for each attempted connection as well as successful completion of client authentication which can be useful in troubleshooting issues and to determine any unusual connection attempts to the server. This recommendation is applicable to PostgreSQL database instances.",
+                    "remediation": "From Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the PostgreSQL instance for which you want to enable the database flag.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag log_connections from the drop-down menu and set the value as on.\n6. Click Save.\n7. Confirm the changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "PostgreSQL",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.2.3 Ensure that the 'log_connections' database flag for Cloud SQL PostgreSQL instance is set to 'on'",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "FlagsPostgreSQL6-2-4-Ensure-that-the-log-disconnections-database-flag-for-Cloud-SQL-PostgreSQL-instance-is-set-to-on-",
+              "name": "6.2.4 Ensure that the 'log_disconnections' database flag for Cloud SQL PostgreSQL instance is set to 'on'",
+              "error": false,
+              "checks": {
+                "log_disconnections": [
+                  {
+                    "exp": "on",
+                    "check": "equals",
+                    "expected": "on",
+                    "background": "PostgreSQL does not log session details such as duration and session end by default. Enabling the log_disconnections setting will create log entries at the end of each session which can be useful in troubleshooting issues and determine any unusual activity across a time period. The log_disconnections and log_connections work hand in hand and generally, the pair would be enabled/disabled together. This recommendation is applicable to PostgreSQL database instances.",
+                    "remediation": "From Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the PostgreSQL instance where the database flag needs to be enabled.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag log_disconnections from the drop-down menu and set the value as on.\n6. Click Save.\n7. Confirm the changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "PostgreSQL",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.2.4 Ensure that the 'log_disconnections' database flag for Cloud SQL PostgreSQL instance is set to 'on'",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "FlagsPostgreSQL6-2-5-Ensure-log-duration-database-flag-for-Cloud-SQL-PostgreSQL-instance-is-set-to-on-",
+              "name": "6.2.5 Ensure 'log_duration' database flag for Cloud SQL PostgreSQL instance is set to 'on'",
+              "error": false,
+              "checks": {
+                "log_duration": [
+                  {
+                    "exp": "on",
+                    "check": "equals",
+                    "expected": "on",
+                    "background": "Monitoring the time taken to execute the queries can be crucial in identifying any resource hogging queries and assessing the performance of the server. Further steps such as load balancing and use of optimized queries can be taken to ensure the performance and stability of the server. This recommendation is applicable to PostgreSQL database instances.",
+                    "remediation": "Using Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the PostgreSQL instance for which you want to enable the database flag.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag log_duration from the drop-down menu and set the value as on.\n6. Click Save to save your changes.\n7. Confirm your changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "PostgreSQL",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.2.5 Ensure 'log_duration' database flag for Cloud SQL PostgreSQL instance is set to 'on'",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "FlagsPostgreSQL6-2-6-Ensure-that-the-log-lock-waits-database-flag-for-Cloud-SQL-PostgreSQL-instance-is-set-to-on-",
+              "name": "6.2.6 Ensure that the 'log_lock_waits' database flag for Cloud SQL PostgreSQL instance is set to 'on'",
+              "error": false,
+              "checks": {
+                "log_lock_waits": [
+                  {
+                    "exp": "on",
+                    "check": "equals",
+                    "expected": "on",
+                    "background": "The deadlock timeout defines the time to wait on a lock before checking for any conditions. Frequent run overs on deadlock timeout can be an indication of an underlying issue. Logging such waits on locks by enabling the log_lock_waits flag can be used to identify poor performance due to locking delays or if a specially-crafted SQL is attempting to starve resources through holding locks for excessive amounts of time. This recommendation is applicable to PostgreSQL database instances.",
+                    "remediation": "From Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the PostgreSQL instance where the database flag needs to be enabled.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag log_lock_waits from the drop-down menu and set the value as on.\n6. Click Save.\n7. Confirm the changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "PostgreSQL",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.2.6 Ensure that the 'log_lock_waits' database flag for Cloud SQL PostgreSQL instance is set to 'on'",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "FlagsPostgreSQL6-2-7-Ensure-log-statement-database-flag-for-Cloud-SQL-PostgreSQL-instance-is-set-appropriately",
+              "name": "6.2.7 Ensure 'log_statement' database flag for Cloud SQL PostgreSQL instance is set appropriately",
+              "error": false,
+              "checks": {
+                "6.2.7 Ensure 'log_statement' database flag for Cloud SQL PostgreSQL instance is set appropriately": [
+                  {
+                    "exp": "ddl",
+                    "check": "equals",
+                    "expected": "ddl",
+                    "background": "Auditing helps in troubleshooting operational problems and also permits forensic analysis. If log_statement is not set to the correct value, too many statements may be logged leading to issues in finding the relevant information from the logs, or too few statements may be logged with relevant information missing from the logs. Setting log_statement to align with your organization's security and logging policies facilitates later auditing and review of database activities. This recommendation is applicable to PostgreSQL database instances.",
+                    "remediation": "Using Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the PostgreSQL instance for which you want to enable the database flag.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag log_statement from the drop-down menu and set appropriate value.\n6. Click Save to save your changes.\n7. Confirm your changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "PostgreSQL",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.2.7 Ensure 'log_statement' database flag for Cloud SQL PostgreSQL instance is set appropriately",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "FlagsPostgreSQL6-2-8-Ensure-log-hostname-database-flag-for-Cloud-SQL-PostgreSQL-instance-is-set-appropriately",
+              "name": "6.2.8 Ensure 'log_hostname' database flag for Cloud SQL PostgreSQL instance is set appropriately",
+              "error": false,
+              "checks": {
+                "log_hostname": [
+                  {
+                    "exp": ".",
+                    "check": "regex",
+                    "expected": ".",
+                    "background": "Logging hostnames can incur overhead on server performance as for each statement logged, DNS resolution will be required to convert IP address to hostname. Depending on the setup, this may be non-negligible. Additionally, the IP addresses that are logged can be resolved to their DNS names later when reviewing the logs excluding the cases where dynamic hostnames are used. This recommendation is applicable to PostgreSQL database instances.",
+                    "remediation": "Using Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the PostgreSQL instance for which you want to enable the database flag.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag log_hostname from the drop-down menu and set appropriate value.\n6. Click Save to save your changes.\n7. Confirm your changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "PostgreSQL",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.2.8 Ensure 'log_hostname' database flag for Cloud SQL PostgreSQL instance is set appropriately",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "FlagsPostgreSQL6-2-9-Ensure-log-parser-stats-database-flag-for-Cloud-SQL-PostgreSQL-instance-is-set-to-off-",
+              "name": "6.2.9 Ensure 'log_parser_stats' database flag for Cloud SQL PostgreSQL instance is set to 'off'",
+              "error": false,
+              "checks": {
+                "log_parser_stats": [
+                  {
+                    "exp": "off",
+                    "check": "equals",
+                    "expected": "off",
+                    "background": "The log_parser_stats flag enables a crude profiling method for logging parser performance statistics which even though can be useful for troubleshooting, it may increase the amount of logs significantly and have performance overhead. This recommendation is applicable to PostgreSQL database instances.",
+                    "remediation": "Using Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the PostgreSQL instance for which you want to enable the database flag.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag log_parser_stats from the drop-down menu and set appropriate value.\n6. Click Save to save your changes.\n7. Confirm your changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "PostgreSQL",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.2.9 Ensure 'log_parser_stats' database flag for Cloud SQL PostgreSQL instance is set to 'off'",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "FlagsPostgreSQL6-2-10-Ensure-log-planner-stats-database-flag-for-Cloud-SQL-PostgreSQL-instance-is-set-to-off-",
+              "name": "6.2.10 Ensure 'log_planner_stats' database flag for Cloud SQL PostgreSQL instance is set to 'off'",
+              "error": false,
+              "checks": {
+                "log_planner_stats": [
+                  {
+                    "exp": "off",
+                    "check": "equals",
+                    "expected": "off",
+                    "background": "The log_planner_stats flag enables a crude profiling method for logging PostgreSQL planner performance statistics which even though can be useful for troubleshooting, it may increase the amount of logs significantly and have performance overhead. This recommendation is applicable to PostgreSQL database instances.",
+                    "remediation": "Using Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the PostgreSQL instance for which you want to enable the database flag.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag log_planner_stats from the drop-down menu and set appropriate value.\n6. Click Save to save your changes.\n7. Confirm your changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "PostgreSQL",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.2.10 Ensure 'log_planner_stats' database flag for Cloud SQL PostgreSQL instance is set to 'off'",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "FlagsPostgreSQL6-2-11-Ensure-log-executor-stats-database-flag-for-Cloud-SQL-PostgreSQL-instance-is-set-to-off-",
+              "name": "6.2.11 Ensure 'log_executor_stats' database flag for Cloud SQL PostgreSQL instance is set to 'off'",
+              "error": false,
+              "checks": {
+                "log_executor_stats": [
+                  {
+                    "exp": "off",
+                    "check": "equals",
+                    "expected": "off",
+                    "background": "The log_executor_stats flag enables a crude profiling method for logging PostgreSQL executor performance statistics which even though can be useful for troubleshooting, it may increase the amount of logs significantly and have performance overhead. This recommendation is applicable to PostgreSQL database instances.",
+                    "remediation": "Using Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the PostgreSQL instance for which you want to enable the database flag.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag log_executor_stats from the drop-down menu and set appropriate value.\n6. Click Save to save your changes.\n7. Confirm your changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "PostgreSQL",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.2.11 Ensure 'log_executor_stats' database flag for Cloud SQL PostgreSQL instance is set to 'off'",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "FlagsPostgreSQL6-2-12-Ensure-log-statement-stats-database-flag-for-Cloud-SQL-PostgreSQL-instance-is-set-to-off-",
+              "name": "6.2.12 Ensure 'log_statement_stats' database flag for Cloud SQL PostgreSQL instance is set to 'off'",
+              "error": false,
+              "checks": {
+                "log_statement_stats": [
+                  {
+                    "exp": "off",
+                    "check": "equals",
+                    "expected": "off",
+                    "background": "The log_statement_stats flag enables a crude profiling method for logging end to end performance statistics of a SQL query. This can be useful for troubleshooting but may increase the amount of logs significantly and have performance overhead. This recommendation is applicable to PostgreSQL database instances.",
+                    "remediation": "Using Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the PostgreSQL instance for which you want to enable the database flag.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag log_statement_stats from the drop-down menu and set appropriate value.\n6. Click Save to save your changes.\n7. Confirm your changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "PostgreSQL",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.2.12 Ensure 'log_statement_stats' database flag for Cloud SQL PostgreSQL instance is set to 'off'",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "FlagsPostgreSQL6-2-13-Ensure-that-the-log-min-messages-database-flag-for-Cloud-SQL-PostgreSQL-instance-is-set-appropriately",
+              "name": "6.2.13 Ensure that the 'log_min_messages' database flag for Cloud SQL PostgreSQL instance is set appropriately",
+              "error": false,
+              "checks": {
+                "log_min_messages": [
+                  {
+                    "exp": "(DEBUG5|DEBUG4|DEBUG3|DEBUG2|DEBUG1|INFO|NOTICE|WARNING|ERROR|LOG|FATAL|PANIC)",
+                    "check": "regex",
+                    "expected": "(DEBUG5|DEBUG4|DEBUG3|DEBUG2|DEBUG1|INFO|NOTICE|WARNING|ERROR|LOG|FATAL|PANIC)",
+                    "background": "Auditing helps in troubleshooting operational problems and also permits forensic analysis. If log_min_error_statement is not set to the correct value, messages may not be classified as error messages appropriately. Considering general log messages as error messages would make it difficult to find actual errors, while considering only stricter severity levels as error messages may skip actual errors to log their SQL statements. The log_min_messages flag should be set in accordance with the organization's logging policy. This recommendation is applicable to PostgreSQL database instances.",
+                    "remediation": "From Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the PostgreSQL instance for which you want to enable the database flag.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag log_min_messages from the drop-down menu and set appropriate value.\n6. Click Save to save the changes.\n7. Confirm the changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "PostgreSQL",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.2.13 Ensure that the 'log_min_messages' database flag for Cloud SQL PostgreSQL instance is set appropriately",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "FlagsPostgreSQL6-2-14-Ensure-log-min-error-statement-database-flag-for-Cloud-SQL-PostgreSQL-instance-is-set-to-Error-or-stricter",
+              "name": "6.2.14 Ensure 'log_min_error_statement' database flag for Cloud SQL PostgreSQL instance is set to 'Error' or stricter",
+              "error": false,
+              "checks": {
+                "log_min_error_statement": [
+                  {
+                    "exp": "( ERROR|LOG|FATAL|PANIC)",
+                    "check": "regex",
+                    "expected": "( ERROR|LOG|FATAL|PANIC)",
+                    "background": "Auditing helps in troubleshooting operational problems and also permits forensic analysis. If log_min_error_statement is not set to the correct value, messages may not be classified as error messages appropriately. Considering general log messages as error messages would make is difficult to find actual errors and considering only stricter severity levels as error messages may skip actual errors to log their SQL statements. The log_min_error_statement flag should be set to ERROR or stricter. This recommendation is applicable to PostgreSQL database instances.",
+                    "remediation": "Using Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the PostgreSQL instance for which you want to enable the database flag.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag log_min_error_statement from the drop-down menu and set appropriate\nvalue.\n6. Click Save to save your changes.\n7. Confirm your changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "PostgreSQL",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.2.14 Ensure 'log_min_error_statement' database flag for Cloud SQL PostgreSQL instance is set to 'Error' or stricter",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "FlagsPostgreSQL6-2-15-Ensure-that-the-log-temp-files-database-flag-for-Cloud-SQL-PostgreSQL-instance-is-set-to-0-on-",
+              "name": "6.2.15 Ensure that the 'log_temp_files' database flag for Cloud SQL PostgreSQL instance is set to '0' (on)",
+              "error": false,
+              "checks": {
+                "log_temp_files": [
+                  {
+                    "exp": "0",
+                    "check": "equals",
+                    "expected": "0",
+                    "background": "If all temporary files are not logged, it may be more difficult to identify potential performance issues that may be due to either poor application coding or deliberate resource starvation attempts.",
+                    "remediation": "From Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the PostgreSQL instance where the database flag needs to be enabled.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag log_temp_files from the drop-down menu and set the value as 0.\n6. Click Save.\n7. Confirm the changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "PostgreSQL",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.2.15 Ensure that the 'log_temp_files' database flag for Cloud SQL PostgreSQL instance is set to '0' (on)",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "FlagsPostgreSQL6-2-16-Ensure-that-the-log-min-duration-statement-database-flag-for-Cloud-SQL-PostgreSQL-instance-is-set-to-1-",
+              "name": "6.2.16 Ensure that the 'log_min_duration_statement' database flag for Cloud SQL PostgreSQL instance is set to '-1'",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "exp": "true",
+                    "check": "equals",
+                    "expected": "true",
+                    "background": "Logging SQL statements may include sensitive information that should not be recorded in logs. This recommendation is applicable to PostgreSQL database instances.",
+                    "remediation": "From Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the PostgreSQL instance where the database flag needs to be enabled.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag log_min_duration_statement from the drop-down menu and set a value of -1.\n6. Click Save.\n7. Confirm the changes under Flags on the Overview page."
+                  }
+                ],
+                "log_min_duration_statement": [
+                  {
+                    "check": "equals",
+                    "expected": "-1"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "PostgreSQL",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.2.16 Ensure that the 'log_min_duration_statement' database flag for Cloud SQL PostgreSQL instance is set to '-1'",
+              "nodeGroupsOpen": true
+            }
+          ]
+        },
+        {
+          "SQLServer": [
+            {
+              "id": "FlagsSQLServer6-3-1-Ensure-external-scripts-enabled-database-flag-for-Cloud-SQL-SQL-Server-instance-is-set-to-off-",
+              "name": "6.3.1 Ensure 'external scripts enabled' database flag for Cloud SQL SQL Server instance is set to 'off'",
+              "error": false,
+              "checks": {
+                "external scripts enabled": [
+                  {
+                    "check": "equals",
+                    "expected": "off",
+                    "background": "external scripts enabled enable the execution of scripts with certain remote language extensions. This property is OFF by default. When Advanced Analytics Services is installed, setup can optionally set this property to true. As the External Scripts Enabled feature allows scripts external to SQL such as files located in an R library to be executed, which could adversely affect the security of the system, hence this should be disabled.This recommendation is applicable to SQL Server database instances.",
+                    "remediation": "Using Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the SQL Server instance for which you want to enable to database flag.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag external scripts enabled from the drop-down menu, and set its value to off.\n6. Click Save to save your changes.\n7. Confirm your changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "SQLServer",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.3.1 Ensure 'external scripts enabled' database flag for Cloud SQL SQL Server instance is set to 'off'",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "FlagsSQLServer6-3-2-Ensure-that-the-cross-db-ownership-chaining-database-flag-for-Cloud-SQL-SQL-Server-instance-is-set-to-off-",
+              "name": "6.3.2 Ensure that the 'cross db ownership chaining' database flag for Cloud SQL SQL Server instance is set to 'off'",
+              "error": false,
+              "checks": {
+                "cross db ownership chaining": [
+                  {
+                    "check": "equals",
+                    "expected": "off",
+                    "background": "Use the cross db ownership for chaining option to configure cross-database ownership chaining for an instance of Microsoft SQL Server. This server option allows you to control cross-database ownership chaining at the database level or to allow cross-database ownership chaining for all databases. Enabling cross db ownership is not recommended unless all of the databases hosted by the instance of SQL Server must participate in cross- database ownership chaining and you are aware of the security implications of this setting.This recommendation is applicable to SQL Server database instances.",
+                    "remediation": "From Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the SQL Server instance for which you want to enable to database flag.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag cross db ownership chaining from the drop-down menu, and set its value to\noff.\n6. Click Save.\n7. Confirm the changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "SQLServer",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.3.2 Ensure that the 'cross db ownership chaining' database flag for Cloud SQL SQL Server instance is set to 'off'",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "FlagsSQLServer6-3-4-Ensure-user-options-database-flag-for-Cloud-SQL-SQL-Server-instance-is-not-configured",
+              "name": "6.3.4 Ensure 'user options' database flag for Cloud SQL SQL Server instance is not configured",
+              "error": false,
+              "checks": {
+                "user options": [
+                  {
+                    "exp": ".",
+                    "check": "regex_excludes",
+                    "expected": ".",
+                    "background": "The user options option specifies global defaults for all users. A list of default query processing options is established for the duration of a user's work session. The user options option allows you to change the default values of the SET options (if the server's default settings are not appropriate).\nA user can override these defaults by using the SET statement. You can configure user options dynamically for new logins. After you change the setting of user options, new login sessions use the new setting; current login sessions are not affected. This recommendation is applicable to SQL Server database instances.",
+                    "remediation": "Using Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the SQL Server instance for which you want to enable to database flag.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. Click the X next user options flag shown\n6. Click Save to save your changes.\n7. Confirm your changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "SQLServer",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.3.4 Ensure 'user options' database flag for Cloud SQL SQL Server instance is not configured",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "FlagsSQLServer6-3-5-Ensure-remote-access-database-flag-for-Cloud-SQL-SQL-Server-instance-is-set-to-off-",
+              "name": "6.3.5 Ensure 'remote access' database flag for Cloud SQL SQL Server instance is set to 'off'",
+              "error": false,
+              "checks": {
+                "remote access": [
+                  {
+                    "check": "equals",
+                    "expected": "off",
+                    "background": "The remote access option controls the execution of stored procedures from local or remote servers on which instances of SQL Server are running. This default value for this option is 1. This grants permission to run local stored procedures from remote servers or remote stored procedures from the local server. To prevent local stored procedures from being run from a remote server or remote stored procedures from being run on the local server, this must be disabled. The Remote Access option controls the execution of local stored procedures on remote servers or remote stored procedures on local server. 'Remote access' functionality can be abused to launch a Denial-of-Service (DoS) attack on remote servers by off-loading query processing to a target, hence this should be disabled. This recommendation is applicable to SQL Server database instances.",
+                    "remediation": "Using Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the SQL Server instance for which you want to enable to database flag.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag remote access from the drop-down menu, and set its value to off.\n6. Click Save to save your changes.\n7. Confirm your changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "SQLServer",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.3.5 Ensure 'remote access' database flag for Cloud SQL SQL Server instance is set to 'off'",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "FlagsSQLServer6-3-6-Ensure-3625-trace-flag-database-flag-for-Cloud-SQL-SQL-Server-instance-is-set-to-off-",
+              "name": "6.3.6 Ensure '3625 (trace flag)' database flag for Cloud SQL SQL Server instance is set to 'off'",
+              "error": false,
+              "checks": {
+                "3625 (trace flag)": [
+                  {
+                    "check": "equals",
+                    "expected": "off",
+                    "background": "Trace flags are frequently used to diagnose performance issues or to debug stored procedures or complex computer systems, but they may also be recommended by Microsoft Support to address behavior that is negatively impacting a specific workload. All documented trace flags and those recommended by Microsoft Support are fully supported in a production environment when used as directed. 3625(trace log) Limits the amount of information returned to users who are not members of the sysadmin fixed server role, by masking the parameters of some error messages using '******'. This can help prevent disclosure of sensitive information, hence this is recommended to disable this flag. This recommendation is applicable to SQL Server database instances.",
+                    "remediation": "Using Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the SQL Server instance for which you want to enable to database flag.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag 3625 from the drop-down menu, and set its value to off.\n6. Click Save to save your changes.\n7. Confirm your changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "SQLServer",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.3.6 Ensure '3625 (trace flag)' database flag for Cloud SQL SQL Server instance is set to 'off'",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "FlagsSQLServer6-3-7-Ensure-that-the-contained-database-authentication-database-flag-for-Cloud-SQL-on-the-SQL-Server-instance-is-set-to-off-",
+              "name": "6.3.7 Ensure that the 'contained database authentication' database flag for Cloud SQL on the SQL Server instance is set to 'off'",
+              "error": false,
+              "checks": {
+                "contained database authentication": [
+                  {
+                    "check": "equals",
+                    "expected": "off",
+                    "background": "A contained database includes all database settings and metadata required to define the database and has no configuration dependencies on the instance of the Database Engine where the database is installed. Users can connect to the database without authenticating a login at the Database Engine level. Isolating the database from the Database Engine makes it possible to easily move the database to another instance of SQL Server. Contained databases have some unique threats that should be understood and mitigated by SQL Server Database Engine administrators. Most of the threats are related to the USER WITH PASSWORD authentication process, which moves the authentication boundary from the Database Engine level to the database level, hence this is recommended to disable this flag. This recommendation is applicable to SQL Server database instances.",
+                    "remediation": "From Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Select the SQL Server instance for which you want to enable to database flag.\n3. Click Edit.\n4. Scroll down to the Flags section.\n5. To set a flag that has not been set on the instance before, click Add item, choose the\nflag contained database authentication from the drop-down menu, and set its\nvalue to off.\n6. Click Save.\n7. Confirm the changes under Flags on the Overview page."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Flags",
+                "SQLServer",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.3.7 Ensure that the 'contained database authentication' database flag for Cloud SQL on the SQL Server instance is set to 'off'",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "IP Configurations": [
+        {
+          "IP Configurations": [
+            {
+              "id": "IP-ConfigurationsIP-Configurations6-4-Ensure-that-the-Cloud-SQL-database-instance-requires-all-incoming-connections-to-use-SSL",
+              "name": "6.4 Ensure that the Cloud SQL database instance requires all incoming connections to use SSL",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "requires SSL": [
+                  {
+                    "check": "equals",
+                    "expected": "true",
+                    "background": "SQL database connections if successfully trapped (MITM); can reveal sensitive data like credentials, database queries, query outputs etc. For security, it is recommended to always use SSL encryption when connecting to your instance. This recommendation is applicable for Postgresql, MySql generation 1, MySql generation 2 and SQL Server 2017 instances.",
+                    "remediation": "From Console:\n1. Go to https://console.cloud.google.com/sql/instances.\n2. Click on an instance name to see its configuration overview.\n3. In the left-side panel, select Connections.\n4. In the SSL connections section, click Allow only SSL connections.\n5. Under Configure SSL server certificates click Create new certificate.\n6. Under Configure SSL client certificates click Create a client certificate.\n7. Follow the instructions shown to learn how to connect to your instance."
+                  }
+                ]
+              },
+              "ci_path": [
+                "IP Configurations",
+                "IP Configurations",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.4 Ensure that the Cloud SQL database instance requires all incoming connections to use SSL",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "IP-ConfigurationsIP-Configurations6-5-Ensure-that-Cloud-SQL-database-instances-are-not-open-to-the-world",
+              "name": "6.5 Ensure that Cloud SQL database instances are not open to the world",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "authorized networks": [
+                  {
+                    "exp": ".",
+                    "check": "regex_excludes",
+                    "expected": ".",
+                    "background": "To minimize attack surface on a Database server instance, only trusted/known and required IP(s) should be white-listed to connect to it.\nAn authorized network should not have IPs/networks configured to 0.0.0.0/0 which will allow access to the instance from anywhere in the world. Note that authorized networks apply only to instances with public IPs.",
+                    "remediation": "From Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console by visiting https://console.cloud.google.com/sql/instances.\n2. Click the instance name to open its Instance details page.\n3. Under the Configuration section click Edit configurations\n4. Under Configuration options expand the Connectivity section.\n5. Click the delete icon for the authorized network 0.0.0.0/0.\n6. Click Save to update the instance."
+                  }
+                ]
+              },
+              "ci_path": [
+                "IP Configurations",
+                "IP Configurations",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.5 Ensure that Cloud SQL database instances are not open to the world",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "SQL Instances": [
+        {
+          "SQL Instances": [
+            {
+              "id": "SQL-InstancesSQL-Instances6-6-Ensure-that-Cloud-SQL-database-instances-do-not-have-public-IPs",
+              "name": "6.6 Ensure that Cloud SQL database instances do not have public IPs",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "ipv4 address type": [
+                  {
+                    "exp": "PRIVATE",
+                    "check": "includes",
+                    "expected": "PRIVATE",
+                    "background": "To lower the organization's attack surface, Cloud SQL databases should not have public IPs. Private IPs provide improved network security and lower latency for your application.",
+                    "remediation": "From Console:\n1. Go to the Cloud SQL Instances page in the Google Cloud Console:\nhttps://console.cloud.google.com/sql/instances\n2. Click the instance name to open its Instance details page.\n3. Select the Connections tab.\n4. Deselect the Public IP checkbox.\n5. Click Save to update the instance."
+                  }
+                ]
+              },
+              "ci_path": [
+                "SQL Instances",
+                "SQL Instances",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.6 Ensure that Cloud SQL database instances do not have public IPs",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scan_options": {}
+}

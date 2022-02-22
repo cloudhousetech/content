@@ -1,0 +1,439 @@
+{
+  "policy": {
+    "name": "gcp_gce_policy",
+    "short_description": "GCP GCE Policy",
+    "description": null,
+    "settings": {
+      "tests": {
+        "output_format": null
+      }
+    },
+    "operating_system_family_id": null,
+    "operating_system_id": null,
+    "type": null
+  },
+  "data": [
+    {
+      "instances": [
+        {
+          "instances": [
+            {
+              "id": "instancesinstances4-11-Ensure-that-Compute-instances-have-Confidential-Computing-enabled",
+              "name": "4.11 Ensure that Compute instances have Confidential Computing enabled",
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "confidential compute enabled": [
+                  {
+                    "check": "equals",
+                    "expected": "true",
+                    "background": "Confidential Computing enables customers' sensitive code and other data encrypted in memory during processing. Google does not have access to the encryption keys. Confidential VM can help alleviate concerns about risk related to either dependency on Google infrastructure or Google insiders' access to customer data in the clear.",
+                    "remediation": "Confidential Computing can only be enabled when an instance is created. You must delete the current instance and create a new one.\nFrom Console:\n1. Go to the VM instances page by visiting: https://console.cloud.google.com/compute/instances.\n2. Click CREATE INSTANCE.\n3. Fill out the desired configuration for your instance.\n4. Under the Confidential VM service section, check the option Enable the\nConfidential Computing service on this VM instance.\n5. Click Create."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Instances",
+                "Instances",
+                "*"
+              ],
+              "Instances": {
+                "name": "*"
+              },
+              "check_type": "instances",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "instancesinstances4-2-Ensure-that-instances-are-not-configured-to-use-the-default-service-account-with-full-access-to-all-Cloud-APIs",
+              "name": "4.2 Ensure that instances are not configured to use the default service account with full access to all Cloud APIs",
+              "checks": {
+                "Service Account * Scopes": [
+                  {
+                    "check": "excludes",
+                    "expected": "https://www.googleapis.com/auth/cloud-platform",
+                    "background": "Along with ability to optionally create, manage and use user managed custom service accounts, Google Compute Engine provides default service account Compute Engine default service account for an instances to access necessary cloud services. Project Editor role is assigned to Compute Engine default service account hence, This service account has almost all capabilities over all cloud services except billing. However, when Compute Engine default service account assigned to an instance it can operate in 3 scopes.\n1. Allow default access: Allows only minimum access required to run an Instance (Least Privileges)\n2. Allow full access to all Cloud APIs: Allow full access to all the cloud APIs/Services (Too much access)\n3. Set access for each API: Allows Instance administrator to choose only those APIs that are needed to perform specific business functionality expected by instance\nWhen an instance is configured with Compute Engine default service account with Scope Allow full access to all Cloud APIs, based on IAM roles assigned to the user(s) accessing Instance, it may allow user to perform cloud operations/API calls that user is not supposed to perform leading to successful privilege escalation.",
+                    "remediation": "From Console:\n1. Go to the VM instances page by visiting: https://console.cloud.google.com/compute/instances.\n2. Click on each instance name to go to its VM instance details page.\n3. If the Default Compute Engine service account is selected under Service\nAccount, ensure that Cloud API access scopes is not set to Allow full access to all Cloud APIs."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Instances",
+                "Instances",
+                "*"
+              ],
+              "Instances": {
+                "name": "*"
+              },
+              "check_type": "instances",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "instancesinstances4-1-Ensure-that-instances-are-not-configured-to-use-the-default-service-account",
+              "name": "4.1 Ensure that instances are not configured to use the default service account",
+              "checks": {
+                "Service Account * Email": [
+                  {
+                    "check": "excludes",
+                    "expected": "compute@developer.gserviceaccount.com",
+                    "background": "The default Compute Engine service account has the Editor role on the project, which allows read and write access to most Google Cloud Services. To defend against privilege escalations if your VM is compromised and prevent an attacker from gaining access to all of your project, it is recommended to not use the default Compute Engine service account. Instead, you should create a new service account and assigning only the permissions needed by your instance.\nThe default Compute Engine service account is named [PROJECT_NUMBER]- compute@developer.gserviceaccount.com.",
+                    "remediation": "From Console:\n1. Go to the VM instances page by visiting: https://console.cloud.google.com/compute/instances.\n2. Click on the instance name to go to its VM instance details page.\n3. Click STOP and then click EDIT.\n4. Under the section Service Account, select a service account other than the default\nCompute Engine service account. You may first need to create a new service\naccount.\n5. Click Save and then click START."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Instances",
+                "Instances",
+                "*"
+              ],
+              "Instances": {
+                "name": "*"
+              },
+              "check_type": "instances",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "instancesinstances4-8-Ensure-Compute-instances-are-launched-with-Shielded-VM-enabled",
+              "name": "4.8 Ensure Compute instances are launched with Shielded VM enabled",
+              "checks": {
+                "VTPM enabled": [
+                  {
+                    "check": "equals",
+                    "expected": "true",
+                    "background": "Shielded VMs are virtual machines (VMs) on Google Cloud Platform hardened by a set of security controls that help defend against rootkits and bootkits.\nShielded VM offers verifiable integrity of your Compute Engine VM instances, so you can be confident your instances haven't been compromised by boot- or kernel-level malware or rootkits. Shielded VM's verifiable integrity is achieved through the use of Secure Boot, virtual trusted platform module (vTPM)-enabled Measured Boot, and integrity monitoring.\nShielded VM instances run firmware which is signed and verified using Google's Certificate Authority, ensuring that the instance's firmware is unmodified and establishing the root of trust for Secure Boot.\nIntegrity monitoring helps you understand and make decisions about the state of your VM instances and the Shielded VM vTPM enables Measured Boot by performing the measurements needed to create a known good boot baseline, called the integrity policy baseline. The integrity policy baseline is used for comparison with measurements from subsequent VM boots to determine if anything has changed.\nSecure Boot helps ensure that the system only runs authentic software by verifying the digital signature of all boot components, and halting the boot process if signature verification fails.",
+                    "remediation": "To be able turn on Shielded VM on an instance, your instance must use an image with Shielded VM support.\nFrom Console:\n1. Go to the VM instances page by visiting: https://console.cloud.google.com/compute/instances.\n2. Click on the instance name to see its VM instance details page.\n3. Click STOP to stop the instance.\n4. When the instance has stopped, click EDIT.\n5. In the Shielded VM section, select Turn on vTPM and Turn on Integrity\nMonitoring.\n6. Optionally, if you do not use any custom or unsigned drivers on the instance, also\nselect Turn on Secure Boot.\n7. Click the Save button to modify the instance and then click START to restart it."
+                  }
+                ],
+                "integrity reporting enabled": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Instances",
+                "Instances",
+                "*"
+              ],
+              "Instances": {
+                "name": "*"
+              },
+              "check_type": "instances",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "instancesinstances4-9-Ensure-that-Compute-instances-do-not-have-public-IP-addresses",
+              "name": "4.9 Ensure that Compute instances do not have public IP addresses",
+              "checks": {
+                "network interface * access config kind": [
+                  {
+                    "check": "excludes",
+                    "expected": "accessConfig",
+                    "background": "To reduce your attack surface, Compute instances should not have public IP addresses. Instead, instances should be configured behind load balancers, to minimize the instance's exposure to the internet.",
+                    "remediation": "From Console:\n1. Go to the VM instances page by visiting: https://console.cloud.google.com/compute/instances.\n2. Click on the instance name to go the the Instance detail page.\n3. Click Edit.\n4. For each Network interface, ensure that External IP is set to None.\n5. Click Done and then click Save."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Instances",
+                "Instances",
+                "*"
+              ],
+              "Instances": {
+                "name": "*"
+              },
+              "check_type": "instances",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "instancesinstances4-6-Ensure-that-IP-forwarding-is-not-enabled-on-Instances",
+              "name": "4.6 Ensure that IP forwarding is not enabled on Instances",
+              "checks": {
+                "can ip forward": [
+                  {
+                    "check": "equals",
+                    "expected": "false",
+                    "background": "Compute Engine instance cannot forward a packet unless the source IP address of the packet matches the IP address of the instance. Similarly, GCP won't deliver a packet whose destination IP address is different than the IP address of the instance receiving the packet. However, both capabilities are required if you want to use instances to help route packets. To enable this source and destination IP check, disable the canIpForward field, which allows an instance to send and receive packets with non-matching destination or source IPs.",
+                    "absent_pass": true,
+                    "remediation": "From Console:\n1. Go to the VM Instances page by visiting: https://pantheon.corp.google.com/compute/instances.\n2. Select the VM Instance you want to remediate.\n3. Click the Delete button.\n4. On the 'VM Instances' page, click `CREATE INSTANCE'.\n5. Create a new instance with the desired configuration. By default, the instance is\nconfigured to not allow IP forwarding."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Instances",
+                "Instances",
+                "*"
+              ],
+              "instances": {
+                "name": "*"
+              },
+              "check_type": "instances",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Metadata": [
+        {
+          "metadata": [
+            {
+              "id": "Metadatametadata4-4-Ensure-oslogin-is-enabled-for-a-Project",
+              "name": "4.4 Ensure oslogin is enabled for a Project",
+              "checks": {
+                "enable-oslogin": [
+                  {
+                    "check": "equals",
+                    "expected": "true",
+                    "background": "Enabling osLogin ensures that SSH keys used to connect to instances are mapped with IAM users. Revoking access to IAM user will revoke all the SSH keys associated with that particular user. It facilitates centralized and automated SSH key pair management which is useful in handling cases like response to compromised SSH key pairs and/or revocation of external/third-party/Vendor users.",
+                    "remediation": "From Console:\n1. Go to the VM compute metadata page by visiting: https://console.cloud.google.com/compute/metadata.\n2. Click Edit.\n3. Add a metadata entry where the key is enable-oslogin and the value is TRUE.\n4. Click Save to apply the changes.\n5. For every instances that overrides the project setting, go to the VM Instances page\nat https://console.cloud.google.com/compute/instances.\n6. Click the name of the instance on which you want to remove the metadata value.\n7. At the top of the instance details page, click Edit to edit the instance settings.\n8. Under Custom metadata, remove any entry with key enable-oslogin and the value\nis FALSE\n9. At the bottom of the instance details page, click Save to apply your changes to the\ninstance."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Common Metadata",
+                "Common Metadata",
+                "items"
+              ],
+              "project": {
+                "name": "items"
+              },
+              "check_type": "project",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "Metadatametadata4-5-Ensure-Enable-connecting-to-serial-ports-is-not-enabled-for-VM-Instance",
+              "name": "4.5 Ensure 'Enable connecting to serial ports' is not enabled for VM Instance",
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true",
+                    "background": "A virtual machine instance has four virtual serial ports. Interacting with a serial port is similar to using a terminal window, in that input and output is entirely in text mode and there is no graphical interface or mouse support. The instance's operating system, BIOS, and other system-level entities often write output to the serial ports, and can accept input such as commands or answers to prompts. Typically, these system-level entities use the first serial port (port 1) and serial port 1 is often referred to as the serial console.\nThe interactive serial console does not support IP-based access restrictions such as IP whitelists. If you enable the interactive serial console on an instance, clients can attempt to connect to that instance from any IP address. This allows anybody to connect to that instance if they know the correct SSH key, username, project ID, zone, and instance name.\nTherefore interactive serial console support should be disabled.",
+                    "remediation": "From Console:\n1. Login to Google Cloud console\n2. Go to Computer Engine\n3. Go to VM instances\n4. Click on the Specific VM\n5. Click EDIT\n6. Unselect Enable connecting to serial ports below Remote access block.\n7. Click Save"
+                  }
+                ],
+                "serial-port-enable": [
+                  {
+                    "check": "regex",
+                    "expected": "0|false"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Common Metadata",
+                "Common Metadata",
+                "items"
+              ],
+              "project": {
+                "name": "items"
+              },
+              "check_type": "project",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "disks": [
+        {
+          "Disks": [
+            {
+              "id": "disksDisks4-7-Ensure-VM-disks-for-critical-VMs-are-encrypted-with-Customer-Supplied-Encryption-Keys-CSEK-",
+              "name": "4.7 Ensure VM disks for critical VMs are encrypted with Customer- Supplied Encryption Keys (CSEK)",
+              "Disks": {
+                "name": "*"
+              },
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "customer encryption key sha256": [
+                  {
+                    "check": "regex",
+                    "expected": ".",
+                    "background": "By default, Google Compute Engine encrypts all data at rest. Compute Engine handles and manages this encryption for you without any additional actions on your part. However, if you wanted to control and manage this encryption yourself, you can provide your own encryption keys.\nIf you provide your own encryption keys, Compute Engine uses your key to protect the Google-generated keys used to encrypt and decrypt your data. Only users who can provide the correct key can use resources protected by a customer-supplied encryption key.\nGoogle does not store your keys on its servers and cannot access your protected data unless you provide the key. This also means that if you forget or lose your key, there is no way for Google to recover the key or to recover any data encrypted with the lost key.\nAt least business critical VMs should have VM disks encrypted with CSEK.",
+                    "remediation": "Currently there is no way to update the encryption of an existing disk. Therefore you should create a new disk with Encryption set to Customer supplied.\nFrom Console:\n1. Go to Compute Engine Disks by visiting: https://console.cloud.google.com/compute/disks.\n2. Click CREATE DISK.\n3. Set Encryption type to Customer supplied,\n4. Provide the Key in the box.\n5. Select Wrapped key.\n6. Click Create."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Disks",
+                "Disks",
+                "*"
+              ],
+              "check_type": "disks",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "networks": [
+        {
+          "networks": [
+            {
+              "id": "networksnetworks3-2-Ensure-legacy-networks-do-not-exist-for-a-project",
+              "name": "3.2 Ensure legacy networks do not exist for a project",
+              "checks": {
+                "Name": [
+                  {
+                    "check": "excludes",
+                    "expected": "legacy",
+                    "background": "Legacy networks have a single network IPv4 prefix range and a single gateway IP address for the whole network. The network is global in scope and spans all cloud regions. Subnetworks cannot be created in a legacy network and are unable to switch from legacy to auto or custom subnet networks. Legacy networks can have an impact for high network traffic projects and are subject to a single point of contention or failure.",
+                    "remediation": "For each Google Cloud Platform project,\n1. Follow the documentation and create a non-legacy network suitable for the organization's requirements.\n2. Follow the documentation and delete the networks in the legacy mode."
+                  }
+                ],
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Networks",
+                "Networks",
+                "*"
+              ],
+              "Networks": {
+                "name": "*"
+              },
+              "check_type": "networks",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "firewalls": [
+        {
+          "firewalls": [
+            {
+              "id": "firewallsfirewalls3-6-Ensure-that-SSH-access-is-restricted-from-the-internet",
+              "name": "3.6 Ensure that SSH access is restricted from the internet",
+              "checks": {
+                "Tcp:22": [
+                  {
+                    "check": "excludes",
+                    "expected": "allowed",
+                    "background": "GCP Firewall Rules within a VPC Network apply to outgoing (egress) traffic from instances and incoming (ingress) traffic to instances in the network. Egress and ingress traffic flows are controlled even if the traffic stays within the network (for example, instance-to-instance communication). For an instance to have outgoing Internet access, the network must have a valid Internet gateway route or custom route whose destination IP is specified. This route simply defines the path to the Internet, to avoid the most general (0.0.0.0/0) destination IP Range specified from the Internet through SSH with the default Port 22. Generic access from the Internet to a specific IP Range needs to be restricted.",
+                    "absent_pass": true,
+                    "remediation": "From the Console:\n1. Go to VPC Network.\n2. Go to the Firewall Rules.\n3. Click the Firewall Rule you want to modify.\n4. Click Edit.\n5. Modify Source IP ranges to specific IP.\n6. Click Save."
+                  }
+                ],
+                "Udp:22": [
+                  {
+                    "check": "excludes",
+                    "expected": "allowed"
+                  }
+                ],
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Firewalls",
+                "Firewalls",
+                "*"
+              ],
+              "Firewalls": {
+                "name": "*"
+              },
+              "check_type": "firewalls",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "firewallsfirewalls3-7-Ensure-that-RDP-access-is-restricted-from-the-Internet",
+              "name": "3.7 Ensure that RDP access is restricted from the Internet",
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "Tcp:3389": [
+                  {
+                    "check": "excludes",
+                    "expected": "allowed",
+                    "background": "GCP Firewall Rules within a VPC Network. These rules apply to outgoing (egress) traffic from instances and incoming (ingress) traffic to instances in the network. Egress and ingress traffic flows are controlled even if the traffic stays within the network (for example, instance-to-instance communication). For an instance to have outgoing Internet access, the network must have a valid Internet gateway route or custom route whose destination IP is specified. This route simply defines the path to the Internet, to avoid the most general (0.0.0.0/0) destination IP Range specified from the Internet through RDP with the default Port 3389. Generic access from the Internet to a specific IP Range should be restricted.",
+                    "remediation": "From the Console:\n1. Go to VPC Network.\n2. Go to the Firewall Rules.\n3. Click the Firewall Rule to be modified.\n4. Click Edit.\n5. Modify Source IP ranges to specific IP.\n6. Click Save."
+                  }
+                ],
+                "Udp:3389": [
+                  {
+                    "check": "excludes",
+                    "expected": "allowed",
+                    "absent_pass": true
+                  }
+                ]
+              },
+              "ci_path": [
+                "Firewalls",
+                "Firewalls",
+                "*"
+              ],
+              "Firewalls": {
+                "name": "*"
+              },
+              "check_type": "firewalls",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "subnetworks": [
+        {
+          "subnetworks": [
+            {
+              "id": "subnetworkssubnetworksItem-at-Subnetworks-should-have-the-defined-properties",
+              "name": "Item at Subnetworks,*,* should have the defined properties",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "enable flow logs": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Subnetworks",
+                "Subnetworks",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "Item at {{ ci_path }} should have the defined properties",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scan_options": {}
+}

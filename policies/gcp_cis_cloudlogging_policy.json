@@ -1,0 +1,102 @@
+{
+  "policy": {
+    "name": "gcp_cloudlogging_policy",
+    "short_description": "GCP CloudLogging Policy",
+    "description": null,
+    "settings": {
+      "tests": {
+        "output_format": null
+      }
+    },
+    "operating_system_family_id": null,
+    "operating_system_id": null,
+    "type": null
+  },
+  "data": [
+    {
+      "Empty Log Sink Filters": [
+        {
+          "Empty Log Sink Filters": [
+            {
+              "id": "Empty-Log-Sink-FiltersEmpty-Log-Sink-Filters2-2-Ensure-that-sinks-are-configured-for-all-log-entries",
+              "name": "2.2 Ensure that sinks are configured for all log entries",
+              "checks": {
+                "empty filter available": [
+                  {
+                    "check": "equals",
+                    "expected": false,
+                    "background": "Log entries are held in Cloud Logging. To aggregate logs, export them to a SIEM. To keep them longer, it is recommended to set up a log sink. Exporting involves writing a filter that selects the log entries to export, and choosing a destination in Cloud Storage, BigQuery, or Cloud Pub/Sub. The filter and destination are held in an object called a sink. To ensure all log entries are exported to sinks, ensure that there is no filter configured for a sink. Sinks can be created in projects, organizations, folders, and billing accounts.",
+                    "remediation": "From Console:\n1. Go to Logging/Logs by visiting https://console.cloud.google.com/logs/viewer.\n2. Click the down arrow symbol on Filter Bar at the rightmost corner and select\nConvert to Advanced Filter.\n3. This step converts Filter Bar to Advanced Filter Bar.\n4. Clear any text from the Advanced Filter field. This ensures that the log-filter is\nset to empty and captures all the logs.\n5. Click Submit Filter and the result should display all logs.\n6. Click Create Sink, which opens a menu on the right.\n7. Fill out the fields and click Create Sink."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Empty Log Sink Filters",
+                "Empty Log Sink Filters"
+              ],
+              "check_type": "empty_log_sink_filters",
+              "nodeGroupsOpen": true,
+              "empty_log_sink_filters": {
+                "name": "empty log sink filters"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Storage Buckets": [
+        {
+          "storage buckets": [
+            {
+              "id": "Storage-Bucketsstorage-buckets2-3-Ensure-that-retention-policies-on-log-buckets-are-configured-using-Bucket-Lock",
+              "name": "2.3 Ensure that retention policies on log buckets are configured using Bucket Lock",
+              "error": false,
+              "checks": {
+                "Locked": [
+                  {
+                    "exp": "true",
+                    "check": "equals",
+                    "expected": "true",
+                    "background": "Logs can be exported by creating one or more sinks that include a log filter and a destination. As Cloud Logging receives new log entries, they are compared against each sink. If a log entry matches a sink's filter, then a copy of the log entry is written to the destination.\nSinks can be configured to export logs in storage buckets. It is recommended to configure a data retention policy for these cloud storage buckets and to lock the data retention policy; thus permanently preventing the policy from being reduced or removed. This way, if the system is ever compromised by an attacker or a malicious insider who wants to cover their tracks, the activity logs are definitely preserved for forensics and security investigations.",
+                    "remediation": "From Console:\n1. If sinks are not configured, first follow the instructions in the recommendation: Ensure that sinks are configured for all Log entries.\n2. For each storage bucket configured as a sink, go to the Cloud Storage browser at https://console.cloud.google.com/storage/browser/<BUCKET_NAME>.\n3. Select the Bucket Lock tab near the top of the page.\n4. In the Retention policy entry, click the Add Duration link. The Set a retention\npolicy dialog box appears.\n5. Enter the desired length of time for the retention period and click Save policy.\n6. Set the Lock status for this retention policy to Locked."
+                  }
+                ],
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "Retention Days": [
+                  {
+                    "exp": ".",
+                    "cond": [
+                      {
+                        "op": "!=",
+                        "val": "0",
+                        "logic": "AND"
+                      }
+                    ],
+                    "check": "regex",
+                    "expected": "."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Storage Buckets",
+                "Storage Buckets",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "2.3 Ensure that retention policies on log buckets are configured using Bucket Lock",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scan_options": {}
+}

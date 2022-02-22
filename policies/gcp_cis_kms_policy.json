@@ -1,0 +1,120 @@
+{
+  "policy": {
+    "name": "gcp_cloudkms_policy",
+    "short_description": "GCP CloudKMS Policy",
+    "description": null,
+    "settings": {
+      "tests": {
+        "output_format": null
+      }
+    },
+    "operating_system_family_id": null,
+    "operating_system_id": null,
+    "type": null
+  },
+  "data": [
+    {
+      "policies": [
+        {
+          "*": [
+            {
+              "id": "policies-1-9-Ensure-that-Cloud-KMS-cryptokeys-are-not-anonymously-or-publicly-accessible",
+              "name": "1.9 Ensure that Cloud KMS cryptokeys are not anonymously or publicly accessible",
+              "checks": {
+                "Members": [
+                  {
+                    "check": "excludes",
+                    "expected": "allUsers",
+                    "background": "Granting permissions to allUsers or allAuthenticatedUsers allows anyone to access the dataset. Such access might not be desirable if sensitive data is stored at the location. In this case, ensure that anonymous and/or public access to a Cloud KMS cryptokey is not allowed.",
+                    "remediation": "From Command Line:\n1. List all Cloud KMS Cryptokeys.\n  gcloud kms keys list --keyring=[key_ring_name] --location=global -- format=json | jq '.[].name'\n 2. Remove IAM policy binding for a KMS key to remove access to allUsers and allAuthenticatedUsers using the below command.\ngcloud kms keys remove-iam-policy-binding [key_name] -- keyring=[key_ring_name] --location=global --member='allAuthenticatedUsers' -- role='[role]'\ngcloud kms keys remove-iam-policy-binding [key_name] -- keyring=[key_ring_name] --location=global --member='allUsers' --role='[role]'"
+                  },
+                  {
+                    "check": "excludes",
+                    "expected": "allAuthenticatedUsers"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Policies",
+                "*",
+                "*"
+              ],
+              "Policies": {
+                "name": "*"
+              },
+              "check_type": "policies",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "KMS Crypto Keys": [
+        {
+          "KMS Crypto Keys": [
+            {
+              "id": "KMS-Crypto-KeysKMS-Crypto-KeysItem-at-kms-kms-crypto-keys-should-have-the-defined-properties",
+              "name": "1.10 Ensure KMS encryption keys are rotated within a period of 90 days",
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "rotation period": [
+                  {
+                    "exp": null,
+                    "cond": [
+                      {
+                        "op": "<=",
+                        "val": "7776000",
+                        "logic": "AND"
+                      }
+                    ],
+                    "check": "conditional",
+                    "expected": null,
+                    "background": "Set a key rotation period and starting time. A key can be created with a specified rotation period, which is the time between when new key versions are generated automatically. A key can also be created with a specified next rotation time. A key is a named object representing a cryptographic key used for a specific purpose. The key material, the actual bits used for encryption, can change over time as new key versions are created.\nA key is used to protect some corpus of data. A collection of files could be encrypted with the same key and people with decrypt permissions on that key would be able to decrypt those files. Therefore, it's necessary to make sure the rotation period is set to a specific time.",
+                    "remediation": "From Console:\n1. Go to Cryptographic Keys by visiting: https://console.cloud.google.com/security/kms.\n2. Click on the specific key ring\n3. From the list of keys, choose the specific key and Click on Right side pop up the\nblade (3 dots).\n4. Click on Edit rotation period.\n5. On the pop-up window, Select a new rotation period in days which should be\nless than 90 and then choose Starting on date (date from which the rotation period begins)."
+                  }
+                ],
+                "next rotation time": [
+                  {
+                    "exp": null,
+                    "cond": [
+                      {
+                        "op": ">",
+                        "val": "90 days ago",
+                        "logic": "AND"
+                      },
+                      {
+                        "op": "<",
+                        "val": "90 days from now",
+                        "logic": "AND"
+                      }
+                    ],
+                    "check": "time_comparison",
+                    "expected": null
+                  }
+                ]
+              },
+              "ci_path": [
+                "KMS Crypto Keys",
+                "KMS Crypto Keys",
+                "*"
+              ],
+              "check_type": "kms crypto keys",
+              "description": "1.10 Ensure KMS encryption keys are rotated within a period of 90 days",
+              "nodeGroupsOpen": true,
+              "KMS Crypto Keys": {
+                "name": "*"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scan_options": {}
+}

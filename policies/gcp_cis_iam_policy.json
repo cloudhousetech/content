@@ -1,0 +1,206 @@
+{
+  "policy": {
+    "name": "gcp_iam_policy",
+    "short_description": "GCP IAM Policy",
+    "description": null,
+    "settings": {
+      "tests": {
+        "output_format": null
+      }
+    },
+    "operating_system_family_id": null,
+    "operating_system_id": null,
+    "type": null
+  },
+  "data": [
+    {
+      "Policies": [
+        {
+          "Policies": [
+            {
+              "id": "PoliciesPolicies1-1-Ensure-that-corporate-login-credentials-are-used",
+              "name": "1.1 Ensure that corporate login credentials are used",
+              "error": false,
+              "checks": {
+                "valid email domain": [
+                  {
+                    "exp": "true",
+                    "check": "equals",
+                    "expected": "true",
+                    "background": "It is recommended fully-managed corporate Google accounts be used for increased visibility, auditing, and controlling access to Cloud Platform resources. Email accounts based outside of the user's organization, such as personal accounts, should not be used for business purposes.",
+                    "remediation": "To ensure that no email addresses outside the organization can be granted IAM permissions to its Google Cloud projects, folders or organization, turn on the Organization Policy for Domain Restricted Sharing. Learn more at: https://cloud.google.com/resource-manager/docs/organization-policy/restricting- domains"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Policies",
+                "Policies",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "1.1 Ensure that corporate login credentials are used",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "PoliciesPolicies1-6-Ensure-that-IAM-users-are-not-assigned-the-Service-Account-User-or-Service-Account-Token-Creator-roles-at-project-level",
+              "name": "1.6 Ensure that IAM users are not assigned the Service Account User or Service Account Token Creator roles at project level",
+              "error": false,
+              "checks": {
+                "bindings": [
+                  {
+                    "exp": "admin*, *Admin, roles/editor, roles/owner",
+                    "check": "regex_excludes",
+                    "expected": "admin*, *Admin, roles/editor, roles/owner",
+                    "background": "Service accounts represent service-level security of the Resources (application or a VM) which can be determined by the roles assigned to it. Enrolling ServiceAccount with Admin rights gives full access to an assigned application or a VM. A ServiceAccount Access holder can perform critical actions like delete, update change settings, etc. without user intervention. For this reason, it's recommended that service accounts not have Admin rights.",
+                    "remediation": "1. Go to IAM & admin/IAM using https://console.cloud.google.com/iam-admin/iam\n2. Go to the Members\n3. Identify User-Managed user created service account with roles containing *Admin\nor *admin or role matching Editor or role matching Owner\n4. Click the Delete bin icon to remove the role from the member (service account in\nthis case)"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Policies",
+                "Policies",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "1.6 Ensure that IAM users are not assigned the Service Account User or Service Account Token Creator roles at project level",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "PoliciesPolicies1-11-Ensure-that-Separation-of-duties-is-enforced-while-assigning-KMS-related-roles-to-users",
+              "name": "1.11 Ensure that Separation of duties is enforced while assigning KMS related roles to users",
+              "error": false,
+              "checks": {
+                "bindings": [
+                  {
+                    "exp": "(?=\"Cloud KMS Admin\")(?= \"Cloud KMS CryptoKey\nEncrypter/Decrypter\")|(?=\"Cloud KMS Admin\")(?= \"Cloud KMS CryptoKey Encrypter\")|(?=\"Cloud KMS Admin\")(?= \"Cloud KMS CryptoKey Decrypter\")",
+                    "check": "regex_excludes",
+                    "expected": "(?=\"Cloud KMS Admin\")(?= \"Cloud KMS CryptoKey\nEncrypter/Decrypter\")|(?=\"Cloud KMS Admin\")(?= \"Cloud KMS CryptoKey Encrypter\")|(?=\"Cloud KMS Admin\")(?= \"Cloud KMS CryptoKey Decrypter\")",
+                    "background": "The built-in/predefined IAM role Cloud KMS Admin allows the user/identity to create, delete, and manage service account(s). The built-in/predefined IAM role Cloud KMS CryptoKey Encrypter/Decrypter allows the user/identity (with adequate privileges on concerned resources) to encrypt and decrypt data at rest using an encryption key(s).\nThe built-in/predefined IAM role Cloud KMS CryptoKey Encrypter allows the user/identity (with adequate privileges on concerned resources) to encrypt data at rest using an encryption key(s). The built-in/predefined IAM role Cloud KMS CryptoKey Decrypter allows the user/identity (with adequate privileges on concerned resources) to decrypt data at rest using an encryption key(s).\nSeparation of duties is the concept of ensuring that one individual does not have all necessary permissions to be able to complete a malicious action. In Cloud KMS, this could be an action such as using a key to access and decrypt data a user should not normally have access to. Separation of duties is a business control typically used in larger organizations, meant to help avoid security or privacy incidents and errors. It is considered best practice.\nNo user(s) should have Cloud KMS Admin and any of the Cloud KMS CryptoKey Encrypter/Decrypter, Cloud KMS CryptoKey Encrypter, Cloud KMS CryptoKey Decrypter roles assigned at the same time.",
+                    "remediation": "From Console:\n1. Go to IAM & Admin/IAM using https://console.cloud.google.com/iam-admin/iam\n2. For any member having Cloud KMS Admin and any of the Cloud KMS CryptoKey\nEncrypter/Decrypter, Cloud KMS CryptoKey Encrypter, Cloud KMS CryptoKey Decrypter roles granted/assigned, click the Delete Bin icon to remove the role from the member."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Policies",
+                "Policies",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "1.11 Ensure that Separation of duties is enforced while assigning KMS related roles to users",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "PoliciesPolicies2-1-Ensure-that-Cloud-Audit-Logging-is-configured-properly-across-all-services-and-all-users-from-a-project",
+              "name": "2.1 Ensure that Cloud Audit Logging is configured properly across all services and all users from a project",
+              "error": false,
+              "checks": {
+                "audit configs": [
+                  {
+                    "exp": "exemptedMembers",
+                    "check": "excludes",
+                    "expected": "exemptedMembers",
+                    "background": "Cloud Audit Logging maintains two audit logs for each project, folder, and organization: Admin Activity and Data Access.\n1. Admin Activity logs contain log entries for API calls or other administrative actions that modify the configuration or metadata of resources. Admin Activity audit logs are enabled for all services and cannot be configured.\n2. Data Access audit logs record API calls that create, modify, or read user-provided data. These are disabled by default and should be enabled.\nThere are three kinds of Data Access audit log information:\no Admin read: Records operations that read metadata or configuration information. Admin Activity audit logs record writes of metadata and configuration information that cannot be disabled.\no Data read: Records operations that read user-provided data. o Data write: Records operations that write user-provided data.\nIt is recommended to have an effective default audit config configured in such a way that:\n1. logtype is set to DATA_READ (to log user activity tracking) and DATA_WRITES (to log changes/tampering to user data).\n2. audit config is enabled for all the services supported by the Data Access audit logs feature.\n3. Logs should be captured for all users, i.e., there are no exempted users in any of the audit config sections. This will ensure overriding the audit config will not contradict the requirement.",
+                    "remediation": "From Console:\n1. Go to Audit Logs by visiting https://console.cloud.google.com/iam-admin/audit.\n2. Follow the steps at https://cloud.google.com/logging/docs/audit/configure-data- access to enable audit logs for all Google Cloud services. Ensure that no exemptions are allowed."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Policies",
+                "Policies",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "2.1 Ensure that Cloud Audit Logging is configured properly across all services and all users from a project",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Service Account Keys": [
+        {
+          "Service Account Keys": [
+            {
+              "id": "Service-Account-KeysService-Account-Keys1-4-Ensure-that-there-are-only-GCP-managed-service-account-keys-for-each-service-account",
+              "name": "1.4 Ensure that there are only GCP-managed service account keys for each service account",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "Key Type": [
+                  {
+                    "exp": "USER_MANAGED",
+                    "check": "regex_excludes",
+                    "expected": "USER_MANAGED"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Service Account Keys",
+                "Service Account Keys",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "1.4 Ensure that there are only GCP-managed service account keys for each service account",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "Service-Account-KeysService-Account-Keys1-7-Ensure-user-managed-external-keys-for-service-accounts-are-rotated-every-90-days-or-less",
+              "name": "1.7 Ensure user-managed/external keys for service accounts are rotated every 90 days or less",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "Valid After": [
+                  {
+                    "exp": "< 90 days",
+                    "cond": [
+                      {
+                        "op": ">",
+                        "val": "90 days ago",
+                        "logic": "AND"
+                      },
+                      {
+                        "op": "<",
+                        "val": "now",
+                        "logic": "AND"
+                      }
+                    ],
+                    "check": "time_comparison",
+                    "expected": "< 90 days",
+                    "background": "Rotating Service Account keys will reduce the window of opportunity for an access key that is associated with a compromised or terminated account to be used. Service Account keys should be rotated to ensure that data cannot be accessed with an old key that might have been lost, cracked, or stolen.\nEach service account is associated with a key pair managed by Google Cloud Platform (GCP). It is used for service-to-service authentication within GCP. Google rotates the keys daily.\nGCP provides the option to create one or more user-managed (also called external key pairs) key pairs for use from outside GCP (for example, for use with Application Default Credentials). When a new key pair is created, the user is required to download the private key (which is not retained by Google). With external keys, users are responsible for keeping the private key secure and other management operations such as key rotation. External keys can be managed by the IAM API, gcloud command-line tool, or the Service Accounts page in the Google Cloud Platform Console. GCP facilitates up to 10 external service account keys per service account to facilitate key rotation.",
+                    "remediation": "From Console:\nDelete any external (user-managed) Service Account Key older than 90 days:\n1. Go to APIs & Services\\Credentials using https://console.cloud.google.com/apis/credentials\n2. In the Section Service Account Keys, for every external (user-managed) service account key where creation date is greater than or equal to the past 90 days, click Delete Bin Icon to Delete Service Account key"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Service Account Keys",
+                "Service Account Keys",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "1.7 Ensure user-managed/external keys for service accounts are rotated every 90 days or less",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scan_options": {}
+}

@@ -1,0 +1,84 @@
+{
+  "policy": {
+    "name": "gcp_bigquerypolicy",
+    "short_description": "GCP BigQuery Policy",
+    "description": null,
+    "settings": {
+      "tests": {
+        "output_format": null
+      }
+    },
+    "operating_system_family_id": null,
+    "operating_system_id": null,
+    "type": null
+  },
+  "data": [
+    {
+      "datasets": [
+        {
+          "datasets": [
+            {
+              "id": "datasetsdatasets7-3-Ensure-that-a-Default-Customer-managed-encryption-key-CMEK-is-specified-for-all-BigQuery-Data-Sets",
+              "name": "7.3 Ensure that a Default Customer-managed encryption key (CMEK) is specified for all BigQuery Data Sets",
+              "error": false,
+              "checks": {
+                "Encryption KMS Key Name": [
+                  {
+                    "exp": ".",
+                    "check": "regex",
+                    "expected": ".",
+                    "background": "BigQuery by default encrypts the data as rest by employing Envelope Encryption using Google managed cryptographic keys. This is seamless and does not require any additional input from the user.\nFor greater control over the encryption, customer-managed encryption keys (CMEK) can be used as encryption key management solution for BigQuery Data Sets. Setting a Default Customer-managed encryption key (CMEK) for a data set ensure any tables created in future will use the specified CMEK if none other is provided.\nNote: Google does not store your keys on its servers and cannot access your protected data unless you provide the key. This also means that if you forget or lose your key, there is no way for Google to recover the key or to recover any data encrypted with the lost key.",
+                    "remediation": "The default CMEK for existing data sets can be updated by specifying the default key in the EncryptionConfiguration.kmsKeyName field when calling the datasets.insert or datasets.patch methods"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Datasets",
+                "Datasets",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "7.3 Ensure that a Default Customer-managed encryption key (CMEK) is specified for all BigQuery Data Sets",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tables": [
+        {
+          "tables": [
+            {
+              "id": "tablestables7-2-Ensure-that-all-BigQuery-Tables-are-encrypted-with-Customer-managed-encryption-key-CMEK-",
+              "name": "7.2 Ensure that all BigQuery Tables are encrypted with Customer- managed encryption key (CMEK)",
+              "error": false,
+              "checks": {
+                "Encryption KMS Key Name": [
+                  {
+                    "exp": ".",
+                    "check": "regex",
+                    "expected": ".",
+                    "background": "BigQuery by default encrypts the data as rest by employing Envelope Encryption using Google managed cryptographic keys. This is seamless and does not require any additional input from the user.\nFor greater control over the encryption, customer-managed encryption keys (CMEK) can be used as encryption key management solution for BigQuery tables. The CMEK is used to encrypt the data encryption keys instead of using google-managed encryption keys. BigQuery stores the table and CMEK association and the encryption/decryption is done automatically.\nApplying the Default Customer-managed keys on BigQuery data sets ensures that all the new tables created in the future will be encrypted using CMEK but existing tables need to be updated to use CMEK individually.\nNote: Google does not store your keys on its servers and cannot access your protected data unless you provide the key. This also means that if you forget or lose your key, there is no way for Google to recover the key or to recover any data encrypted with the lost key.",
+                    "remediation": "Currently, there is no way to update the encryption of existing data in the table. The data needs to be copied to either an original table or another table while specifying the customer managed encryption key (CMEK).\nFrom Command Line:\nUse the following command to copy the data. The source and the destination needs to be same in case copying to the original table.\nbq cp --destination_kms_key <customer_managed_key> source_dataset.source_table destination_dataset.destination_table"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Tables",
+                "Tables",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "7.2 Ensure that all BigQuery Tables are encrypted with Customer- managed encryption key (CMEK)",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scan_options": {}
+}

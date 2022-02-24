@@ -1,0 +1,96 @@
+{
+  "policy": {
+    "name": "gpc_dns_policy",
+    "short_description": "GPC DNS Policy",
+    "description": null,
+    "settings": {
+      "tests": {
+        "output_format": null
+      }
+    },
+    "operating_system_family_id": null,
+    "operating_system_id": null,
+    "type": null
+  },
+  "data": [
+    {
+      "Managed Zones": [
+        {
+          "Managed Zones": [
+            {
+              "id": "Managed-ZonesManaged-Zones3-3-Ensure-that-DNSSEC-is-enabled-for-Cloud-DNS",
+              "name": "3.3 Ensure that DNSSEC is enabled for Cloud DNS",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "dnssec config state": [
+                  {
+                    "exp": "on",
+                    "check": "equals",
+                    "expected": "on",
+                    "background": "Domain Name System Security Extensions (DNSSEC) adds security to the DNS protocol by enabling DNS responses to be validated. Having a trustworthy DNS that translates a domain name like www.example.com into its associated IP address is an increasingly important building block of today’s web-based applications. Attackers can hijack this process of domain/IP lookup and redirect users to a malicious site through DNS hijacking and man-in- the-middle attacks. DNSSEC helps mitigate the risk of such attacks by cryptographically signing DNS records. As a result, it prevents attackers from issuing fake DNS responses that may misdirect browsers to nefarious websites.",
+                    "remediation": "From Console:\n1. Go to Cloud DNS by visiting https://console.cloud.google.com/net- services/dns/zones.\n2. For each zone of Type Public, set DNSSEC to On."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Managed Zones",
+                "Managed Zones",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "3.3 Ensure that DNSSEC is enabled for Cloud DNS",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "policies": [
+        {
+          "policies": [
+            {
+              "id": "policiespolicies2-12-Ensure-that-Cloud-DNS-logging-is-enabled-for-all-VPC-networks",
+              "name": "2.12 Ensure that Cloud DNS logging is enabled for all VPC networks",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "logging enabled": [
+                  {
+                    "exp": "true",
+                    "check": "equals",
+                    "expected": "true",
+                    "background": "Security monitoring and forensics cannot depend solely on IP addresses from VPC flow logs, especially when considering the dynamic IP usage of cloud resources, HTTP virtual host routing, and other technology that can obscure the DNS name used by a client from the IP address. Monitoring of Cloud DNS logs provides visibility to DNS names requested by the clients within the VPC. These logs can be monitored for anomalous domain names, evaluated against threat intelligence, and\nNote: For full capture of DNS, firewall must block egress UDP/53 (DNS) and TCP/443 (DNS over HTTPS) to prevent client from using external DNS name server for resolution.",
+                    "remediation": "From Command Line:\nAdd New DNS Policy With Logging Enabled\nFor each VPC network that needs a DNS policy with logging enabled:\ngcloud dns policies create enable-dns-logging --enable-logging -- description=\"Enable DNS Logging\" --networks=VPC_NETWORK_NAME\nThe VPC_NETWORK_NAME can be one or more networks in comma-separated list\nEnable Logging for Existing DNS Policy\nFor each VPC network that has an existing DNS policy that needs logging enabled:\n gcloud dns policies update POLICY_NAME --enable-logging -- networks=VPC_NETWORK_NAME\n\nThe VPC_NETWORK_NAME can be one or more networks in comma-separated list"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Policies",
+                "Policies",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "2.12 Ensure that Cloud DNS logging is enabled for all VPC networks",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scan_options": {}
+}

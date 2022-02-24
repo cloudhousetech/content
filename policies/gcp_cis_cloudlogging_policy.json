@@ -86,7 +86,7 @@
               "ci_path": [
                 "Storage Buckets",
                 "Storage Buckets",
-                "*"
+                "**"
               ],
               "check_type": "other",
               "path_error": "",

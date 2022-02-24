@@ -1,7 +1,7 @@
 {
   "policy": {
     "name": "gcp_bigquerypolicy",
-    "short_description": "GCP BigQueryPolicy",
+    "short_description": "GCP BigQuery Policy",
     "description": null,
     "settings": {
       "tests": {

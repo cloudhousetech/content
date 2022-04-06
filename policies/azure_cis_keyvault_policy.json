@@ -1,0 +1,56 @@
+{
+  "policy": {
+    "name": "azure_key_vault_policy",
+    "short_description": "Azure Key Vault Policy",
+    "description": null,
+    "settings": {
+      "tests": {
+        "output_format": null
+      }
+    },
+    "operating_system_family_id": null,
+    "operating_system_id": null,
+    "type": null
+  },
+  "data": [
+    {
+      "Properties": [
+        {
+          "Key Attributes": [
+            {
+              "id": "PropertiesKey-Attributes8-1-Ensure-that-the-Expiration-Date-is-set-for-all-Keys-in-RBAC-Key-Vaults",
+              "name": "8.1 Ensure that the Expiration Date is set for all Keys in RBAC Key Vaults",
+              "error": false,
+              "checks": {
+                "expires": [
+                  {
+                    "check": "regex",
+                    "expected": ".",
+                    "background": "Azure Key Vault enables users to store and use cryptographic keys within the Microsoft Azure environment. The exp (expiration time) attribute identifies the expiration time on or after which the key MUST NOT be used for a cryptographic operation. By default, keys never expire. It is thus recommended that keys be rotated in the key vault and set an explicit expiration time for all keys. This ensures that the keys cannot be used beyond their assigned lifetimes.",
+                    "remediation": "From Azure Console\n1. Go to Key vaults\n2. For each Key vault, click on Keys.\n3. Under the Settings section, Make sure Enabled? is set to Yes\n4. Set an appropriate EXPIRATION DATE on all keys."
+                  }
+                ],
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Properties",
+                "Key Attributes",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "8.1 Ensure that the Expiration Date is set for all Keys in RBAC Key Vaults",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scan_options": {}
+}

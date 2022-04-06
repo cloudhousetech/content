@@ -1,0 +1,257 @@
+{
+  "policy": {
+    "name": "azure_app_service_policy",
+    "short_description": "Azure App Service Policy",
+    "description": null,
+    "settings": {
+      "tests": {
+        "output_format": null
+      }
+    },
+    "operating_system_family_id": null,
+    "operating_system_id": null,
+    "type": null
+  },
+  "data": [
+    {
+      "Properties": [
+        {
+          "Site Properties": [
+            {
+              "id": "PropertiesSite-Properties9-2-Ensure-Web-App-Redirects-All-HTTP-traffic-to-HTTPS-in-Azure-App-Service",
+              "name": "9.2 Ensure Web App Redirects All HTTP traffic to HTTPS in Azure App Service",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "HTTPS only": [
+                  {
+                    "check": "equals",
+                    "expected": "true",
+                    "background": "Enabling HTTPS-only traffic will redirect all non-secure HTTP request to HTTPS ports. HTTPS uses the TLS/SSL protocol to provide a secure connection, which is both encrypted and authenticated. So it is important to support HTTPS for the security benefits.",
+                    "remediation": "From Azure Console\n1. Login to Azure Portal using https://portal.azure.com\n2. Go to App Services\n3. Click on each App\n4. Under Setting section, Click on TLS/SSL settings\n5. Under the Bindings pane, set HTTPS Only to On under Protocol Settings section"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Properties",
+                "Site Properties",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "9.2 Ensure Web App Redirects All HTTP traffic to HTTPS in Azure App Service",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "PropertiesSite-Properties9-4-Ensure-the-web-app-has-Client-Certificates-Incoming-client-certificates-set-to-On-",
+              "name": "9.4 Ensure the web app has 'Client Certificates (Incoming client certificates)' set to 'On'",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "client cert enabled": [
+                  {
+                    "check": "equals",
+                    "expected": "true",
+                    "background": "The TLS mutual authentication technique in enterprise environments ensures the authenticity of clients to the server. If incoming client certificates are enabled, then only an authenticated client who has valid certificates can access the app.",
+                    "remediation": "From Azure Console\n1. Login to Azure Portal using https://portal.azure.com\n2. Go to App Services\n3. Click on each App\n4. Under the Settings section, Click on Configuration, then General settings\n5. Set the option Client certificate mode located under Incoming client certificates\nis set to Require"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Properties",
+                "Site Properties",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "9.4 Ensure the web app has 'Client Certificates (Incoming client certificates)' set to 'On'",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Site Configuration": [
+        {
+          "Site Configuration": [
+            {
+              "id": "Site-ConfigurationSite-Configuration9-3-Ensure-Web-App-is-using-the-latest-version-of-TLS-encryption",
+              "name": "9.3 Ensure Web App is using the latest version of TLS encryption",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "min TLS version": [
+                  {
+                    "check": "equals",
+                    "expected": "TLS1_2",
+                    "background": "App service currently allows the web app to set TLS versions 1.0, 1.1 and 1.2. It is highly recommended to use the latest TLS 1.2 version for web app secure connections.",
+                    "remediation": "From Azure Console\n1. Login to Azure Portal using https://portal.azure.com\n2. Go to App Services\n3. Click on each App\n4. Under Setting section, Click on SSL settings\n5. Under the Bindings pane, set Minimum TLS Version to 1.2 under Protocol\nSettings section"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Site Configuration",
+                "Site Configuration",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "9.3 Ensure Web App is using the latest version of TLS encryption",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "Site-ConfigurationSite-Configuration9-9-Ensure-that-HTTP-Version-is-the-Latest-if-Used-to-Run-the-Web-App",
+              "name": "9.9 Ensure that 'HTTP Version' is the Latest, if Used to Run the Web App",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "HTTP 2.0 enabled": [
+                  {
+                    "check": "equals",
+                    "expected": "true",
+                    "background": "Newer versions may contain security enhancements and additional functionality. Using the latest version is recommended in order to take advantage of enhancements and new capabilities. With each software installation, organizations need to determine if a given update meets their requirements and also verify the compatibility and support provided for any additional software against the update revision that is selected.\nHTTP 2.0 has additional performance improvements on the head-of-line blocking problem of old HTTP version, header compression, and prioritization of requests. HTTP 2.0 no longer supports HTTP 1.1's chunked transfer encoding mechanism, as it provides its own, more efficient, mechanisms for data streaming.",
+                    "remediation": "From Azure Console\n1. Login to Azure Portal using https://portal.azure.com 2. Go to App Services\n3. Click on each App\n4. Under Setting section, Click on Configuration\n5. Set HTTP version to 2.0 under General settings"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Site Configuration",
+                "Site Configuration",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "9.9 Ensure that 'HTTP Version' is the Latest, if Used to Run the Web App",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "Site-ConfigurationSite-Configuration9-10-Ensure-FTP-deployments-are-Disabled",
+              "name": "9.10 Ensure FTP deployments are Disabled",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "FTP state": [
+                  {
+                    "check": "regex_excludes",
+                    "expected": "AllAllowed",
+                    "background": "Azure FTP deployment endpoints are public. An attacker listening to traffic on a wifi network used by a remote employee or a corporate network could see login traffic in clear- text which would then grant them full control of the code base of the app or service. This finding is more severe if User Credentials for deployment are set at the subscription level rather than using the default Application Credentials which are unique per App.",
+                    "remediation": "From Azure Console\n1. Go to the Azure Portal\n2. Select App Services\n3. Click on an app\n4. Select Settings and then Configuration\n5. Under General Settings, for the Platform Settings, the FTP state should be set\nto Disabled or FTPS Only"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Site Configuration",
+                "Site Configuration",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "9.10 Ensure FTP deployments are Disabled",
+              "nodeGroupsOpen": true,
+              "removeConfirmation": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Auth Settings": [
+        {
+          "Identity Providers": [
+            {
+              "id": "Auth-SettingsIdentity-Providers9-5-Ensure-that-Register-with-Azure-Active-Directory-is-enabled-on-App-Service",
+              "name": "9.5 Ensure that Register with Azure Active Directory is enabled on App Service",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "azure active directory enabled": [
+                  {
+                    "check": "equals",
+                    "expected": "true",
+                    "background": "App Service provides a highly scalable, self-patching web hosting service in Azure. It also provides a managed identity for apps, which is a turn-key solution for securing access to Azure SQL Database and other Azure services.",
+                    "remediation": "From Azure Console\n1. Login to Azure Portal using https://portal.azure.com\n2. Go to App Services\n3. Click on each App\n4. Under Setting section, Click on Identity\n5. Under the System assigned pane, set Status to On"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Auth Settings",
+                "Identity Providers",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "9.5 Ensure that Register with Azure Active Directory is enabled on App Service",
+              "nodeGroupsOpen": true
+            }
+          ]
+        },
+        {
+          "Platform": [
+            {
+              "id": "Auth-SettingsPlatform9-1-Ensure-App-Service-Authentication-is-set-up-for-apps-in-Azure-App-Service",
+              "name": "9.1 Ensure App Service Authentication is set up for apps in Azure App Service",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "auth platform enabled": [
+                  {
+                    "check": "equals",
+                    "expected": "true",
+                    "background": "By Enabling App Service Authentication, every incoming HTTP request passes through it before being handled by the application code. It also handles authentication of users with the specified provider (Azure Active Directory, Facebook, Google, Microsoft Account, and Twitter), validation, storing and refreshing of tokens, managing the authenticated sessions and injecting identity information into request headers.",
+                    "remediation": "From Azure Console\n1. Login to Azure Portal using https://portal.azure.com\n2. Go to App Services\n3. Click on each App\n4. Under Setting section, click on Authentication\n5. If no identity providers are set up, then click Add identity provider\n6. Choose other parameters as per your requirements and click on Add"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Auth Settings",
+                "Platform",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "9.1 Ensure App Service Authentication is set up for apps in Azure App Service",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scan_options": {}
+}

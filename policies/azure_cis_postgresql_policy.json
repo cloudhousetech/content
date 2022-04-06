@@ -1,0 +1,87 @@
+{
+  "policy": {
+    "name": "azure_postgresql_policy",
+    "short_description": "Azure PostgreSQL Policy",
+    "description": null,
+    "settings": {
+      "tests": {
+        "output_format": null
+      }
+    },
+    "operating_system_family_id": null,
+    "operating_system_id": null,
+    "type": null
+  },
+  "data": [
+    {
+      "Server Properties": [
+        {
+          "Server Properties": [
+            {
+              "id": "Server-PropertiesServer-Properties4-3-1-Ensure-Enforce-SSL-connection-is-set-to-ENABLED-for-PostgreSQL-Database-Server",
+              "name": "4.3.1 Ensure 'Enforce SSL connection' is set to 'ENABLED' for PostgreSQL Database Server",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "SSL enforcement": [
+                  {
+                    "check": "equals",
+                    "expected": "Enabled",
+                    "background": "SSL connectivity helps to provide a new layer of security, by connecting database server to client applications using Secure Sockets Layer (SSL). Enforcing SSL connections between database server and client applications helps protect against \"man in the middle\" attacks by encrypting the data stream between the server and application.",
+                    "remediation": "From Azure Console\n1. Login to Azure Portal using https://portal.azure.com\n2. Go to Azure Database for PostgreSQL server\n3. For each database, click on Connection security\n4. In SSL settings.\n5. Click on ENABLED to Enforce SSL connection"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Server Properties",
+                "Server Properties",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "4.3.1 Ensure 'Enforce SSL connection' is set to 'ENABLED' for PostgreSQL Database Server",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "Server-PropertiesServer-Properties4-3-8-Ensure-Infrastructure-double-encryption-for-PostgreSQL-Database-Server-is-Enabled-",
+              "name": "4.3.8 Ensure 'Infrastructure double encryption' for PostgreSQL Database Server is 'Enabled'",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "infrastructure encryption": [
+                  {
+                    "exp": "Enabled",
+                    "check": "equals",
+                    "expected": "Enabled",
+                    "background": "If Double Encryption is enabled, another layer of encryption is implemented at the hardware level before the storage or network level. Information will be encrypted before it is even accessed, preventing both interception of data in motion if the network layer encryption is broken and data at rest in system resources such as memory or processor cache. Encryption will also be in place for any backups taken of the database, so the key will secure access the data in all forms. For the most secure implementation of key based encryption, it is recommended to use a Customer Managed asymmetric RSA 2048 Key in Azure Key Vault.",
+                    "remediation": "From Azure Console\nFor the creation of a new server;\n1. Go through the normal process of database creation.\n2. On step 2 titled 'Additional settings' ensure that 'Infrastructure double encryption\nenabled' is 'checked'\n3. Acknowledge that you understand this will impact database performance.\n4. Finish database creation as normal.\n5. On the final 'Review + create' screen, ensure that at the very bottom of the database\nproperties, that 'Infrastructure (Double) encryption' is 'enabled'."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Server Properties",
+                "Server Properties",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "4.3.8 Ensure 'Infrastructure double encryption' for PostgreSQL Database Server is 'Enabled'",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scan_options": {}
+}

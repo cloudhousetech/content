@@ -1,0 +1,158 @@
+{
+  "policy": {
+    "name": "azure_security_group_policy",
+    "short_description": "Azure Security Group Policy",
+    "description": null,
+    "settings": {
+      "tests": {
+        "output_format": null
+      }
+    },
+    "operating_system_family_id": null,
+    "operating_system_id": null,
+    "type": null
+  },
+  "data": [
+    {
+      "Properties": [
+        {
+          "Rules": [
+            {
+              "id": "PropertiesRules6-1-Ensure-that-RDP-access-is-restricted-from-the-internet",
+              "name": "6.1 Ensure that RDP access is restricted from the internet",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "RDP access restricted": [
+                  {
+                    "exp": "true",
+                    "check": "equals",
+                    "expected": "true",
+                    "background": "The potential security problem with using RDP over the Internet is that attackers can use various brute force techniques to gain access to Azure Virtual Machines. Once the attackers gain access, they can use a virtual machine as a launch point for compromising other machines on an Azure Virtual Network or even attack networked devices outside of Azure.",
+                    "remediation": "Disable direct RDP access to your Azure Virtual Machines from the Internet. After direct RDP access from the Internet is disabled, you have other options you can use to access these virtual machines for remote management:\n• Point-to-site VPN\n• Site-to-site VPN\n• ExpressRoute"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Properties",
+                "Rules",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.1 Ensure that RDP access is restricted from the internet",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "PropertiesRules6-2-Ensure-that-SSH-access-is-restricted-from-the-internet",
+              "name": "6.2 Ensure that SSH access is restricted from the internet",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "SSH access restricted": [
+                  {
+                    "check": "equals",
+                    "expected": "true",
+                    "background": "The potential security problem with using SSH over the Internet is that attackers can use various brute force techniques to gain access to Azure Virtual Machines. Once the attackers gain access, they can use a virtual machine as a launch point for compromising other machines on the Azure Virtual Network or even attack networked devices outside of Azure.",
+                    "remediation": "Disable direct SSH access to your Azure Virtual Machines from the Internet. After direct SSH access from the Internet is disabled, you have other options you can use to access these virtual machines for remote management:\n• Point-to-site VPN\n• Site-to-site VPN\n• ExpressRoute"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Properties",
+                "Rules",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.2 Ensure that SSH access is restricted from the internet",
+              "nodeGroupsOpen": true
+            },
+            {
+              "id": "PropertiesRules6-6-Ensure-that-UDP-Services-are-restricted-from-the-Internet",
+              "name": "6.6 Ensure that UDP Services are restricted from the Internet",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "UDP access restricted": [
+                  {
+                    "check": "equals",
+                    "expected": "true",
+                    "background": "The potential security problem with broadly exposing UDP services over the Internet is that attackers can use DDoS amplification techniques to reflect spoofed UDP traffic from Azure Virtual Machines. The most common types of these attacks use exposed DNS, NTP, SSDP, SNMP, CLDAP and other UDP-based services as amplification source for disrupting services of other machines on the Azure Virtual Network or even attack networked devices outside of Azure.",
+                    "remediation": "Disable direct UDP access to your Azure Virtual Machines from the Internet. After direct UDP access from the Internet is disabled, you have other options you can use to access UDP based services running on these virtual machines:\nPoint-to-site VPN\nSite-to-site VPN\nExpressRoute"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Properties",
+                "Rules",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.6 Ensure that UDP Services are restricted from the Internet",
+              "nodeGroupsOpen": true
+            }
+          ]
+        },
+        {
+          "Flow Logs": [
+            {
+              "id": "PropertiesFlow-Logs6-4-Ensure-that-Network-Security-Group-Flow-Log-retention-period-is-greater-than-90-days-",
+              "name": "6.4 Ensure that Network Security Group Flow Log retention period is 'greater than 90 days'",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "retention policy days": [
+                  {
+                    "case": "false",
+                    "cond": [
+                      {
+                        "op": ">",
+                        "val": "90"
+                      }
+                    ],
+                    "check": "conditional",
+                    "logic": "AND",
+                    "background": "Flow logs enable capturing information about IP traffic flowing in and out of network security groups. Logs can be used to check for anomalies and give insight into suspected breaches.",
+                    "remediation": "From Azure Console\n1. Go to Network Watcher\n2. Select NSG flow logs blade in the Logs section\n3. Select each Network Security Group from the list\n4. Ensure Status is set to On\n5. Ensure Retention (days) setting greater than 90 days\n6. Select your storage account in the Storage account field\n7. Select Save"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Properties",
+                "Flow Logs",
+                "*"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "6.4 Ensure that Network Security Group Flow Log retention period is 'greater than 90 days'",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scan_options": {}
+}

@@ -1,0 +1,191 @@
+{
+  "policy": {
+    "name": "azure_storage_policy",
+    "short_description": "Azure Storage Policy",
+    "description": null,
+    "settings": {
+      "tests": {
+        "output_format": null
+      }
+    },
+    "operating_system_family_id": null,
+    "operating_system_id": null,
+    "type": null
+  },
+  "data": [
+    {
+      "Storage Account Info": [
+        {
+          "Properties": [
+            {
+              "id": "Storage-Account-InfoProperties3-5-Ensure-that-Public-access-level-is-set-to-Private-for-blob-containers",
+              "name": "3.5 Ensure that 'Public access level' is set to Private for blob containers",
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "allow blob public access": [
+                  {
+                    "exp": "false",
+                    "check": "equals",
+                    "expected": "false",
+                    "background": "Anonymous, public read access to a container and its blobs can be enabled in Azure Blob storage. It grants read-only access to these resources without sharing the account key, and without requiring a shared access signature. It is recommended not to provide anonymous access to blob containers until, and unless, it is strongly desired. A shared access signature token should be used for providing controlled and timed access to blob containers. If no anonymous access is needed on the storage account, it’s recommended to set allowBlobPublicAccess false.",
+                    "remediation": "From Azure Console\nFirst, follow Microsoft documentation and created shared access signature tokens for your blob containers. Then,\n1. Go to Storage Accounts\n2. For each storage account, go to Containers under the Data Storage heading\n3. For each container, click Access policy\n4. Set Public access level to Private (no anonymous access)\n5. For each storage account, go to Allow Blob public access in Configuration\n6. Set Disabled if no anonymous access is needed on the storage account"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Storage Account Info",
+                "Properties",
+                "properties"
+              ],
+              "check_type": "storage account info",
+              "nodeGroupsOpen": true,
+              "Storage Account Info": {
+                "name": "properties"
+              }
+            },
+            {
+              "id": "Storage-Account-InfoProperties3-1-Ensure-that-Secure-transfer-required-is-set-to-Enabled-",
+              "name": "3.1 Ensure that 'Secure transfer required' is set to 'Enabled'",
+              "checks": {
+                "enable HTTPS traffic only": [
+                  {
+                    "exp": "true",
+                    "check": "equals",
+                    "expected": "true",
+                    "background": "The secure transfer option enhances the security of a storage account by only allowing requests to the storage account by a secure connection. For example, when calling REST APIs to access storage accounts, the connection must use HTTPS. Any requests using HTTP will be rejected when 'secure transfer required' is enabled. When using the Azure files service, connection without encryption will fail, including scenarios using SMB 2.1, SMB 3.0 without encryption, and some flavors of the Linux SMB client. Because Azure storage doesn’t support HTTPS for custom domain names, this option is not applied when using a custom domain name.",
+                    "remediation": "From Azure Console\n1. Go to Storage Accounts\n2. For each storage account, go to Configuration\n3. Set Secure transfer required to Enabled"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Storage Account Info",
+                "Properties",
+                "properties"
+              ],
+              "check_type": "storage account info",
+              "nodeGroupsOpen": true,
+              "Storage Account Info": {
+                "name": "properties"
+              }
+            },
+            {
+              "id": "Storage-Account-InfoProperties3-12-Ensure-the-Minimum-TLS-version-is-set-to-Version-1-2-",
+              "name": "3.12 Ensure the \"Minimum TLS version\" is set to \"Version 1.2\"",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "minimum TLS version": [
+                  {
+                    "exp": "TLS1_2",
+                    "check": "equals",
+                    "expected": "TLS1_2",
+                    "background": "TLS 1.0 has known vulnerabilities and has been replaced by later versions of the TLS protocol. Continued use of this legacy protocol affects the security of data in transit.",
+                    "remediation": "From Azure Console\n1. Login to Azure Portal using https://portal.azure.com\n2. Go to Storage Accounts\n3. Click on each Storage Account\n4. Under Setting section, Click on Configuration 5. Set the minimum TLS version to be Version 1.2"
+                  }
+                ]
+              },
+              "ci_path": [
+                "Storage Account Info",
+                "Properties",
+                "properties"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "3.12 Ensure the \"Minimum TLS version\" is set to \"Version 1.2\"",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Network Rule Set": [
+        {
+          "Info": [
+            {
+              "id": "Network-Rule-SetInfo3-6-Ensure-Default-Network-Access-Rule-for-Storage-Accounts-is-Set-to-Deny",
+              "name": "3.6 Ensure Default Network Access Rule for Storage Accounts is Set to Deny",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "default action": [
+                  {
+                    "exp": "Deny",
+                    "check": "equals",
+                    "expected": "Deny",
+                    "background": "Storage accounts should be configured to deny access to traffic from all networks (including internet traffic). Access can be granted to traffic from specific Azure Virtual networks, allowing a secure network boundary for specific applications to be built. Access can also be granted to public internet IP address ranges, to enable connections from specific internet or on-premises clients. When network rules are configured, only applications from allowed networks can access a storage account. When calling from an allowed network, applications continue to require proper authorization (a valid access key or SAS token) to access the storage account.",
+                    "remediation": "From Azure Console\n1. Go to Storage Accounts\n2. For each storage account, Click on the Networking blade\n3. Click the Firewalls and virtual networks heading.\n4. Ensure that you have elected to allow access from Selected networks\n5. Add rules to allow traffic from specific network.\n6. Click Save to apply your changes."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Network Rule Set",
+                "Info",
+                "info"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "3.6 Ensure Default Network Access Rule for Storage Accounts is Set to Deny",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Blob Service": [
+        {
+          "Properties": [
+            {
+              "id": "Blob-ServiceProperties3-8-Ensure-Soft-Delete-is-Enabled-for-Azure-Storage",
+              "name": "3.8 Ensure Soft Delete is Enabled for Azure Storage",
+              "error": false,
+              "checks": {
+                "present": [
+                  {
+                    "check": "equals",
+                    "expected": "true"
+                  }
+                ],
+                "delete retention policy enabled": [
+                  {
+                    "exp": "true",
+                    "check": "equals",
+                    "expected": "true",
+                    "background": "There could be scenarios where users accidentally run delete commands on Azure Storage blobs or blob snapshot or attacker/malicious user does it deliberately to cause disruption. Deleting an Azure Storage blob leads to immediate data loss / non-accessible data.\nThere is a property of Azure Storage blob service to make recoverable blobs.",
+                    "remediation": "From Azure Console:\n1. Go to Storage Account\n2. For each Storage Account, navigate to Data Protection\n3. Select set soft delete enabled and enter a number of days you want to retain soft\ndeleted data."
+                  }
+                ]
+              },
+              "ci_path": [
+                "Blob Service",
+                "Properties",
+                "properties"
+              ],
+              "check_type": "other",
+              "path_error": "",
+              "description": "3.8 Ensure Soft Delete is Enabled for Azure Storage",
+              "nodeGroupsOpen": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "scan_options": {}
+}

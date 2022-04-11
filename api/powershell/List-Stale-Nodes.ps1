@@ -2,11 +2,12 @@
 # Usage: List-Stale-Nodes.ps1 -Url https://upguard.url -ApiKey 12345 -SecretKey 12345 -Days 30
 
 param (
-  [Parameter(Mandatory=$true)][string]$Url,
+  [string]$Url = $env:GUARDIAN_URL,
   # Get the API and secret keys: https://support.upguard.com/upguard/using-the-api.html#authorization-header
-  [Parameter(Mandatory=$true)][string]$ApiKey,
-  [Parameter(Mandatory=$true)][string]$SecretKey,
-  [Int]$Days = 30
+  [string]$ApiKey = $env:GUARDIAN_APIKEY,
+  [string]$SecretKey = $env:GUARDIAN_SECRETKEY,
+  [Int]$Days = 30,
+  [Switch]$DeleteStaleNodes
 )
 
 # Perform an API request and return the result as a Powershell object
@@ -41,7 +42,7 @@ function UpGuard-WebRequest
       if ($Body.Keys -notcontains "page") { $Body.page = 1 }
       if ($Body.Keys -notcontains "per_page") { $Body.per_page = 50 }
       while ($true) {
-        $new = Invoke-WebRequest -Method $Method -Uri $Endpoint -Headers $headers -Body $Body -ContentType "application/json"
+        $new = Invoke-WebRequest -Method $Method -Uri $Endpoint -Headers $headers -Body $Body -ContentType "application/json" -SkipCertificateCheck
         if ($new.StatusCode > 400){throw [System.Exception] "$($new.StatusCode.ToString()) $($new.StatusDescription)"}
         $new = ConvertFrom-Json $new.Content
 
@@ -59,13 +60,13 @@ function UpGuard-WebRequest
         $Body.page = [int]$Body.page + 1
       }
     }
-    if ($Method -in "Get","Delete"){$req = Invoke-WebRequest -Method $Method -Uri $Endpoint -Headers $headers -ContentType "application/json"}
-    else{$req = Invoke-WebRequest -Method $Method -Uri $Endpoint -Headers $headers -Body $Body -ContentType "application/json"}
+    if ($Method -in "Get","Delete"){$req = Invoke-WebRequest -Method $Method -Uri $Endpoint -Headers $headers -ContentType "application/json" -SkipCertificateCheck}
+    else{$req = Invoke-WebRequest -Method $Method -Uri $Endpoint -Headers $headers -Body $Body -ContentType "application/json" -SkipCertificateCheck}
     if ($req)
     {
       if ($req.StatusCode > 400){throw [System.Exception] "$($req.StatusCode.ToString()) $($req.StatusDescription)"}
       # else{return $jsonserial.DeserializeObject($req.Content)}
-      else { return ConvertFrom-Json $req.Content }
+      else { if ($Method -in "Get"){return ConvertFrom-Json $req.Content} }
     }
 }
 
@@ -84,6 +85,11 @@ Foreach ($Node in $Nodes)
   $LastScan = UpGuard-WebRequest -EndPoint "$($Url)/api/v2/nodes/$($Node.id)/last_successful_scan.json" -ApiKey $ApiKey -SecretKey $SecretKey
   If ($LastScan.created_at -lt $DateThreshold) {
     Write-Output "  - $($Node.name) $($LastScan.created_at)"
+    If ($DeleteStaleNodes) {
+      Write-Output "    - Deleting $($Node.name)"
+      UpGuard-WebRequest -EndPoint "$($Url)/api/v2/nodes/$($Node.id).json" -Method "Delete" -ApiKey $ApiKey -SecretKey $SecretKey
+      Write-Output "      Done!"
+    }
   }
 }
 Write-Output "Done!"

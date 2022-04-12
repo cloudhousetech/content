@@ -438,7 +438,7 @@
                 ]
               },
               "ci_path": [
-                "Policies",
+                "Attached Policies",
                 "*",
                 "Policy Versions"
               ],

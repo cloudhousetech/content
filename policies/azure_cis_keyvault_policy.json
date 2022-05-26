@@ -16,7 +16,7 @@
     {
       "Properties": [
         {
-          "Key Attributes": [
+          "Attributes": [
             {
               "id": "PropertiesKey-Attributes8-1-Ensure-that-the-Expiration-Date-is-set-for-all-Keys-in-RBAC-Key-Vaults",
               "name": "8.1 Ensure that the Expiration Date is set for all Keys in RBAC Key Vaults",
@@ -39,8 +39,8 @@
               },
               "ci_path": [
                 "Properties",
-                "Key Attributes",
-                "*"
+                "*",
+                "Attributes"
               ],
               "check_type": "other",
               "path_error": "",

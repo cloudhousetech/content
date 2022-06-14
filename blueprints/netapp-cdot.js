@@ -1,6 +1,9 @@
 // NetApp Clustered Data-OnTap pluggable blueprint for UpGuard
 // Please contact UpGuard support for installation
-// 2018-03-08 v1.1
+// 2022-06-13 v1.1.1
+
+// Changelog:
+// v1.1.1 - updated ProgramOutputStdout to support larger incoming byte arrays
 
 // Required permissions:
 // Service user must be able to run the following commands:
@@ -71,7 +74,10 @@ function main(targetHost) {
     // function to extract stdout from the runCmd response
     let programOutputStdout = resp => {
         let [exit_status, _stdout, _stderr] = resp;
-        let stdout = String.fromCharCode.apply(null, _stdout);
+        let stdout = '';
+        for (var i=0; i < _stdout.byteLength; i++) {
+            stdout += String.fromCharCode(_stdout[i]);
+        }
         return stdout.trim();
     }
 

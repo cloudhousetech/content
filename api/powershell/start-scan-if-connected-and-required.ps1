@@ -2,13 +2,13 @@ param(
 [string]$url='',
 [string]$apiKey='',
 [string]$secretKey='',
-[string]$nodeHostname='',
+[string]$nodeHostname=(hostname),
 [int]$interval=12
 )
 
 Set-Variable ERR_SUCCESS -option Constant -value 0
-Set-Variable ERR_NO_UPGUARD_SERVICE -option Constant -value 1
-Set-Variable ERR_UPGUARD_SERVICE_STOPPED -option Constant -value 2
+Set-Variable ERR_NO_GUARDIAN_SERVICE -option Constant -value 1
+Set-Variable ERR_GUARDIAN_SERVICE_STOPPED -option Constant -value 2
 Set-Variable ERR_NO_HEARTBEAT -option Constant -value 3
 Set-Variable ERR_NODE_NOT_FOUND -option Constant -value 4
 Set-Variable ERR_LAST_STATUS_NOT_FOUND -option Constant -value 5
@@ -29,35 +29,35 @@ function webRequest($requestUrl, $method='GET') {
 }
 
 
-Write-Host "Checking that the UpGuard service is running"
+Write-Host "Checking that the Guardian service is running"
 
 $service = $null
 
 try {
-    $service = Get-Service -Name 'upguardd'
+    $service = Get-Service -Name 'guardiand'
 } catch {
     Write-Host $_
-    exit $ERR_NO_UPGUARD_SERVICE
+    exit $ERR_NO_GUARDIAN_SERVICE
 }
 
 if ($service -eq $null) {
-    Write-Host 'Could not find upguardd service, exiting'
-    exit $ERR_NO_UPGUARD_SERVICE
+    Write-Host 'Could not find guardiand service, exiting'
+    exit $ERR_NO_GUARDIAN_SERVICE
 }
 
 if ($service.Status -ne 'Running') {
-    Write-Host 'upguardd service is not running, attempting to start'
+    Write-Host 'guardiand service is not running, attempting to start'
     $service.Start();
     try {
         $service.WaitForStatus('Running', '00:00:10')
     } catch {
-        Write-Host 'The upguardd service did not start within 10 seconds, exiting'
+        Write-Host 'The guardiand service did not start within 10 seconds, exiting'
         Write-Host $_
-        exit $ERR_UPGUARD_SERVICE_STOPPED
+        exit $ERR_GUARDIAN_SERVICE_STOPPED
     }
 }
 
-Write-Host 'Service is running, confirming connectivity to UpGuard appliance'
+Write-Host 'Service is running, confirming connectivity to Guardian appliance'
 
 $response = webRequest ($url + '/heartbeat')
 

@@ -29,7 +29,7 @@ function webRequest($requestUrl, $method='GET') {
 }
 
 
-Write-Host "Checking that the UpGuard service is running"
+Write-Host "Checking that the Guardian service is running"
 
 $service = $null
 

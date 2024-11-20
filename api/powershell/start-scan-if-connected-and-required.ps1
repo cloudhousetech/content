@@ -89,7 +89,7 @@ if ($response -eq $null -or $response.StatusCode -ne 200) {
     exit $ERR_LAST_STATUS_NOT_FOUND
 }
 
-$lastScanDate = [datetime]::ParseExact(($response.Content | ConvertFrom-Json).updated_at,'yyyy-MM-ddTHH:mm:ss.fffzzz', [Globalization.CultureInfo]::InvariantCulture)
+$lastScanDate = [datetime]::ParseExact(($response.Content | ConvertFrom-Json).updated_at,'yyyy-MM-ddTHH:mm:ss.fffZ', [Globalization.CultureInfo]::InvariantCulture)
 
 if ($lastScanDate -gt (Get-Date).AddHours(-$interval)) {
     Write-Host "Last successful scan less than $interval hours ago ($lastScanDate), exiting"
